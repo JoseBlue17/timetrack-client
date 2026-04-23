@@ -1,21 +1,16 @@
-import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ToastOptions {
   title: string;
   description?: string;
-  type?: 'success' | 'error' | 'info';
+  type?: 'success' | 'error' | 'info' | 'warning';
 }
 
 export function useToast() {
-  const [toasts, setToasts] = useState<(ToastOptions & { id: number })[]>([]);
-
-  const triggerToast = (options: ToastOptions) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { ...options, id }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+  const triggerToast = ({ title, description, type = 'info' }: ToastOptions) => {
+    const message = description ? `${title}: ${description}` : title;
+    toast[type](message);
   };
 
-  return { toasts, triggerToast };
+  return { triggerToast };
 }

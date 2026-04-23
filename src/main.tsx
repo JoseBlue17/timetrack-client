@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 import { ReactQueryProvider } from '@/tools/react-query-provider';
 import AppProvider from '@/contexts/app-provider';
@@ -20,5 +21,6 @@ createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </AppProvider>
     </ReactQueryProvider>
+    <Toaster position="top-right" richColors closeButton />
   </StrictMode>,
 );

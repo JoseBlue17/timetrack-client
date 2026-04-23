@@ -1,18 +1,21 @@
 import type { AxiosResponseError } from '@/config/http';
 import { useMemo } from 'react';
+import { useToast } from './use-toast';
 
 export const useShowError = () => {
+  const { triggerToast } = useToast();
+
   const { byDomainCode, byHttpCode } = useMemo(
     () => ({
       byDomainCode: {
         INSUFFICIENT_CREDENTIALS_PROVIDED: 'Credenciales insuficientes',
-        INVALID_CREDENTIALS: 'Contraseña actual incorrecta',
-        SESSION_TOKEN_EXPIRED: 'Token de sesión ha expirado',
-        TOKEN_INVALID: 'El token es inválido.',
-        USER_ALREADY_REGISTERED: 'Usuario ya registrado.',
+        INVALID_CREDENTIALS: 'Contraseña o correo incorrectos',
+        SESSION_TOKEN_EXPIRED: 'Sesión expirada, inicia sesión nuevamente',
+        TOKEN_INVALID: 'El token es inválido',
+        USER_ALREADY_REGISTERED: 'Este correo ya está registrado',
       } as Record<string, string>,
       byHttpCode: {
-        400: 'Revisa los campos',
+        400: 'Revisa los campos ingresados',
         401: 'No autorizado',
         403: 'No tienes permiso para realizar esta acción',
         404: 'Recurso no encontrado',
@@ -34,9 +37,7 @@ export const useShowError = () => {
       message = byHttpCode[statusCode];
     }
 
-    console.error(message ?? error.message);
-    // Sustituir por tu sistema de notificaciones (toast, etc.)
-    alert(message ?? error.message);
+    triggerToast({ title: message ?? error.message, type: 'error' });
   };
 
   return { showError };

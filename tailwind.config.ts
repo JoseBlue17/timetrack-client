@@ -2,7 +2,7 @@ import animate from 'tailwindcss-animate';
 import tailwindcssReactAria from 'tailwindcss-react-aria-components';
 import plugin from 'tailwindcss/plugin';
 
-module.exports = {
+export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {

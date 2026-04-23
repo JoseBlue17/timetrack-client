@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useVerifyToken } from '@/hooks/use-verify-token';
 import useLoggedUser from '@/hooks/use-logged-user';
+import { SignInPage } from '@/modules/sign-in';
+import { SignUpPage } from '@/modules/sign-up';
 
 function App() {
   const { isVerifyingToken } = useVerifyToken();
@@ -17,10 +19,8 @@ function App() {
   return (
     <Routes>
       {/* Rutas públicas */}
-      <Route
-        path="/sign-in"
-        element={loggedUser ? <Navigate to="/" replace /> : <div>Sign In Page (por construir)</div>}
-      />
+      <Route path="/sign-in" element={loggedUser ? <Navigate to="/" replace /> : <SignInPage />} />
+      <Route path="/sign-up" element={loggedUser ? <Navigate to="/" replace /> : <SignUpPage />} />
 
       {/* Rutas protegidas */}
       <Route
