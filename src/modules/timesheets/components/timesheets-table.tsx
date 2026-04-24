@@ -2,16 +2,14 @@ import { useState } from 'react';
 import { Table, Button, Popconfirm, Tag } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import type { ITimesheetDateGroup, ITimesheet } from '../timesheet.interface';
+import type {
+  ITimesheetDateGroup,
+  ITimesheet,
+  ITimesheetsTableProps,
+} from '../timesheet.interface';
 import { useDeleteTimesheet } from '../hooks/use-delete-timesheet';
 
-interface TimesheetsTableProps {
-  groups: ITimesheetDateGroup[];
-  loading?: boolean;
-  onEdit: (timesheet: ITimesheet) => void;
-}
-
-export function TimesheetsTable({ groups, loading, onEdit }: TimesheetsTableProps) {
+export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTableProps) {
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const { mutate: deleteTimesheet, isPending: isDeleting } = useDeleteTimesheet();
 
@@ -56,13 +54,16 @@ export function TimesheetsTable({ groups, loading, onEdit }: TimesheetsTableProp
               e.stopPropagation();
               if (record.timesheets.length === 1) {
                 onEdit(record.timesheets[0]);
-              } else {
-                setExpandedKeys((prev) =>
-                  prev.includes(record.date)
-                    ? prev.filter((k) => k !== record.date)
-                    : [...prev, record.date],
-                );
+                return;
               }
+
+              setExpandedKeys((previousKeys) => {
+                if (previousKeys.includes(record.date)) {
+                  return previousKeys.filter((key) => key !== record.date);
+                }
+
+                return [...previousKeys, record.date];
+              });
             }}
           />
           {record.timesheets.length === 1 && (
@@ -155,11 +156,12 @@ export function TimesheetsTable({ groups, loading, onEdit }: TimesheetsTableProp
         expandedRowRender,
         expandedRowKeys: expandedKeys,
         onExpand: (expanded, record) => {
-          setExpandedKeys(
-            expanded
-              ? [...expandedKeys, record.date]
-              : expandedKeys.filter((k) => k !== record.date),
-          );
+          if (expanded) {
+            setExpandedKeys([...expandedKeys, record.date]);
+            return;
+          }
+
+          setExpandedKeys(expandedKeys.filter((key) => key !== record.date));
         },
         rowExpandable: (record) => record.timesheets.length > 1,
       }}

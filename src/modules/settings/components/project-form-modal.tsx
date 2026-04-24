@@ -1,23 +1,12 @@
 import { useMemo } from 'react';
 import { Modal, Input, Button } from 'antd';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import type { IProject } from '../project.interface';
+import type { IProjectFormModalProps } from '../project.interface';
 import { useCreateProject } from '../hooks/use-create-project';
 import { useUpdateProject } from '../hooks/use-update-project';
+import { projectFormSchema } from '../project.validations';
 
-interface ProjectFormModalProps {
-  open: boolean;
-  onClose: () => void;
-  project?: IProject;
-}
-
-const validationSchema = Yup.object({
-  name: Yup.string().max(100, 'Máximo 100 caracteres').required('El nombre es requerido'),
-  description: Yup.string().max(500, 'Máximo 500 caracteres').optional(),
-});
-
-export function ProjectFormModal({ open, onClose, project }: ProjectFormModalProps) {
+export function ProjectFormModal({ open, onClose, project }: IProjectFormModalProps) {
   const isEditing = !!project;
 
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
@@ -37,14 +26,15 @@ export function ProjectFormModal({ open, onClose, project }: ProjectFormModalPro
 
     if (isEditing) {
       updateProject(values, { onSuccess });
-    } else {
-      createProject(values, { onSuccess });
+      return;
     }
+
+    createProject(values, { onSuccess });
   };
 
   const formik = useFormik({
     initialValues,
-    validationSchema,
+    validationSchema: projectFormSchema,
     enableReinitialize: true,
     onSubmit: handleSubmit,
   });

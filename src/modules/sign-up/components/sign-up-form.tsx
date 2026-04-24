@@ -4,14 +4,9 @@ import { Link } from 'react-router-dom';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
 import { signUpValidationSchema } from '../sign-up.validations';
 import { signUpInitialValues } from '../sign-up.initial-values';
-import type { SignUpValues } from '../sign-up.interface';
+import type { ISignUpFormProps, SignUpValues } from '../sign-up.interface';
 
-interface SignUpFormProps {
-  onSubmit: (values: SignUpValues) => void;
-  isPending: boolean;
-}
-
-export function SignUpForm({ onSubmit, isPending }: SignUpFormProps) {
+export function SignUpForm({ onSubmit, isPending }: ISignUpFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 

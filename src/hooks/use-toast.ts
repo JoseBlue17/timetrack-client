@@ -1,13 +1,8 @@
 import { toast } from 'sonner';
-
-interface ToastOptions {
-  title: string;
-  description?: string;
-  type?: 'success' | 'error' | 'info' | 'warning';
-}
+import type { IToastOptions } from './hooks.interface';
 
 export function useToast() {
-  const triggerToast = ({ title, description, type = 'info' }: ToastOptions) => {
+  const triggerToast = ({ title, description, type = 'info' }: IToastOptions) => {
     const message = description ? `${title}: ${description}` : title;
     toast[type](message);
   };

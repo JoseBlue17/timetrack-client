@@ -4,14 +4,9 @@ import { Link } from 'react-router-dom';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
 import { signInValidationSchema } from '../sign-in.validations';
 import { signInInitialValues } from '../sign-in.initial-values';
-import type { SignInValues } from '../sign-in.interface';
+import type { ISignInFormProps, SignInValues } from '../sign-in.interface';
 
-interface SignInFormProps {
-  onSubmit: (values: Omit<SignInValues, 'rememberMe'>) => void;
-  isPending: boolean;
-}
-
-export function SignInForm({ onSubmit, isPending }: SignInFormProps) {
+export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik<SignInValues>({

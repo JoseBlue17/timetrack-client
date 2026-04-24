@@ -4,6 +4,11 @@ export interface SignInValues {
   rememberMe: boolean;
 }
 
+export interface ISignInFormProps {
+  onSubmit: (values: Omit<SignInValues, 'rememberMe'>) => void;
+  isPending: boolean;
+}
+
 export interface SignInResponse {
   token: string;
   user: {

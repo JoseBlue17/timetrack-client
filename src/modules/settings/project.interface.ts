@@ -4,6 +4,12 @@ export interface IProject {
   description: string;
 }
 
+export interface IProjectFormModalProps {
+  open: boolean;
+  onClose: () => void;
+  project?: IProject;
+}
+
 export interface ICreateProjectValues {
   name: string;
   description?: string;

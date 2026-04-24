@@ -6,6 +6,11 @@ export interface SignUpValues {
   confirmPassword: string;
 }
 
+export interface ISignUpFormProps {
+  onSubmit: (values: SignUpValues) => void;
+  isPending: boolean;
+}
+
 export interface SignUpResponse {
   token: string;
   user: {

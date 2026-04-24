@@ -10,15 +10,38 @@ import {
 } from '@ant-design/icons';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { useAuth } from '@/hooks';
+import { LuClock } from 'react-icons/lu';
 
 const { Sider, Content } = Layout;
+const colorText = 'text-black!';
+const labelText = 'text-black!';
 
 const NAV_ITEMS = [
-  { key: '/', label: 'Dashboard', icon: <DashboardOutlined /> },
-  { key: '/timesheets', label: 'Timesheets', icon: <ClockCircleOutlined /> },
-  { key: '/reportes', label: 'Reportes', icon: <BarChartOutlined /> },
-  { key: '/pagos', label: 'Pagos', icon: <CreditCardOutlined /> },
-  { key: '/settings', label: 'Settings', icon: <SettingOutlined /> },
+  {
+    key: '/',
+    label: <span className={labelText}>Dashboard</span>,
+    icon: <DashboardOutlined className={colorText} />,
+  },
+  {
+    key: '/timesheets',
+    label: <span className={labelText}>Timesheets</span>,
+    icon: <ClockCircleOutlined className={colorText} />,
+  },
+  {
+    key: '/reportes',
+    label: <span className={labelText}>Reportes</span>,
+    icon: <BarChartOutlined className={colorText} />,
+  },
+  {
+    key: '/pagos',
+    label: <span className={labelText}>Pagos</span>,
+    icon: <CreditCardOutlined className={colorText} />,
+  },
+  {
+    key: '/settings',
+    label: <span className={labelText}>Settings</span>,
+    icon: <SettingOutlined className={colorText} />,
+  },
 ];
 
 export function AppLayout() {
@@ -37,11 +60,13 @@ export function AppLayout() {
     <Layout className="min-h-screen!">
       <Sider
         width={240}
-        className="bg-indigo-950! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
+        className="bg-gray-50! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
       >
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">
-            <span className="text-white text-xl font-bold tracking-wide">⏱ TimeTrack</span>
+            <span className="text-black text-xl font-bold tracking-wide">
+              <LuClock className="inline-block mr-2" /> TimeTrack
+            </span>
           </div>
 
           <div className="flex-1">
@@ -51,7 +76,7 @@ export function AppLayout() {
               onClick={({ key }) => navigate(key)}
               items={NAV_ITEMS}
               className="bg-transparent! border-0!"
-              theme="dark"
+              theme="light"
             />
           </div>
 

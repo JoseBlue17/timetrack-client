@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Http } from '@/config/http';
 import useLoggedUser from './use-logged-user';
-import type { IUser } from '@/interfaces';
-
-interface UserData {
-  user: IUser;
-}
+import type { IUserMeResponse } from '@/interfaces';
 
 export function useVerifyToken() {
   const [isVerifyingToken, setIsVerifyingToken] = useState(true);
@@ -20,7 +16,7 @@ export function useVerifyToken() {
     const token = localStorage.getItem('token');
     if (token) {
       getMe(token)
-        .then(({ user }: UserData) => {
+        .then(({ user }: IUserMeResponse) => {
           if (user) {
             updateLoggedUser(user);
             updateToken(token);

@@ -42,3 +42,32 @@ export interface ITimesheetDateGroup {
   totalHours: number;
   timesheets: ITimesheet[];
 }
+
+export interface ITimesheetEntry {
+  project: string;
+  description: string;
+  hours: number | null;
+}
+
+export interface ITimesheetEntryError {
+  project?: string;
+  description?: string;
+  hours?: string;
+}
+
+export interface ITimesheetFormValues {
+  date: string;
+  entries: ITimesheetEntry[];
+}
+
+export interface ITimesheetFormModalProps {
+  open: boolean;
+  onClose: () => void;
+  timesheet?: ITimesheet;
+}
+
+export interface ITimesheetsTableProps {
+  groups: ITimesheetDateGroup[];
+  loading?: boolean;
+  onEdit: (timesheet: ITimesheet) => void;
+}

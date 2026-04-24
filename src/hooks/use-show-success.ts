@@ -1,14 +1,10 @@
 import { useToast } from './use-toast';
-
-interface IShowSuccess {
-  title: string;
-  description?: string;
-}
+import type { IShowSuccessOptions } from './hooks.interface';
 
 export const useShowSuccess = () => {
   const { triggerToast } = useToast();
 
-  const showSuccess = ({ title, description }: IShowSuccess) => {
+  const showSuccess = ({ title, description }: IShowSuccessOptions) => {
     triggerToast({ title, description, type: 'success' });
   };
 

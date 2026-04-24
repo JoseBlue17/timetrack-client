@@ -1,52 +1,22 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Modal, Input, InputNumber, DatePicker, Button, Select } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import * as Yup from 'yup';
-import type { ITimesheet } from '../timesheet.interface';
+import { useFormik } from 'formik';
+import type { ITimesheetEntry, ITimesheetFormModalProps } from '../timesheet.interface';
 import { useCreateTimesheet } from '../hooks/use-create-timesheet';
 import { useUpdateTimesheet } from '../hooks/use-update-timesheet';
 import { useGetProjects } from '@/modules/settings/hooks/use-get-projects';
+import { timesheetFormSchema } from '../timesheet.validations';
+import {
+  createEmptyEntry,
+  getTimesheetFormInitialValues,
+} from './timesheet-form-modal.initial-values';
+import { createTimesheetFormSubmit } from './timesheet-form-modal.submit';
+import { getTimesheetEntryError } from './timesheet-form-modal.errors';
 
-interface ProjectEntry {
-  project: string;
-  description: string;
-  hours: number | null;
-}
-
-interface ProjectEntryError {
-  project?: string;
-  description?: string;
-  hours?: string;
-}
-
-const emptyEntry = (): ProjectEntry => ({ project: '', description: '', hours: null });
-
-const entrySchema = Yup.object({
-  project: Yup.string().max(100).required('Requerido'),
-  description: Yup.string().max(500).required('Requerido'),
-  hours: Yup.number().min(0.25).max(24).nullable().required('Requerido'),
-});
-
-interface TimesheetFormModalProps {
-  open: boolean;
-  onClose: () => void;
-  timesheet?: ITimesheet;
-}
-
-export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormModalProps) {
+export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormModalProps) {
   const isEditing = !!timesheet;
-
-  const [date, setDate] = useState<string>(() =>
-    timesheet ? timesheet.date.slice(0, 10) : dayjs().format('YYYY-MM-DD'),
-  );
-  const [dateError, setDateError] = useState('');
-  const [entries, setEntries] = useState<ProjectEntry[]>(() =>
-    timesheet
-      ? [{ project: timesheet.project, description: timesheet.description, hours: timesheet.hours }]
-      : [emptyEntry()],
-  );
-  const [entryErrors, setEntryErrors] = useState<ProjectEntryError[]>([{}]);
 
   const { mutate: createTimesheet, isPending: isCreating } = useCreateTimesheet();
   const { mutate: updateTimesheet, isPending: isUpdating } = useUpdateTimesheet(
@@ -56,86 +26,53 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
 
   const { data: projects = [] } = useGetProjects();
 
-  const projectOptions = projects.map((p) => ({ value: p.name, label: p.name }));
+  const projectOptions = projects.map((project) => ({ value: project.name, label: project.name }));
 
-  const updateEntry = (index: number, field: keyof ProjectEntry, value: string | number | null) => {
-    setEntries((prev) => prev.map((e, i) => (i === index ? { ...e, [field]: value } : e)));
-    setEntryErrors((prev) => prev.map((e, i) => (i === index ? { ...e, [field]: undefined } : e)));
+  const initialValues = useMemo(() => getTimesheetFormInitialValues(timesheet), [timesheet]);
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema: timesheetFormSchema,
+    enableReinitialize: true,
+    onSubmit: createTimesheetFormSubmit({
+      isEditing,
+      createTimesheet,
+      updateTimesheet,
+      onClose,
+      createEmptyEntry,
+    }),
+  });
+
+  const showErrors = formik.submitCount > 0;
+  const dateError =
+    showErrors && typeof formik.errors.date === 'string' ? String(formik.errors.date) : '';
+
+  const updateEntry = (
+    entryIndex: number,
+    field: keyof ITimesheetEntry,
+    value: string | number | null,
+  ) => {
+    formik.setFieldValue(
+      'entries',
+      formik.values.entries.map((previousEntry, previousIndex) =>
+        previousIndex === entryIndex ? { ...previousEntry, [field]: value } : previousEntry,
+      ),
+    );
   };
 
   const addEntry = () => {
-    setEntries((prev) => [...prev, emptyEntry()]);
-    setEntryErrors((prev) => [...prev, {}]);
+    formik.setFieldValue('entries', [...formik.values.entries, createEmptyEntry()]);
   };
 
-  const validate = async (): Promise<boolean> => {
-    let valid = true;
-
-    if (!date) {
-      setDateError('La fecha es requerida');
-      valid = false;
-    } else {
-      setDateError('');
-    }
-
-    const newErrors: ProjectEntryError[] = await Promise.all(
-      entries.map(async (entry) => {
-        try {
-          await entrySchema.validate(entry, { abortEarly: false });
-          return {};
-        } catch (err) {
-          if (err instanceof Yup.ValidationError) {
-            const errors: ProjectEntryError = {};
-            for (const e of err.inner) {
-              if (e.path) (errors as Record<string, string>)[e.path] = e.message;
-            }
-            valid = false;
-            return errors;
-          }
-          return {};
-        }
-      }),
-    );
-
-    setEntryErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = async () => {
-    if (!(await validate())) return;
-
-    if (isEditing) {
-      const entry = entries[0];
-      updateTimesheet(
-        { date, project: entry.project, description: entry.description, hours: entry.hours ?? 0 },
-        { onSuccess: onClose },
-      );
-    } else {
-      let completed = 0;
-      for (const entry of entries) {
-        createTimesheet(
-          {
-            date,
-            project: entry.project,
-            description: entry.description,
-            hours: entry.hours ?? 0,
-            hourlyRate: 0,
-          },
-          {
-            onSuccess: () => {
-              completed++;
-              if (completed === entries.length) onClose();
-            },
-          },
-        );
-      }
-    }
+  const handleClose = () => {
+    formik.resetForm();
+    onClose();
   };
 
   return (
     <Modal
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       title={
         <span className="text-lg font-semibold text-gray-800">
           {isEditing ? 'Editar registro de tiempo' : 'Agregar registro de tiempo'}
@@ -145,7 +82,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
       destroyOnClose
       width={560}
     >
-      <div className="flex flex-col gap-5 mt-4">
+      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-5 mt-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             <span className="text-red-500 mr-1">*</span>Fecha
@@ -153,10 +90,9 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
           <DatePicker
             className="w-full"
             format="DD/MM/YYYY"
-            value={date ? dayjs(date) : null}
-            onChange={(val) => {
-              setDate(val ? val.format('YYYY-MM-DD') : '');
-              setDateError('');
+            value={formik.values.date ? dayjs(formik.values.date) : null}
+            onChange={(selectedDate) => {
+              formik.setFieldValue('date', selectedDate ? selectedDate.format('YYYY-MM-DD') : '');
             }}
             status={dateError ? 'error' : ''}
           />
@@ -170,68 +106,91 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
           </p>
 
           <div className="flex flex-col gap-4">
-            {entries.map((entry, i) => (
-              <div key={i} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500 mr-1">*</span>Proyecto
-                  </label>
-                  <Select
-                    className="w-full"
-                    placeholder="Selecciona un proyecto"
-                    value={entry.project || undefined}
-                    onChange={(val: string) => updateEntry(i, 'project', val)}
-                    status={entryErrors[i]?.project ? 'error' : ''}
-                    showSearch
-                    filterOption={(input, option) =>
-                      String(option?.label ?? '')
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    options={projectOptions}
-                  />
-                  {entryErrors[i]?.project && (
-                    <p className="text-red-500 text-xs mt-1">{entryErrors[i].project}</p>
-                  )}
-                </div>
+            {formik.values.entries.map((entry, entryIndex) => {
+              const projectError = getTimesheetEntryError({
+                showErrors,
+                errors: formik.errors,
+                entryIndex,
+                field: 'project',
+              });
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500 mr-1">*</span>Descripción
-                  </label>
-                  <Input.TextArea
-                    rows={3}
-                    placeholder="¿Qué hiciste en este proyecto?"
-                    value={entry.description}
-                    onChange={(e) => updateEntry(i, 'description', e.target.value)}
-                    status={entryErrors[i]?.description ? 'error' : ''}
-                  />
-                  {entryErrors[i]?.description && (
-                    <p className="text-red-500 text-xs mt-1">{entryErrors[i].description}</p>
-                  )}
-                </div>
+              const descriptionError = getTimesheetEntryError({
+                showErrors,
+                errors: formik.errors,
+                entryIndex,
+                field: 'description',
+              });
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500 mr-1">*</span>Horas
-                  </label>
-                  <InputNumber
-                    className="w-full"
-                    placeholder="8"
-                    min={0.25}
-                    max={24}
-                    step={0.25}
-                    value={entry.hours}
-                    onChange={(val) => updateEntry(i, 'hours', val)}
-                    addonAfter="horas"
-                    status={entryErrors[i]?.hours ? 'error' : ''}
-                  />
-                  {entryErrors[i]?.hours && (
-                    <p className="text-red-500 text-xs mt-1">{entryErrors[i].hours}</p>
-                  )}
+              const hoursError = getTimesheetEntryError({
+                showErrors,
+                errors: formik.errors,
+                entryIndex,
+                field: 'hours',
+              });
+
+              return (
+                <div key={entryIndex} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="text-red-500 mr-1">*</span>Proyecto
+                    </label>
+                    <Select
+                      className="w-full"
+                      placeholder="Selecciona un proyecto"
+                      value={entry.project || undefined}
+                      onChange={(selectedProject: string) =>
+                        updateEntry(entryIndex, 'project', selectedProject)
+                      }
+                      status={projectError ? 'error' : ''}
+                      showSearch
+                      filterOption={(inputText, option) =>
+                        String(option?.label ?? '')
+                          .toLowerCase()
+                          .includes(inputText.toLowerCase())
+                      }
+                      options={projectOptions}
+                    />
+                    {projectError && <p className="text-red-500 text-xs mt-1">{projectError}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="text-red-500 mr-1">*</span>Descripción
+                    </label>
+                    <Input.TextArea
+                      rows={3}
+                      placeholder="¿Qué hiciste en este proyecto?"
+                      value={entry.description}
+                      onChange={(event) =>
+                        updateEntry(entryIndex, 'description', event.target.value)
+                      }
+                      status={descriptionError ? 'error' : ''}
+                    />
+                    {descriptionError && (
+                      <p className="text-red-500 text-xs mt-1">{descriptionError}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="text-red-500 mr-1">*</span>Horas
+                    </label>
+                    <InputNumber
+                      className="w-full"
+                      placeholder="8"
+                      min={0.25}
+                      max={24}
+                      step={0.25}
+                      value={entry.hours}
+                      onChange={(selectedHours) => updateEntry(entryIndex, 'hours', selectedHours)}
+                      addonAfter="horas"
+                      status={hoursError ? 'error' : ''}
+                    />
+                    {hoursError && <p className="text-red-500 text-xs mt-1">{hoursError}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {!isEditing && (
@@ -247,7 +206,14 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
         </div>
 
         <div className="flex gap-3 mt-1">
-          <Button block size="large" onClick={onClose} disabled={isPending} className="rounded-lg!">
+          <Button
+            block
+            size="large"
+            htmlType="button"
+            onClick={handleClose}
+            disabled={isPending}
+            className="rounded-lg!"
+          >
             Cancelar
           </Button>
           <Button
@@ -255,13 +221,13 @@ export function TimesheetFormModal({ open, onClose, timesheet }: TimesheetFormMo
             size="large"
             type="primary"
             loading={isPending}
-            onClick={handleSubmit}
+            htmlType="submit"
             className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600!"
           >
             {isEditing ? 'Actualizar registro' : 'Guardar registro'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

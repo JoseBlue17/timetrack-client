@@ -15,23 +15,37 @@ export function TimesheetsPage() {
 
   const timesheets = useMemo(() => data?.timesheets ?? [], [data?.timesheets]);
 
-  const totalHours = useMemo(() => timesheets.reduce((sum, t) => sum + t.hours, 0), [timesheets]);
+  const totalHours = useMemo(() => {
+    return timesheets.reduce((total, timesheet) => total + timesheet.hours, 0);
+  }, [timesheets]);
 
   const groups = useMemo<ITimesheetDateGroup[]>(() => {
-    const map = new Map<string, ITimesheet[]>();
-    for (const t of timesheets) {
-      const key = t.date.slice(0, 10);
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(t);
-    }
-    return Array.from(map.entries())
-      .sort(([a], [b]) => b.localeCompare(a))
-      .map(([date, items]) => ({
-        date,
-        projects: new Set(items.map((t) => t.project)).size,
-        totalHours: items.reduce((s, t) => s + t.hours, 0),
-        timesheets: items,
-      }));
+    const timesheetsByDate = timesheets.reduce<Map<string, ITimesheet[]>>(
+      (accumulator, timesheet) => {
+        const dateKey = timesheet.date.slice(0, 10);
+        const existingList = accumulator.get(dateKey) ?? [];
+        accumulator.set(dateKey, [...existingList, timesheet]);
+        return accumulator;
+      },
+      new Map<string, ITimesheet[]>(),
+    );
+
+    return Array.from(timesheetsByDate.entries())
+      .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
+      .map(([date, items]) => {
+        const uniqueProjectsCount = new Set(items.map((item) => item.project)).size;
+        const totalHoursForDate = items.reduce(
+          (totalForDate, item) => totalForDate + item.hours,
+          0,
+        );
+
+        return {
+          date,
+          projects: uniqueProjectsCount,
+          totalHours: totalHoursForDate,
+          timesheets: items,
+        };
+      });
   }, [timesheets]);
 
   const handleEdit = (timesheet: ITimesheet) => {

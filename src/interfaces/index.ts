@@ -27,6 +27,10 @@ export interface IOnLogin {
   user: IUser;
 }
 
+export interface IUserMeResponse {
+  user: IUser;
+}
+
 // ─── Shared ──────────────────────────────────────────────────────────────────
 
 export interface IPaginatedResponse<T> {

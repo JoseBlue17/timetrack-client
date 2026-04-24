@@ -12,3 +12,16 @@ export const timesheetValidationSchema = Yup.object({
     .required('Las horas son requeridas'),
   hourlyRate: Yup.number().min(0, 'No puede ser negativo').required('La tarifa es requerida'),
 });
+
+export const timesheetEntrySchema = Yup.object({
+  project: Yup.string().max(100).required('Requerido'),
+  description: Yup.string().max(500).required('Requerido'),
+  hours: Yup.number().min(0.25).max(24).nullable().required('Requerido'),
+});
+
+export const timesheetEntriesSchema = Yup.array().of(timesheetEntrySchema);
+
+export const timesheetFormSchema = Yup.object({
+  date: Yup.string().required('La fecha es requerida'),
+  entries: timesheetEntriesSchema.required('Requerido'),
+});
