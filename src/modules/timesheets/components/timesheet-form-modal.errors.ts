@@ -1,5 +1,5 @@
 import type { FormikErrors } from 'formik';
-import type { ITimesheetEntry, ITimesheetFormValues } from '../timesheet.interface';
+import type { ITimesheetEntry, ITimesheetFormValues } from './timesheet.interface';
 
 export const getTimesheetEntryError = (params: {
   showErrors: boolean;

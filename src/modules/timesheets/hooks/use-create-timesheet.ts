@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import type { ICreateTimesheetValues, ITimesheet } from '../timesheet.interface';
+import type { ICreateTimesheetValues, ITimesheet } from '../components/timesheet.interface';
 import { useGetTimesheets } from './use-get-timesheets';
 
 export function useCreateTimesheet() {

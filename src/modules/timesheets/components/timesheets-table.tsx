@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { Table, Button, Popconfirm, Tag } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import type {
-  ITimesheetDateGroup,
-  ITimesheet,
-  ITimesheetsTableProps,
-} from '../timesheet.interface';
+import type { ITimesheetDateGroup, ITimesheet, ITimesheetsTableProps } from './timesheet.interface';
 import { useDeleteTimesheet } from '../hooks/use-delete-timesheet';
 
 export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTableProps) {

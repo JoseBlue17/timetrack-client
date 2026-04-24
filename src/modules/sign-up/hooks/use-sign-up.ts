@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { PublicHttp } from '@/config';
 import { useAuth, useShowError, useShowSuccess } from '@/hooks';
-import type { SignUpValues, SignUpResponse } from '../sign-up.interface';
+import type { SignUpValues, SignUpResponse } from '../components/sign-up.interface';
 
 export function useSignUp() {
   const { onLogin } = useAuth();

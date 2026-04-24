@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuth, useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import { PublicHttp } from '@/config/http';
-import type { SignInValues, SignInResponse } from '../sign-in.interface';
+import type { SignInValues, SignInResponse } from '../components/sign-in.interface';
 
 export function useSignIn() {
   const { showError } = useShowError();

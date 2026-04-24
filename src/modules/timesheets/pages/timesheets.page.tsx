@@ -4,7 +4,7 @@ import { BellOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
-import type { ITimesheet, ITimesheetDateGroup } from '../timesheet.interface';
+import type { ITimesheet, ITimesheetDateGroup } from '../components/timesheet.interface';
 
 export function TimesheetsPage() {
   const [search, setSearch] = useState('');

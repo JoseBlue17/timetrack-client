@@ -3,7 +3,7 @@ import type {
   ITimesheetEntry,
   ITimesheetFormValues,
   IUpdateTimesheetValues,
-} from '../timesheet.interface';
+} from './timesheet.interface';
 
 type MutationOptions = { onSuccess?: () => void };
 

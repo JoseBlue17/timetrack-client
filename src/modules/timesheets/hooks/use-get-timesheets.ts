@@ -1,6 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import type { IGetTimesheetsParams, IGetTimesheetsResponse } from '../timesheet.interface';
+import type {
+  IGetTimesheetsParams,
+  IGetTimesheetsResponse,
+} from '../components/timesheet.interface';
 
 export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
   const queryClient = useQueryClient();

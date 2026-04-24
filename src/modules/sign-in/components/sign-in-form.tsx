@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
-import { signInValidationSchema } from '../sign-in.validations';
-import { signInInitialValues } from '../sign-in.initial-values';
-import type { ISignInFormProps, SignInValues } from '../sign-in.interface';
+import { signInValidationSchema } from './validations';
+import { signInInitialValues } from './initial-values';
+import type { ISignInFormProps, SignInValues } from './sign-in.interface';
 
 export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
   const [showPassword, setShowPassword] = useState(false);

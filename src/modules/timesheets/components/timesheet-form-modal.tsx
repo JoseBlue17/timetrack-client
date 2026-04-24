@@ -3,11 +3,11 @@ import { Modal, Input, InputNumber, DatePicker, Button, Select } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useFormik } from 'formik';
-import type { ITimesheetEntry, ITimesheetFormModalProps } from '../timesheet.interface';
+import type { ITimesheetEntry, ITimesheetFormModalProps } from './timesheet.interface';
 import { useCreateTimesheet } from '../hooks/use-create-timesheet';
 import { useUpdateTimesheet } from '../hooks/use-update-timesheet';
 import { useGetProjects } from '@/modules/settings/hooks/use-get-projects';
-import { timesheetFormSchema } from '../timesheet.validations';
+import { timesheetFormSchema } from './validations';
 import {
   createEmptyEntry,
   getTimesheetFormInitialValues,
