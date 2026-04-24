@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Button, Input } from 'antd';
-import { LuBell, LuFilter, LuPlus } from 'react-icons/lu';
+import { LuBell, LuFilter, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
+import { CloseMonthModal } from '../components/close-month-modal';
 import type { ITimesheet, ITimesheetDateGroup } from '../components/timesheet.interface';
 
 export function TimesheetsPage() {
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [closeMonthModalOpen, setCloseMonthModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
 
   const { data, isLoading } = useGetTimesheets({ search });
@@ -17,6 +19,10 @@ export function TimesheetsPage() {
 
   const totalHours = useMemo(() => {
     return timesheets.reduce((total, timesheet) => total + timesheet.hours, 0);
+  }, [timesheets]);
+
+  const uniqueDays = useMemo(() => {
+    return new Set(timesheets.map((t) => t.date.slice(0, 10))).size;
   }, [timesheets]);
 
   const groups = useMemo<ITimesheetDateGroup[]>(() => {
@@ -87,7 +93,14 @@ export function TimesheetsPage() {
 
         <div className="flex items-center gap-3 mb-4">
           <Button icon={<LuFilter />}>Filtrar</Button>
-          <Button>Esta semana</Button>
+          <Button icon={<LuClock className="text-gray-400" />}>Esta semana</Button>
+          <Button
+            icon={<LuClipboardCheck className="text-indigo-500" />}
+            onClick={() => setCloseMonthModalOpen(true)}
+            className="ml-auto! border-gray-300!"
+          >
+            Cerrar mes y generar reporte
+          </Button>
           <Button
             type="primary"
             icon={<LuPlus />}
@@ -103,6 +116,15 @@ export function TimesheetsPage() {
 
       {modalOpen && (
         <TimesheetFormModal open={modalOpen} onClose={handleClose} timesheet={selectedTimesheet} />
+      )}
+
+      {closeMonthModalOpen && (
+        <CloseMonthModal
+          isModalOpen={closeMonthModalOpen}
+          handleCloseModal={() => setCloseMonthModalOpen(false)}
+          totalMonthRegisteredDays={uniqueDays}
+          totalMonthWorkedHours={totalHours}
+        />
       )}
     </div>
   );
