@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BellOutlined, WalletOutlined, FolderOutlined } from '@ant-design/icons';
+import { LuBell, LuWallet, LuFolder } from 'react-icons/lu';
 import { Button, Input } from 'antd';
 import { ProjectsList } from '../components/projects-list';
 
@@ -14,7 +14,7 @@ export function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-800">Configuración</h1>
         <div className="flex items-center gap-4">
           <Input.Search placeholder="Buscar..." allowClear className="w-60" />
-          <Button shape="circle" icon={<BellOutlined />} />
+          <Button shape="circle" icon={<LuBell />} />
         </div>
       </header>
 
@@ -29,7 +29,7 @@ export function SettingsPage() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            <WalletOutlined />
+            <LuWallet />
             Wallets
           </button>
           <button
@@ -41,14 +41,14 @@ export function SettingsPage() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            <FolderOutlined />
+            <LuFolder />
             Proyectos
           </button>
         </div>
 
         {activeTab === 'wallets' && (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            <WalletOutlined className="text-[40px] mb-3" />
+            <LuWallet className="text-[40px] mb-3" />
             <p className="text-base">Próximamente</p>
           </div>
         )}

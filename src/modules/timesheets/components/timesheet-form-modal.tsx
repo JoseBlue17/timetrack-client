@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Modal, Input, InputNumber, DatePicker, Button, Select } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { LuPlus } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import { useFormik } from 'formik';
 import type { ITimesheetEntry, ITimesheetFormModalProps } from './timesheet.interface';
@@ -199,7 +199,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
               onClick={addEntry}
               className="mt-3 w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg py-3 text-gray-600 text-sm hover:border-indigo-400 hover:text-indigo-600 transition-colors bg-white"
             >
-              <PlusCircleOutlined />
+              <LuPlus />
               Agregar otro proyecto
             </button>
           )}

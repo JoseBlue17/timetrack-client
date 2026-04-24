@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Table, Button, Popconfirm, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LuPencil, LuTrash2 } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import type { ITimesheetDateGroup, ITimesheet, ITimesheetsTableProps } from './timesheet.interface';
 import { useDeleteTimesheet } from '../hooks/use-delete-timesheet';
@@ -45,7 +45,7 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
         <div className="flex gap-2">
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<LuPencil />}
             onClick={(e) => {
               e.stopPropagation();
               if (record.timesheets.length === 1) {
@@ -75,7 +75,7 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
               <Button
                 size="small"
                 danger
-                icon={<DeleteOutlined />}
+                icon={<LuTrash2 />}
                 loading={isDeleting}
                 onClick={(e) => e.stopPropagation()}
               />
@@ -115,14 +115,14 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
         key: 'actions',
         render: (_: unknown, record: ITimesheet) => (
           <div className="flex gap-2">
-            <Button size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
+            <Button size="small" icon={<LuPencil />} onClick={() => onEdit(record)} />
             <Popconfirm
               title="¿Eliminar este registro?"
               onConfirm={() => deleteTimesheet(record.id)}
               okText="Sí"
               cancelText="No"
             >
-              <Button size="small" danger icon={<DeleteOutlined />} loading={isDeleting} />
+              <Button size="small" danger icon={<LuTrash2 />} loading={isDeleting} />
             </Popconfirm>
           </div>
         ),

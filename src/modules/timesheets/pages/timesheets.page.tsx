@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Button, Input } from 'antd';
-import { BellOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons';
+import { LuBell, LuFilter, LuPlus } from 'react-icons/lu';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
@@ -65,7 +65,7 @@ export function TimesheetsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
+      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-gray-50">
         <h1 className="text-2xl font-bold text-gray-800">Timesheets</h1>
         <div className="flex items-center gap-4">
           <Input.Search
@@ -75,22 +75,22 @@ export function TimesheetsPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-60"
           />
-          <Button shape="circle" icon={<BellOutlined />} />
+          <Button shape="circle" icon={<LuBell />} />
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto p-8 bg-gray-50">
+      <main className="flex-1 overflow-auto p-8 bg-stone-100">
         <div className="mb-4 text-gray-600 font-medium">
           Total de horas registradas:{' '}
           <span className="text-indigo-600 font-bold">{totalHours}h</span>
         </div>
 
         <div className="flex items-center gap-3 mb-4">
-          <Button icon={<FilterOutlined />}>Filtrar</Button>
+          <Button icon={<LuFilter />}>Filtrar</Button>
           <Button>Esta semana</Button>
           <Button
             type="primary"
-            icon={<PlusOutlined />}
+            icon={<LuPlus />}
             onClick={handleAdd}
             className="bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600!"
           >
