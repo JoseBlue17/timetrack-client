@@ -3,6 +3,9 @@ import { useVerifyToken } from '@/hooks/use-verify-token';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { SignInPage } from '@/modules/sign-in';
 import { SignUpPage } from '@/modules/sign-up';
+import { TimesheetsPage } from '@/modules/timesheets';
+import { SettingsPage } from '@/modules/settings';
+import { AppLayout } from '@/components/layout/app-layout';
 
 function App() {
   const { isVerifyingToken } = useVerifyToken();
@@ -18,26 +21,37 @@ function App() {
 
   return (
     <Routes>
-      {/* Rutas públicas */}
-      <Route path="/sign-in" element={loggedUser ? <Navigate to="/" replace /> : <SignInPage />} />
-      <Route path="/sign-up" element={loggedUser ? <Navigate to="/" replace /> : <SignUpPage />} />
-
-      {/* Rutas protegidas */}
       <Route
-        path="/"
-        element={
-          loggedUser ? (
-            <div className="min-h-screen bg-appBackground p-8">
-              <h1 className="text-2xl font-bold text-primary-500">TimeTrack Client</h1>
-              <p className="mt-2 text-slate-600">Hola, {loggedUser.profile.firstName} 👋</p>
-            </div>
-          ) : (
-            <Navigate to="/sign-in" replace />
-          )
-        }
+        path="/sign-in"
+        element={loggedUser ? <Navigate to="/timesheets" replace /> : <SignInPage />}
+      />
+      <Route
+        path="/sign-up"
+        element={loggedUser ? <Navigate to="/timesheets" replace /> : <SignUpPage />}
       />
 
-      {/* Fallback */}
+      <Route element={loggedUser ? <AppLayout /> : <Navigate to="/sign-in" replace />}>
+        <Route path="/" element={<Navigate to="/timesheets" replace />} />
+        <Route path="/timesheets" element={<TimesheetsPage />} />
+        <Route
+          path="/reportes"
+          element={
+            <div className="p-8">
+              <h1 className="text-2xl font-bold">Reportes</h1>
+            </div>
+          }
+        />
+        <Route
+          path="/pagos"
+          element={
+            <div className="p-8">
+              <h1 className="text-2xl font-bold">Pagos</h1>
+            </div>
+          }
+        />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

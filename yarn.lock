@@ -53,7 +53,7 @@
 
 "@ant-design/icons@^6.1.1":
   version "6.1.1"
-  resolved "https://registry.npmjs.org/@ant-design/icons/-/icons-6.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/@ant-design/icons/-/icons-6.1.1.tgz#068963d3de44ff7034dce32c9cec3ff7d343fe6b"
   integrity sha512-AMT4N2y++TZETNHiM77fs4a0uPVCJGuL5MTonk13Pvv7UN7sID1cNEZOc1qNqx6zLKAOilTEFAdAoAFKa0U//Q==
   dependencies:
     "@ant-design/colors" "^8.0.0"
@@ -1629,7 +1629,7 @@ ansi-styles@^6.2.1, ansi-styles@^6.2.3:
 
 antd@^6.3.6:
   version "6.3.6"
-  resolved "https://registry.npmjs.org/antd/-/antd-6.3.6.tgz"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-6.3.6.tgz#e892b851cf45d62201d889fe9cac36f4d2412e5f"
   integrity sha512-zdCYjusrTUn4gNxEg4PH8MWlfuXYbKfuGOkjgZ0Rg6DpWbIVmG/MwvsZ5yvG6z3Y6UI/gzYpaQ82iTt4KdbeaA==
   dependencies:
     "@ant-design/colors" "^8.0.1"
@@ -2114,9 +2114,14 @@ data-urls@^7.0.0:
     whatwg-mimetype "^5.0.0"
     whatwg-url "^16.0.0"
 
-dayjs@^1.11.11, dayjs@^1.11.20:
+dayjs@^1.11.11:
   version "1.11.20"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.20.tgz"
+  integrity sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==
+
+dayjs@^1.11.20:
+  version "1.11.20"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.20.tgz#88d919fd639dc991415da5f4cb6f1b6650811938"
   integrity sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==
 
 debug@^4.1.0, debug@^4.3.1, debug@^4.3.2, debug@^4.4.3:
