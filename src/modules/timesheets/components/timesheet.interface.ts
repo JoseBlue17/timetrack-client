@@ -28,7 +28,7 @@ export interface IUpdateTimesheetValues {
 export interface IGetTimesheetsParams {
   cursor?: string;
   limit?: number;
-  search?: string;
+  terms?: string;
 }
 
 export interface IGetTimesheetsResponse {

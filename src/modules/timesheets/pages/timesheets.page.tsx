@@ -1,21 +1,37 @@
-import { useMemo, useState } from 'react';
-import { Button, Input } from 'antd';
+import { useMemo, useState, useRef } from 'react';
+import { Button, Input, Spin } from 'antd';
 import { LuBell, LuFilter, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
 import { CloseMonthModal } from '../components/close-month-modal';
 import type { ITimesheet, ITimesheetDateGroup } from '../components/timesheet.interface';
+import { useDebounce } from '@/hooks/use-debounce';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { LoadingOutlined } from '@ant-design/icons';
 
 export function TimesheetsPage() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [closeMonthModalOpen, setCloseMonthModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
 
-  const { data, isLoading } = useGetTimesheets({ search });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetTimesheets({
+    terms: debouncedSearch,
+  });
 
-  const timesheets = useMemo(() => data?.timesheets ?? [], [data?.timesheets]);
+  const timesheets = useMemo(() => data ?? [], [data]);
+
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useInfiniteScroll({
+    observerTarget,
+    onLoadMore: fetchNextPage,
+    hasNextPage: hasNextPage ?? false,
+    isLoading,
+    isFetchingNextPage,
+  });
 
   const totalHours = useMemo(() => {
     return timesheets.reduce((total, timesheet) => total + timesheet.hours, 0);
@@ -112,6 +128,10 @@ export function TimesheetsPage() {
         </div>
 
         <TimesheetsTable groups={groups} loading={isLoading} onEdit={handleEdit} />
+
+        <div ref={observerTarget} className="flex justify-center py-6">
+          {isFetchingNextPage ? <Spin indicator={<LoadingOutlined spin />} size="large" /> : null}
+        </div>
       </main>
 
       {modalOpen && (
