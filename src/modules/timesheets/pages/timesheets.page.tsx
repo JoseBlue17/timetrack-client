@@ -122,8 +122,8 @@ export function TimesheetsPage() {
         <CloseMonthModal
           isModalOpen={closeMonthModalOpen}
           handleCloseModal={() => setCloseMonthModalOpen(false)}
-          totalMonthRegisteredDays={uniqueDays}
-          totalMonthWorkedHours={totalHours}
+          totalLocalDays={uniqueDays}
+          totalLocalHours={totalHours}
         />
       )}
     </div>

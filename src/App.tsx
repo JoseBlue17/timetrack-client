@@ -5,6 +5,7 @@ import { SignInPage } from '@/modules/sign-in';
 import { SignUpPage } from '@/modules/sign-up';
 import { TimesheetsPage } from '@/modules/timesheets';
 import { SettingsPage } from '@/modules/settings';
+import { ReportsPage } from '@/modules/reports';
 import { AppLayout } from '@/components/layout/app-layout';
 
 function App() {
@@ -33,14 +34,7 @@ function App() {
       <Route element={loggedUser ? <AppLayout /> : <Navigate to="/sign-in" replace />}>
         <Route path="/" element={<Navigate to="/timesheets" replace />} />
         <Route path="/timesheets" element={<TimesheetsPage />} />
-        <Route
-          path="/reportes"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Reportes</h1>
-            </div>
-          }
-        />
+        <Route path="/reportes" element={<ReportsPage />} />
         <Route
           path="/pagos"
           element={

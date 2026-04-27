@@ -1,6 +1,6 @@
 export interface ICloseMonthModalProps {
   isModalOpen: boolean;
   handleCloseModal: () => void;
-  totalMonthRegisteredDays: number;
-  totalMonthWorkedHours: number;
+  totalLocalDays: number;
+  totalLocalHours: number;
 }
