@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import dayjs from 'dayjs';
-import { Modal, Button, Alert, Spin } from 'antd';
+import { Modal, Button, Alert, Spin, Upload } from 'antd';
+import type { UploadFile } from 'antd/es/upload/interface';
 import { LuRotateCcw, LuUpload, LuCircleCheck } from 'react-icons/lu';
 import { useCloseMonthSignature } from '../hooks/use-close-month-signature';
 import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-summary';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import type { ICloseMonthModalProps } from './close-month.interface';
+import { Http } from '@/config/http';
+import { toast } from 'sonner';
 
 export function CloseMonthModal({
   isModalOpen,
@@ -12,6 +16,8 @@ export function CloseMonthModal({
   totalLocalDays,
   totalLocalHours,
 }: ICloseMonthModalProps) {
+  const [signatureUploadList, setSignatureUploadList] = useState<UploadFile[]>([]);
+  const [isSigningTimesheets, setIsSigningTimesheets] = useState(false);
   const currentMonth = dayjs().format('MM');
   const currentYear = dayjs().format('YYYY');
 
@@ -31,28 +37,80 @@ export function CloseMonthModal({
     handleClearSignatureCanvas,
   } = useCloseMonthSignature(isModalOpen);
 
-  const handleConfirmCloseMonth = () => {
-    const signatureCanvas = signatureCanvasRef.current;
-    if (!signatureCanvas) return;
+  const selectedSignatureImageFile = signatureUploadList[0]?.originFileObj as File | undefined;
 
-    createReport(
-      {
-        month: Number(currentMonth),
-        year: Number(currentYear),
-      },
-      {
-        onSuccess: () => {
-          handleCloseModal();
-          handleClearSignatureCanvas();
-        },
-      },
+  const canvasToPngFile = (canvas: HTMLCanvasElement, fileName = 'signature.png'): Promise<File> =>
+    new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('No se pudo generar la imagen de la firma.'));
+          return;
+        }
+        resolve(new File([blob], fileName, { type: 'image/png' }));
+      }, 'image/png');
+    });
+
+  const signMonthTimesheets = async (file: File) => {
+    const timesheets = monthlySummaryData?.timesheets;
+    if (!timesheets?.length) return;
+
+    await Promise.all(
+      timesheets
+        .filter((t) => Boolean(t.id))
+        .map((t) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          return Http.post(`/timesheets/${t.id}/sign`, formData);
+        }),
     );
   };
 
+  const handleConfirmCloseMonth = async () => {
+    try {
+      const signatureCanvas = signatureCanvasRef.current;
+      const signatureFile = selectedSignatureImageFile
+        ? selectedSignatureImageFile
+        : signatureCanvas && !isSignatureCanvasEmpty
+          ? await canvasToPngFile(signatureCanvas)
+          : undefined;
+
+      if (!signatureFile) return;
+
+      setIsSigningTimesheets(true);
+      await signMonthTimesheets(signatureFile);
+
+      createReport(
+        {
+          month: Number(currentMonth),
+          year: Number(currentYear),
+        },
+        {
+          onSuccess: () => {
+            handleCloseModal();
+            handleClearSignatureCanvas();
+            setSignatureUploadList([]);
+          },
+          onSettled: () => setIsSigningTimesheets(false),
+        },
+      );
+    } catch (error) {
+      setIsSigningTimesheets(false);
+      toast.error('Error al subir la firma');
+      console.error(error);
+    }
+  };
+
   // Usamos los datos del backend por prioridad, si no existen, usamos los locales
-  const totalMonthRegisteredDays = monthlySummaryData?.uniqueDays ?? totalLocalDays;
+  const totalMonthRegisteredDays =
+    monthlySummaryData?.uniqueDays ??
+    (monthlySummaryData?.timesheets
+      ? new Set(monthlySummaryData.timesheets.map((t) => String(t.date).slice(0, 10))).size
+      : undefined) ??
+    totalLocalDays;
+
   const totalMonthWorkedHours = monthlySummaryData?.totalHours ?? totalLocalHours;
-  const totalMonthAmountInUsdt = monthlySummaryData?.totalAmount ?? 0;
+  const totalMonthAmountInUsdt =
+    monthlySummaryData?.totalAmount ?? monthlySummaryData?.totalFacturado ?? 0;
 
   return (
     <Modal
@@ -135,14 +193,22 @@ export function CloseMonthModal({
               <span className="relative bg-white px-4 text-gray-400 text-xs italic">o</span>
             </div>
 
-            <Button
-              block
-              size="large"
-              icon={<LuUpload />}
-              className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
+            <Upload
+              accept="image/png,image/jpeg"
+              maxCount={1}
+              beforeUpload={() => false}
+              fileList={signatureUploadList}
+              onChange={({ fileList }) => setSignatureUploadList(fileList)}
             >
-              Cargar imagen de firma
-            </Button>
+              <Button
+                block
+                size="large"
+                icon={<LuUpload />}
+                className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
+              >
+                Cargar imagen de firma
+              </Button>
+            </Upload>
 
             <Alert
               message={
@@ -172,8 +238,8 @@ export function CloseMonthModal({
                 block
                 size="large"
                 icon={<LuCircleCheck />}
-                disabled={isSignatureCanvasEmpty}
-                loading={isCreatingReport}
+                disabled={isSignatureCanvasEmpty && signatureUploadList.length === 0}
+                loading={isCreatingReport || isSigningTimesheets}
                 onClick={handleConfirmCloseMonth}
                 className="rounded-xl font-semibold"
               >

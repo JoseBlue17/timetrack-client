@@ -1,10 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 
+interface IMonthlySummaryTimesheet {
+  id: string;
+  date: string;
+}
+
 interface IMonthlySummaryResponse {
   totalHours: number;
-  totalAmount: number; // En USDT
-  uniqueDays: number;
+  // Legacy fields (older backend)
+  totalAmount?: number; // En USDT
+  uniqueDays?: number;
+
+  // Current backend fields (payment-system)
+  totalFacturado?: number;
+  totalEntries?: number;
+  timesheets?: IMonthlySummaryTimesheet[];
 }
 
 export function useGetMonthlySummary(month: string, year: string) {

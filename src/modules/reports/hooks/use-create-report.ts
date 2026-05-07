@@ -14,7 +14,7 @@ export function useCreateReport() {
 
   return useMutation({
     mutationFn: async (payload: ICreateReportPayload) => {
-      const { data } = await Http.post('/reports', payload);
+      const { data } = await Http.post('/timesheets/close-month', payload);
       return data;
     },
     onSuccess: () => {
