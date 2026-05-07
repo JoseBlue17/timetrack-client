@@ -20,7 +20,7 @@ export function useSignReport() {
     },
     onSuccess: () => {
       toast.success('Reporte firmado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['reports-list'] });
+      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
     onError: (error: unknown) => {
       const errorMessage = isAxiosError<ApiError>(error)

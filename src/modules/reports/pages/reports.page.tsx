@@ -6,7 +6,7 @@ import { useGetReports } from '../hooks/use-get-reports';
 import type { IOldPdfReport } from '../components/reports.interface';
 
 export function ReportsPage() {
-  const { data: monthlyReportsHistory = [] } = useGetReports();
+  const { reports: monthlyReportsHistory = [] } = useGetReports();
   const archivedPdfReports: IOldPdfReport[] = [];
 
   return (

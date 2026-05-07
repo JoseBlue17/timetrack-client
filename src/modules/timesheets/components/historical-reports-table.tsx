@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Table, Button, Tag, Spin } from 'antd';
 import { LuEye, LuPencil, LuFileText } from 'react-icons/lu';
 import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
@@ -5,6 +6,7 @@ import type {
   IMonthlyReport,
   MonthlyReportStatus,
 } from '@/modules/reports/components/reports.interface';
+import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
 
 const STATUS_COLORS: Record<MonthlyReportStatus, string> = {
   Borrador: 'processing',
@@ -13,7 +15,8 @@ const STATUS_COLORS: Record<MonthlyReportStatus, string> = {
 };
 
 export function HistoricalReportsTable() {
-  const { data: reports, isLoading } = useGetReports();
+  const { reports, isLoading } = useGetReports();
+  const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
 
   const columns = [
     {
@@ -56,6 +59,7 @@ export function HistoricalReportsTable() {
           <Button
             type="text"
             icon={<LuEye size={18} className="text-gray-400 group-hover:text-indigo-500" />}
+            onClick={() => setSelectedReport({ id: record.id, name: record.monthName })}
             className="flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700! group"
           >
             Ver detalles
@@ -84,22 +88,31 @@ export function HistoricalReportsTable() {
   }
 
   return (
-    <Table
-      columns={columns}
-      dataSource={reports}
-      rowKey="id"
-      pagination={false}
-      expandable={{
-        rowExpandable: () => true,
-        expandedRowRender: (record) => (
-          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
-            <p className="text-gray-500 italic text-sm text-center">
-              Detalle del mes de {record.monthName} (funcionalidad en desarrollo)
-            </p>
-          </div>
-        ),
-      }}
-      className="historical-reports-table"
-    />
+    <>
+      <Table
+        columns={columns}
+        dataSource={reports}
+        rowKey="id"
+        pagination={false}
+        expandable={{
+          rowExpandable: () => true,
+          expandedRowRender: (record) => (
+            <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
+              <p className="text-gray-500 italic text-sm text-center">
+                Detalle del mes de {record.monthName} (funcionalidad en desarrollo)
+              </p>
+            </div>
+          ),
+        }}
+        className="historical-reports-table"
+      />
+
+      <ReportPdfModal
+        open={!!selectedReport}
+        reportId={selectedReport?.id ?? null}
+        reportName={selectedReport?.name}
+        onClose={() => setSelectedReport(null)}
+      />
+    </>
   );
 }

@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import type { IMonthlyReport, MonthlyReportStatus } from '../components/reports.interface';
 
@@ -21,42 +22,55 @@ interface IReportsPaginatedResponse {
 }
 
 export function useGetReports() {
-  return useQuery({
-    queryKey: ['reports-list'],
-    queryFn: async () => {
-      const { data } = await Http.get<IReportsPaginatedResponse>('/reports');
-      const monthNames = [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
-      ];
+  const queryClient = useQueryClient();
 
-      // Mapeamos los datos del backend a nuestra interfaz de frontend
-      return data.data.map((report) => ({
-        id: report.id || report._id,
-        monthName: `${monthNames[report.month - 1]} ${report.year}`,
-        month: report.month,
-        year: report.year,
-        totalWorkedHours: report.totalHours || 0,
-        totalAmountInUsdt: report.totalAmount || 0,
-        reportStatus: (report.status === 'draft'
-          ? 'Borrador'
-          : report.status === 'approved'
-            ? 'Aprobado'
-            : report.status === 'paid'
-              ? 'Pagado'
-              : 'Borrador') as MonthlyReportStatus,
-        isSigned: report.employeeSigned || false,
-      })) as IMonthlyReport[];
-    },
+  const getReports = useCallback(async () => {
+    const { data } = await Http.get<IReportsPaginatedResponse>('/reports');
+    const monthNames = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ];
+
+    return data.data.map((report) => ({
+      id: report.id || report._id,
+      monthName: `${monthNames[report.month - 1]} ${report.year}`,
+      month: report.month,
+      year: report.year,
+      totalWorkedHours: report.totalHours || 0,
+      totalAmountInUsdt: report.totalAmount || 0,
+      reportStatus: (report.status === 'draft'
+        ? 'Borrador'
+        : report.status === 'approved'
+          ? 'Aprobado'
+          : report.status === 'paid'
+            ? 'Pagado'
+            : 'Borrador') as MonthlyReportStatus,
+      isSigned: report.employeeSigned || false,
+    })) as IMonthlyReport[];
+  }, []);
+
+  const { data: reports, ...rest } = useQuery({
+    queryKey: ['REPORTS_LIST'],
+    queryFn: getReports,
   });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+  };
+
+  return {
+    reports,
+    ...rest,
+    invalidate,
+  };
 }

@@ -21,7 +21,7 @@ interface IMonthlySummaryResponse {
 export function useGetMonthlySummary(month: string, year: string) {
   // Nota: La URL base de la API debería venir de una configuración, aquí usamos el estándar del proyecto
   return useQuery({
-    queryKey: ['monthly-summary', month, year],
+    queryKey: ['MONTHLY_SUMMARY', month, year],
     queryFn: async () => {
       const { data } = await Http.get<IMonthlySummaryResponse>(`/timesheets/summary/monthly`, {
         params: { month, year },

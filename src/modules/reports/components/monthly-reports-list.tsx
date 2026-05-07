@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Button, Tag } from 'antd';
 import { LuFileText, LuEye, LuPenTool } from 'react-icons/lu';
 import { useSignReport } from '../hooks/use-sign-report';
 import type { IMonthlyReport, MonthlyReportStatus } from './reports.interface';
+import { ReportPdfModal } from './report-pdf-modal';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
@@ -15,6 +17,7 @@ const MONTHLY_REPORT_STATUS_COLORS: Record<MonthlyReportStatus, string> = {
 
 export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
   const { mutate: signReport, isPending: isSigningReport } = useSignReport();
+  const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
@@ -56,6 +59,9 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                   <Button
                     type="text"
                     icon={<LuEye className="text-gray-400 group-hover:text-indigo-500" />}
+                    onClick={() =>
+                      setSelectedReport({ id: reportItem.id, name: reportItem.monthName })
+                    }
                     className="flex items-center gap-2 text-gray-600 font-medium hover:text-indigo-600!"
                   >
                     Ver detalle
@@ -78,6 +84,13 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
           ))
         )}
       </div>
+
+      <ReportPdfModal
+        open={!!selectedReport}
+        reportId={selectedReport?.id ?? null}
+        reportName={selectedReport?.name}
+        onClose={() => setSelectedReport(null)}
+      />
     </div>
   );
 }

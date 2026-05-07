@@ -19,9 +19,9 @@ export function useCreateReport() {
     },
     onSuccess: () => {
       toast.success('Mes cerrado y reporte generado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['monthly-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['MONTHLY_SUMMARY'] });
       queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
-      queryClient.invalidateQueries({ queryKey: ['reports-list'] });
+      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
     onError: (error: unknown) => {
       const errorMessage = isAxiosError<ApiError>(error)
