@@ -44,6 +44,8 @@ export function useGetReports() {
       return data.data.map((report) => ({
         id: report.id || report._id,
         monthName: `${monthNames[report.month - 1]} ${report.year}`,
+        month: report.month,
+        year: report.year,
         totalWorkedHours: report.totalHours || 0,
         totalAmountInUsdt: report.totalAmount || 0,
         reportStatus: (report.status === 'draft'

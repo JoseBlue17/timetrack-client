@@ -20,7 +20,8 @@ export function useCreateReport() {
     onSuccess: () => {
       toast.success('Mes cerrado y reporte generado exitosamente');
       queryClient.invalidateQueries({ queryKey: ['monthly-summary'] });
-      // También podríamos invalidar el historial de reportes cuando lo tengamos
+      queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
+      queryClient.invalidateQueries({ queryKey: ['reports-list'] });
     },
     onError: (error: unknown) => {
       const errorMessage = isAxiosError<ApiError>(error)

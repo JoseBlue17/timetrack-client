@@ -3,6 +3,8 @@ export type MonthlyReportStatus = 'Borrador' | 'Aprobado' | 'Pagado';
 export interface IMonthlyReport {
   id: string;
   monthName: string;
+  month: number;
+  year: number;
   totalWorkedHours: number;
   totalAmountInUsdt: number;
   reportStatus: MonthlyReportStatus;
