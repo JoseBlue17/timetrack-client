@@ -16,7 +16,7 @@ const MONTHLY_REPORT_STATUS_COLORS: Record<MonthlyReportStatus, string> = {
 };
 
 export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
-  const { mutate: signReport, isPending: isSigningReport } = useSignReport();
+  const { signReport, isSigningReport } = useSignReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
 
   return (

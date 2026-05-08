@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { toast } from 'sonner';
-import { isAxiosError } from 'axios';
-import type { ApiError } from '@/config/http';
+import { useShowError, useShowSuccess } from '@/hooks';
+import type { AxiosResponseError } from '@/config/http';
 
 interface ICreateReportPayload {
   month: number;
@@ -11,23 +10,26 @@ interface ICreateReportPayload {
 
 export function useCreateReport() {
   const queryClient = useQueryClient();
+  const { showError } = useShowError();
+  const { showSuccess } = useShowSuccess();
 
-  return useMutation({
-    mutationFn: async (payload: ICreateReportPayload) => {
-      const { data } = await Http.post('/timesheets/close-month', payload);
-      return data;
-    },
+  const { mutate: createReport, isPending: isCreatingReport } = useMutation({
+    mutationFn: (payload: ICreateReportPayload) =>
+      Http.post('/timesheets/close-month', payload).then(({ data }) => data),
     onSuccess: () => {
-      toast.success('Mes cerrado y reporte generado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['MONTHLY_SUMMARY'] });
-      queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      showSuccess({
+        title: 'Mes cerrado',
+        description: 'El mes ha sido cerrado y el reporte generado exitosamente.',
+      });
+      ['MONTHLY_SUMMARY', 'TIMESHEETS', 'REPORTS_LIST'].forEach((key) =>
+        queryClient.invalidateQueries({ queryKey: [key] }),
+      );
     },
-    onError: (error: unknown) => {
-      const errorMessage = isAxiosError<ApiError>(error)
-        ? error.response?.data?.message
-        : undefined;
-      toast.error(errorMessage || 'Error al cerrar el mes');
-    },
+    onError: (error: AxiosResponseError) => showError(error),
   });
+
+  return {
+    createReport,
+    isCreatingReport,
+  };
 }

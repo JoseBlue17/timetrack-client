@@ -5,6 +5,7 @@ import type { UploadFile } from 'antd/es/upload/interface';
 import { LuRotateCcw, LuUpload, LuCircleCheck } from 'react-icons/lu';
 import { useCloseMonthSignature } from '../hooks/use-close-month-signature';
 import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-summary';
+import type { IMonthlySummaryTimesheet } from '@/modules/reports/hooks/use-get-monthly-summary';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import type { ICloseMonthModalProps } from './close-month.interface';
 import { Http } from '@/config/http';
@@ -18,15 +19,12 @@ export function CloseMonthModal({
 }: ICloseMonthModalProps) {
   const [signatureUploadList, setSignatureUploadList] = useState<UploadFile[]>([]);
   const [isSigningTimesheets, setIsSigningTimesheets] = useState(false);
-  const currentMonth = dayjs().format('MM');
-  const currentYear = dayjs().format('YYYY');
+  const currentMonth = Number(dayjs().format('MM'));
+  const currentYear = Number(dayjs().format('YYYY'));
 
-  const { data: monthlySummaryData, isLoading: isSummaryLoading } = useGetMonthlySummary(
-    currentMonth,
-    currentYear,
-  );
+  const { monthlySummaryData, isSummaryLoading } = useGetMonthlySummary(currentMonth, currentYear);
 
-  const { mutate: createReport, isPending: isCreatingReport } = useCreateReport();
+  const { createReport, isCreatingReport } = useCreateReport();
 
   const {
     signatureCanvasRef,
@@ -104,7 +102,11 @@ export function CloseMonthModal({
   const totalMonthRegisteredDays =
     monthlySummaryData?.uniqueDays ??
     (monthlySummaryData?.timesheets
-      ? new Set(monthlySummaryData.timesheets.map((t) => String(t.date).slice(0, 10))).size
+      ? new Set(
+          monthlySummaryData.timesheets.map((t: IMonthlySummaryTimesheet) =>
+            String(t.date).slice(0, 10),
+          ),
+        ).size
       : undefined) ??
     totalLocalDays;
 

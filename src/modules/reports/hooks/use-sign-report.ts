@@ -1,32 +1,32 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { toast } from 'sonner';
+import { useShowError, useShowSuccess } from '@/hooks';
+import type { AxiosResponseError } from '@/config/http';
 import useLoggedUser from '@/hooks/use-logged-user';
-import { isAxiosError } from 'axios';
-import type { ApiError } from '@/config/http';
 
 export function useSignReport() {
   const queryClient = useQueryClient();
   const { loggedUser } = useLoggedUser();
+  const { showError } = useShowError();
+  const { showSuccess } = useShowSuccess();
 
-  return useMutation({
-    mutationFn: async (reportId: string) => {
-      // Endpoint según el nuevo backend: POST /reports/:id/sign-employee
-      // El backend pide un userId en el body según vi en el controlador
-      const { data } = await Http.post(`/reports/${reportId}/sign-employee`, {
+  const { mutate: signReport, isPending: isSigningReport } = useMutation({
+    mutationFn: (reportId: string) =>
+      Http.post(`/reports/${reportId}/sign-employee`, {
         userId: loggedUser?.id,
-      });
-      return data;
-    },
+      }).then(({ data }) => data),
     onSuccess: () => {
-      toast.success('Reporte firmado exitosamente');
+      showSuccess({
+        title: 'Reporte firmado',
+        description: 'Has firmado el reporte correctamente.',
+      });
       queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
-    onError: (error: unknown) => {
-      const errorMessage = isAxiosError<ApiError>(error)
-        ? error.response?.data?.message
-        : undefined;
-      toast.error(errorMessage || 'Error al firmar el reporte');
-    },
+    onError: (error: AxiosResponseError) => showError(error),
   });
+
+  return {
+    signReport,
+    isSigningReport,
+  };
 }

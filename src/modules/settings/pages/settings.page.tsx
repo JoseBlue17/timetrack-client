@@ -42,7 +42,7 @@ export function SettingsPage() {
             }`}
           >
             <LuFolder />
-            Proyectos
+            Timesheets
           </button>
         </div>
 
