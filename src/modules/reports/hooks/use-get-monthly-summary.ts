@@ -11,7 +11,7 @@ export const useGetMonthlySummary = (month: number, year: number) => {
   }: UseQueryResult<IMonthlySummaryResponse, Error> = useQuery({
     queryKey: ['MONTHLY_SUMMARY', month, year],
     queryFn: () =>
-      Http.get(`/reports/monthly-summary?month=${month}&year=${year}`).then(({ data }) => data),
+      Http.get(`/timesheets/summary/monthly?month=${month}&year=${year}`).then(({ data }) => data),
   });
 
   return { monthlySummaryData, isSummaryLoading, ...rest };

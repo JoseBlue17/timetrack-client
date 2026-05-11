@@ -10,7 +10,7 @@ interface IReportPdfModalProps {
 }
 
 export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportPdfModalProps) {
-  const { pdfUrl, isLoading, error } = useGetReportPdf(reportId);
+  const { reportPdfUrl, isLoading, error } = useGetReportPdf(reportId);
 
   return (
     <Modal
@@ -21,13 +21,13 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
           <span className="text-lg font-bold text-gray-800 truncate max-w-xs">
             Detalle del reporte: {reportName || 'Cargando...'}
           </span>
-          {pdfUrl && (
+          {reportPdfUrl && (
             <div className="flex gap-2">
               <Button
                 type="text"
                 size="small"
                 icon={<LuExternalLink size={16} />}
-                onClick={() => window.open(pdfUrl, '_blank')}
+                onClick={() => window.open(reportPdfUrl, '_blank')}
                 className="text-indigo-600 hover:text-indigo-700!"
               >
                 Abrir en nueva pestaña
@@ -38,7 +38,7 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
                 icon={<LuDownload size={16} />}
                 onClick={() => {
                   const link = document.createElement('a');
-                  link.href = pdfUrl;
+                  link.href = reportPdfUrl;
                   link.download = `reporte-${reportName || reportId}.pdf`;
                   link.click();
                 }}
@@ -77,9 +77,9 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
           </div>
         )}
 
-        {pdfUrl && !isLoading && (
+        {reportPdfUrl && !isLoading && (
           <iframe
-            src={`${pdfUrl}#toolbar=0&navpanes=0`}
+            src={`${reportPdfUrl}#toolbar=0&navpanes=0`}
             title={`Reporte ${reportName}`}
             className="w-full h-full border-none shadow-inner"
           />

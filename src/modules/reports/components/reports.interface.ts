@@ -19,7 +19,7 @@ export interface IOldPdfReport {
 }
 
 export interface IReportPdfResponse {
-  pdfUrl: string;
+  url?: string;
 }
 
 export interface IMonthlySummaryTimesheet {

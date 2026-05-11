@@ -6,17 +6,17 @@ export function useGetReportPdf(reportId: string | null) {
   const queryClient = useQueryClient();
 
   const { data, ...rest } = useQuery<IReportPdfResponse>({
-    queryKey: ['REPORT_PDF', reportId],
+    queryKey: ['report-pdf', reportId],
     queryFn: () => Http.get(`/reports/${reportId}/pdf`).then(({ data }) => data),
     enabled: !!reportId,
   });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['REPORT_PDF', reportId] });
+    queryClient.invalidateQueries({ queryKey: ['report-pdf'] });
   };
 
   return {
-    pdfUrl: data?.pdfUrl,
+    reportPdfUrl: data?.url,
     ...rest,
     invalidate,
   };
