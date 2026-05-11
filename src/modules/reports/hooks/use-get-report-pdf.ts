@@ -1,23 +1,13 @@
-import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-
-interface IReportPdfResponse {
-  url: string;
-}
+import type { IReportPdfResponse } from '../components/reports.interface';
 
 export function useGetReportPdf(reportId: string | null) {
   const queryClient = useQueryClient();
 
-  const getReportPdf = useCallback(async () => {
-    if (!reportId) return null;
-    const { data } = await Http.get<IReportPdfResponse>(`/reports/${reportId}/pdf`);
-    return data.url;
-  }, [reportId]);
-
-  const { data: pdfUrl, ...rest } = useQuery({
+  const { data, ...rest } = useQuery<IReportPdfResponse>({
     queryKey: ['REPORT_PDF', reportId],
-    queryFn: getReportPdf,
+    queryFn: () => Http.get(`/reports/${reportId}/pdf`).then(({ data }) => data),
     enabled: !!reportId,
   });
 
@@ -26,7 +16,7 @@ export function useGetReportPdf(reportId: string | null) {
   };
 
   return {
-    pdfUrl,
+    pdfUrl: data?.pdfUrl,
     ...rest,
     invalidate,
   };

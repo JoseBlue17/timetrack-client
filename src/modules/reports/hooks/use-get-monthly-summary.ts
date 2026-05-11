@@ -1,20 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-
-export interface IMonthlySummaryTimesheet {
-  id: string;
-  date: string;
-}
-
-export interface IMonthlySummaryResponse {
-  totalHours: number;
-  totalAmount?: number;
-  uniqueDays?: number;
-  totalFacturado?: number;
-  totalEntries?: number;
-  timesheets?: IMonthlySummaryTimesheet[];
-}
+import type { IMonthlySummaryResponse } from '../components/reports.interface';
 
 export const useGetMonthlySummary = (month: number, year: number) => {
   const {

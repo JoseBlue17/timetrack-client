@@ -17,3 +17,21 @@ export interface IOldPdfReport {
   referenceMonth: string;
   uploadedAtDate: string;
 }
+
+export interface IReportPdfResponse {
+  pdfUrl: string;
+}
+
+export interface IMonthlySummaryTimesheet {
+  id: string;
+  date: string;
+}
+
+export interface IMonthlySummaryResponse {
+  totalHours: number;
+  totalAmount?: number;
+  uniqueDays?: number;
+  totalFacturado?: number;
+  totalEntries?: number;
+  timesheets?: IMonthlySummaryTimesheet[];
+}
