@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Button, Popconfirm, Spin } from 'antd';
+import { Button, InputNumber, Popconfirm, Spin } from 'antd';
 import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
 import { useGetProjects } from '../hooks/use-get-projects';
 import { useDeleteProject } from '../hooks/use-delete-project';
 import { ProjectFormModal } from './project-form-modal';
 import type { IProject } from '../project.interface';
+import { useHourlyRate } from '@/hooks';
 
 export function ProjectsList() {
+  const { hourlyRate, setHourlyRate } = useHourlyRate();
   const { data: projects = [], isLoading } = useGetProjects();
   const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
 
@@ -41,6 +43,22 @@ export function ProjectsList() {
         >
           Agregar proyecto
         </Button>
+      </div>
+
+      <div className="mb-4 bg-white p-6 rounded-2xl border border-gray-200">
+        <h3 className="text-sm font-semibold text-gray-800 mb-1">Costo por hora ($)</h3>
+        <p className="text-sm text-gray-500 mb-3">
+          Este valor se usará por defecto al registrar tus horas en tus timesheets.
+        </p>
+        <InputNumber
+          className="w-full max-w-xs"
+          placeholder="0.00"
+          min={0}
+          precision={2}
+          prefix="$"
+          value={hourlyRate}
+          onChange={setHourlyRate}
+        />
       </div>
 
       {isLoading ? (

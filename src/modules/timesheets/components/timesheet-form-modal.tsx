@@ -13,6 +13,7 @@ import {
   getTimesheetFormInitialValues,
 } from './timesheet-form-modal.initial-values';
 import { createTimesheetFormSubmit } from './timesheet-form-modal.submit';
+import { useHourlyRate } from '@/hooks';
 import { getTimesheetEntryError } from './timesheet-form-modal.errors';
 
 export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormModalProps) {
@@ -28,6 +29,8 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
 
   const projectOptions = projects.map((project) => ({ value: project.name, label: project.name }));
 
+  const { hourlyRate } = useHourlyRate();
+
   const initialValues = useMemo(() => getTimesheetFormInitialValues(timesheet), [timesheet]);
 
   const formik = useFormik({
@@ -40,6 +43,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
       updateTimesheet,
       onClose,
       createEmptyEntry,
+      hourlyRate,
     }),
   });
 

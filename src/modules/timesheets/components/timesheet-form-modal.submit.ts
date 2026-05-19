@@ -15,8 +15,10 @@ export const createTimesheetFormSubmit = (params: {
   updateTimesheet: MutateFn<IUpdateTimesheetValues>;
   onClose: () => void;
   createEmptyEntry: () => ITimesheetEntry;
+  hourlyRate: number;
 }) => {
-  const { isEditing, createTimesheet, updateTimesheet, onClose, createEmptyEntry } = params;
+  const { isEditing, createTimesheet, updateTimesheet, onClose, createEmptyEntry, hourlyRate } =
+    params;
 
   return (values: ITimesheetFormValues, helpers: { resetForm: () => void }) => {
     const closeModal = () => {
@@ -48,7 +50,7 @@ export const createTimesheetFormSubmit = (params: {
           project: entryToCreate.project,
           description: entryToCreate.description,
           hours: entryToCreate.hours ?? 0,
-          hourlyRate: 0,
+          hourlyRate,
         },
         {
           onSuccess: () => {
