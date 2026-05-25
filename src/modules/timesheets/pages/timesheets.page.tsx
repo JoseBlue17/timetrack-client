@@ -1,15 +1,17 @@
 import { useMemo, useState, useRef } from 'react';
-import { Button, Input, Spin } from 'antd';
+import { Button, Input, Modal, Spin } from 'antd';
 import { LuBell, LuFilter, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
+import { useCloseMonth } from '../hooks/use-close-month';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
-import { CloseMonthModal } from '../components/close-month-modal';
 import { HistoricalReportsTable } from '../components/historical-reports-table';
 import type { ITimesheet, ITimesheetDateGroup } from '../components/timesheet.interface';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useSignature } from '@/hooks';
+import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-summary';
 import { LoadingOutlined } from '@ant-design/icons';
 
 export function TimesheetsPage() {
@@ -17,7 +19,6 @@ export function TimesheetsPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search);
   const [modalOpen, setModalOpen] = useState(false);
-  const [closeMonthModalOpen, setCloseMonthModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
 
   // Definimos el mes y año actual para filtrar la vista "Activo"
@@ -48,6 +49,33 @@ export function TimesheetsPage() {
     isLoading,
     isFetchingNextPage,
   });
+
+  const { signatureDataUrl } = useSignature();
+  const { monthlySummaryData } = useGetMonthlySummary(Number(currentMonth), Number(currentYear));
+  const { closeMonth, isClosingMonth } = useCloseMonth({
+    month: Number(currentMonth),
+    year: Number(currentYear),
+    signatureDataUrl,
+    timesheets: monthlySummaryData?.timesheets,
+  });
+
+  const handleCloseMonth = () => {
+    if (!signatureDataUrl) {
+      Modal.warning({
+        title: 'Firma requerida',
+        content: 'Debes subir tu firma en Configuración antes de cerrar el mes.',
+      });
+      return;
+    }
+
+    Modal.confirm({
+      title: '¿Cerrar mes y generar reporte?',
+      content: 'No podrás agregar más registros a este mes después de cerrarlo.',
+      okText: 'Sí, cerrar mes',
+      cancelText: 'Cancelar',
+      onOk: () => closeMonth(),
+    });
+  };
 
   const totalHours = useMemo(() => {
     return timesheets.reduce((total, timesheet) => total + timesheet.hours, 0);
@@ -196,7 +224,8 @@ export function TimesheetsPage() {
                   </Button>
                   <Button
                     icon={<LuClipboardCheck className="text-indigo-500" />}
-                    onClick={() => setCloseMonthModalOpen(true)}
+                    loading={isClosingMonth}
+                    onClick={handleCloseMonth}
                     className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
                   >
                     Cerrar mes y generar reporte
@@ -259,15 +288,6 @@ export function TimesheetsPage() {
 
       {modalOpen && (
         <TimesheetFormModal open={modalOpen} onClose={handleClose} timesheet={selectedTimesheet} />
-      )}
-
-      {closeMonthModalOpen && (
-        <CloseMonthModal
-          isModalOpen={closeMonthModalOpen}
-          handleCloseModal={() => setCloseMonthModalOpen(false)}
-          totalLocalDays={uniqueDays}
-          totalLocalHours={totalHours}
-        />
       )}
     </div>
   );

@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Button, InputNumber, Popconfirm, Spin } from 'antd';
-import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
+import { Button, InputNumber, Popconfirm, Spin, Upload } from 'antd';
+import { DollarOutlined } from '@ant-design/icons';
+import { LuPencil, LuTrash2, LuFolderPlus, LuPenTool, LuUpload } from 'react-icons/lu';
 
 import { useGetProjects } from '../hooks/use-get-projects';
 import { useDeleteProject } from '../hooks/use-delete-project';
 import { ProjectFormModal } from './project-form-modal';
 
 import type { IProject } from '../project.interface';
-import { useHourlyRate } from '@/hooks';
+import { useHourlyRate, useSignature } from '@/hooks';
 
 export function ProjectsList() {
   const { hourlyRate, setHourlyRate } = useHourlyRate();
+  const { signatureDataUrl, setSignatureDataUrl } = useSignature();
 
   const { data: projects = [], isLoading } = useGetProjects();
 
@@ -121,7 +123,10 @@ export function ProjectsList() {
       <ProjectFormModal open={modalOpen} onClose={() => setModalOpen(false)} project={selected} />
 
       <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-1">Costo por hora ($)</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-1">
+          <DollarOutlined className="!text-green-500 mr-2" />
+          Costo por hora ($)
+        </h3>
 
         <p className="text-sm text-gray-500 mb-3">
           Este valor se usará por defecto al registrar tus horas en tus timesheets.
@@ -137,6 +142,49 @@ export function ProjectsList() {
           value={hourlyRate}
           onChange={setHourlyRate}
         />
+      </section>
+      <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-800 mb-1">
+          <LuPenTool className="bg-indigo-100 text-indigo-500 w-5 h-5 rounded inline align-text-bottom mr-2" />
+          Firma digital
+        </h3>
+
+        <p className="text-sm text-gray-500 mb-3">
+          Sube tu firma para agilizar el cierre de reportes
+          <div className="border-b border-gray-200 mt-2"></div>
+        </p>
+
+        {signatureDataUrl ? (
+          <div className="flex items-center gap-4">
+            <img
+              src={signatureDataUrl}
+              alt="Firma"
+              className="h-16 rounded-lg border border-gray-200 bg-white"
+            />
+            <Button danger icon={<LuTrash2 />} onClick={() => setSignatureDataUrl(null)}>
+              Eliminar firma
+            </Button>
+          </div>
+        ) : (
+          <Upload
+            accept="image/png,image/jpeg"
+            maxCount={1}
+            showUploadList={false}
+            beforeUpload={(file) => {
+              const reader = new FileReader();
+              reader.onload = (e) => setSignatureDataUrl(e.target?.result as string);
+              reader.readAsDataURL(file);
+              return false;
+            }}
+          >
+            <Button
+              icon={<LuUpload />}
+              className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
+            >
+              Cargar imagen de firma
+            </Button>
+          </Upload>
+        )}
       </section>
     </>
   );
