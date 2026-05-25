@@ -23,3 +23,14 @@ export const UserStatus = {
   Inactive: 'inactive',
 } as const;
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
+
+export const ReportStatus = {
+  Draft: 'draft',
+  Submitted: 'submitted',
+  SignedByEmployee: 'signed_by_employee',
+  Approved: 'approved',
+  Rejected: 'rejected',
+  Paid: 'paid',
+  Closed: 'closed',
+} as const;
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus];

@@ -5,7 +5,7 @@ import type { UploadFile } from 'antd/es/upload/interface';
 import { LuRotateCcw, LuUpload, LuCircleCheck } from 'react-icons/lu';
 import { useCloseMonthSignature } from '../hooks/use-close-month-signature';
 import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-summary';
-import type { IMonthlySummaryTimesheet } from '@/modules/reports/hooks/use-get-monthly-summary';
+import type { IMonthlySummaryTimesheet } from '@/modules/reports/components/reports.interface';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import type { ICloseMonthModalProps } from './close-month.interface';
 import { Http } from '@/config/http';

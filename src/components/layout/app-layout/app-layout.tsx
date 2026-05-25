@@ -15,7 +15,7 @@ const { Sider, Content } = Layout;
 const colorText = 'text-black! text-lg';
 const labelText = 'text-black!';
 
-const NAV_ITEMS = [
+const ALL_NAV_ITEMS = [
   {
     key: '/',
     label: <span className={labelText}>Dashboard</span>,
@@ -30,6 +30,7 @@ const NAV_ITEMS = [
     key: '/reportes',
     label: <span className={labelText}>Reportes</span>,
     icon: <LuClipboardList className={colorText} />,
+    adminOnly: true,
   },
   {
     key: '/pagos',
@@ -54,6 +55,9 @@ export function AppLayout() {
   const fullName = `${firstName} ${lastName}`.trim() || 'Usuario';
   const role = loggedUser?.role ?? '';
   const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
+  const isAdmin = role === 'admin' || role === 'superAdmin';
+
+  const navItems = ALL_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <Layout className="min-h-screen!">
@@ -73,7 +77,7 @@ export function AppLayout() {
               mode="inline"
               selectedKeys={[location.pathname]}
               onClick={({ key }) => navigate(key)}
-              items={NAV_ITEMS}
+              items={navItems}
               className="bg-transparent! border-0!"
               theme="light"
             />

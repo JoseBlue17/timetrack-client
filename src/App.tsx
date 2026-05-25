@@ -34,7 +34,16 @@ function App() {
       <Route element={loggedUser ? <AppLayout /> : <Navigate to="/sign-in" replace />}>
         <Route path="/" element={<Navigate to="/timesheets" replace />} />
         <Route path="/timesheets" element={<TimesheetsPage />} />
-        <Route path="/reportes" element={<ReportsPage />} />
+        <Route
+          path="/reportes"
+          element={
+            loggedUser?.role === 'admin' || loggedUser?.role === 'superAdmin' ? (
+              <ReportsPage />
+            ) : (
+              <Navigate to="/timesheets" replace />
+            )
+          }
+        />
         <Route
           path="/pagos"
           element={

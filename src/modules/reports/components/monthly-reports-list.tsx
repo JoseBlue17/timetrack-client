@@ -2,22 +2,26 @@ import { useState } from 'react';
 import { Button, Tag } from 'antd';
 import { LuFileText, LuEye, LuPenTool } from 'react-icons/lu';
 import { useSignReport } from '../hooks/use-sign-report';
-import type { IMonthlyReport, MonthlyReportStatus } from './reports.interface';
+import { useApproveReport } from '../hooks/use-approve-report';
+import { useRejectReport } from '../hooks/use-reject-report';
+import type { IMonthlyReport } from './reports.interface';
 import { ReportPdfModal } from './report-pdf-modal';
+import { useLoggedUser } from '@/hooks';
+import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
 }
 
-const MONTHLY_REPORT_STATUS_COLORS: Record<MonthlyReportStatus, string> = {
-  Borrador: 'blue',
-  Aprobado: 'success',
-  Pagado: 'cyan',
-};
-
 export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
   const { signReport, isSigningReport } = useSignReport();
+  const { approveReport, isApprovingReport } = useApproveReport();
+  const { rejectReport, isRejectingReport } = useRejectReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
+  const { loggedUser } = useLoggedUser();
+  const userRole = loggedUser?.role ?? 'basic';
+
+  const isAdmin = userRole === 'admin' || userRole === 'superAdmin';
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
@@ -31,57 +35,85 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
             </p>
           </div>
         ) : (
-          monthlyReportsData.map((reportItem) => (
-            <div
-              key={reportItem.id}
-              className="flex items-center gap-4 p-5 bg-stone-50/50 rounded-2xl border border-stone-100/50 hover:border-indigo-100 transition-colors group"
-            >
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 shrink-0">
-                <LuFileText size={24} />
-              </div>
+          monthlyReportsData.map((reportItem) => {
+            const statusMapping = getReportStatusMapping(reportItem.reportStatus, userRole);
 
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-800 text-base">{reportItem.monthName}</h3>
-                <p className="text-gray-400 text-sm">
-                  {reportItem.totalWorkedHours} horas · {reportItem.totalAmountInUsdt} USDT
-                </p>
-              </div>
+            return (
+              <div
+                key={reportItem.id}
+                className="flex items-center gap-4 p-5 bg-stone-50/50 rounded-2xl border border-stone-100/50 hover:border-indigo-100 transition-colors group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 shrink-0">
+                  <LuFileText size={24} />
+                </div>
 
-              <div className="flex items-center gap-6">
-                <Tag
-                  color={MONTHLY_REPORT_STATUS_COLORS[reportItem.reportStatus]}
-                  className="rounded-full px-4 py-0.5 border-none font-medium"
-                >
-                  {reportItem.reportStatus}
-                </Tag>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-800 text-base">{reportItem.monthName}</h3>
+                  <p className="text-gray-400 text-sm">
+                    {reportItem.totalWorkedHours} horas · {reportItem.totalAmountInUsdt} USDT
+                  </p>
+                </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="text"
-                    icon={<LuEye className="text-gray-400 group-hover:text-indigo-500" />}
-                    onClick={() =>
-                      setSelectedReport({ id: reportItem.id, name: reportItem.monthName })
-                    }
-                    className="flex items-center gap-2 text-gray-600 font-medium hover:text-indigo-600!"
+                <div className="flex items-center gap-6">
+                  <Tag
+                    color={STATUS_TAG_COLORS[statusMapping.color]}
+                    className="rounded-full px-4 py-0.5 border-none font-medium"
                   >
-                    Ver detalle
-                  </Button>
+                    {statusMapping.label}
+                  </Tag>
 
-                  {reportItem.reportStatus !== 'Pagado' && (
+                  <div className="flex items-center gap-2">
                     <Button
                       type="text"
-                      icon={<LuPenTool className="text-gray-400 group-hover:text-indigo-500" />}
-                      loading={isSigningReport}
-                      onClick={() => signReport(reportItem.id)}
+                      icon={<LuEye className="text-gray-400 group-hover:text-indigo-500" />}
+                      onClick={() =>
+                        setSelectedReport({ id: reportItem.id, name: reportItem.monthName })
+                      }
                       className="flex items-center gap-2 text-gray-600 font-medium hover:text-indigo-600!"
                     >
-                      Firmar
+                      Ver detalle
                     </Button>
-                  )}
+
+                    {isAdmin && reportItem.reportStatus === 'signed_by_employee' && (
+                      <>
+                        <Button
+                          type="text"
+                          loading={isApprovingReport}
+                          icon={<LuPenTool className="text-gray-400 group-hover:text-indigo-500" />}
+                          onClick={() => approveReport(reportItem.id)}
+                          className="flex items-center gap-2 text-green-600 font-medium hover:text-green-700!"
+                        >
+                          Aprobar
+                        </Button>
+                        <Button
+                          type="text"
+                          danger
+                          loading={isRejectingReport}
+                          icon={<LuPenTool className="text-gray-400 group-hover:text-red-500" />}
+                          onClick={() => rejectReport(reportItem.id)}
+                          className="flex items-center gap-2 text-red-600 font-medium hover:text-red-700!"
+                        >
+                          Rechazar
+                        </Button>
+                      </>
+                    )}
+
+                    {!isAdmin && reportItem.reportStatus !== 'paid' && (
+                      <Button
+                        type="text"
+                        icon={<LuPenTool className="text-gray-400 group-hover:text-indigo-500" />}
+                        loading={isSigningReport}
+                        onClick={() => signReport(reportItem.id)}
+                        className="flex items-center gap-2 text-gray-600 font-medium hover:text-indigo-600!"
+                      >
+                        Firmar
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

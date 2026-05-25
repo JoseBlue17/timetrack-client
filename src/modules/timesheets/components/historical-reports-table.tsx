@@ -2,24 +2,36 @@ import { useState } from 'react';
 import { Table, Button, Tag, Spin } from 'antd';
 import { LuEye, LuFileText } from 'react-icons/lu';
 import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
-import type {
-  IMonthlyReport,
-  MonthlyReportStatus,
-} from '@/modules/reports/components/reports.interface';
+import type { IMonthlyReport } from '@/modules/reports/components/reports.interface';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
 import { OldReportsSection } from '@/modules/reports/components/old-reports-section';
 import type { IOldPdfReport } from '@/modules/reports/components/reports.interface';
-
-const STATUS_COLORS: Record<MonthlyReportStatus, string> = {
-  Borrador: 'processing',
-  Aprobado: 'success',
-  Pagado: 'cyan',
-};
+import { useLoggedUser } from '@/hooks';
+import {
+  getReportStatusMapping,
+  STATUS_TAG_COLORS,
+} from '@/modules/reports/components/report-status-mappings';
+import type { ReportStatus } from '@/enums';
 
 export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
+  const { loggedUser } = useLoggedUser();
+  const userRole = loggedUser?.role ?? 'basic';
   const archivedPdfReports: IOldPdfReport[] = [];
+
+  const renderStatus = (status: ReportStatus) => {
+    const mapping = getReportStatusMapping(status, userRole);
+    return (
+      <Tag
+        color={STATUS_TAG_COLORS[mapping.color]}
+        className="rounded-full px-4 py-0.5 border-none font-medium"
+      >
+        {mapping.label}
+      </Tag>
+    );
+  };
+
   const columns = [
     {
       title: 'Mes',
@@ -38,14 +50,7 @@ export function HistoricalReportsTable() {
       title: 'Estado',
       dataIndex: 'reportStatus',
       key: 'reportStatus',
-      render: (status: MonthlyReportStatus) => (
-        <Tag
-          color={STATUS_COLORS[status]}
-          className="rounded-full px-4 py-0.5 border-none font-medium"
-        >
-          {status}
-        </Tag>
-      ),
+      render: renderStatus,
     },
     {
       title: 'Total horas',

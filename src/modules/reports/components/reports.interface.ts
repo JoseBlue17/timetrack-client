@@ -1,4 +1,4 @@
-export type MonthlyReportStatus = 'Borrador' | 'Aprobado' | 'Pagado';
+import type { ReportStatus } from '@/enums';
 
 export interface IMonthlyReport {
   id: string;
@@ -7,7 +7,7 @@ export interface IMonthlyReport {
   year: number;
   totalWorkedHours: number;
   totalAmountInUsdt: number;
-  reportStatus: MonthlyReportStatus;
+  reportStatus: ReportStatus;
   isSigned: boolean;
 }
 
