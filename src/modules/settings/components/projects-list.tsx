@@ -125,6 +125,7 @@ export function ProjectsList() {
 
         <p className="text-sm text-gray-500 mb-3">
           Este valor se usará por defecto al registrar tus horas en tus timesheets.
+          <div className="border-b border-gray-200 mt-2"></div>
         </p>
 
         <InputNumber

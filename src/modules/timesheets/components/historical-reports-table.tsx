@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Table, Button, Tag, Spin } from 'antd';
-import { LuEye, LuPencil, LuFileText } from 'react-icons/lu';
+import { LuEye, LuFileText } from 'react-icons/lu';
 import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
 import type {
   IMonthlyReport,
   MonthlyReportStatus,
 } from '@/modules/reports/components/reports.interface';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
+import { OldReportsSection } from '@/modules/reports/components/old-reports-section';
+import type { IOldPdfReport } from '@/modules/reports/components/reports.interface';
 
 const STATUS_COLORS: Record<MonthlyReportStatus, string> = {
   Borrador: 'processing',
@@ -17,7 +19,7 @@ const STATUS_COLORS: Record<MonthlyReportStatus, string> = {
 export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
-
+  const archivedPdfReports: IOldPdfReport[] = [];
   const columns = [
     {
       title: 'Mes',
@@ -64,15 +66,6 @@ export function HistoricalReportsTable() {
           >
             Ver detalles
           </Button>
-          {record.reportStatus === 'Borrador' && (
-            <Button
-              type="text"
-              icon={<LuPencil size={18} className="text-gray-400 group-hover:text-indigo-500" />}
-              className="flex items-center gap-2 text-gray-500 font-semibold hover:text-indigo-600! group"
-            >
-              Editar
-            </Button>
-          )}
         </div>
       ),
     },
@@ -88,24 +81,27 @@ export function HistoricalReportsTable() {
   }
 
   return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={reports}
-        rowKey="id"
-        pagination={false}
-        expandable={{
-          rowExpandable: () => true,
-          expandedRowRender: (record) => (
-            <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
-              <p className="text-gray-500 italic text-sm text-center">
-                Detalle del mes de {record.monthName} (funcionalidad en desarrollo)
-              </p>
-            </div>
-          ),
-        }}
-        className="historical-reports-table"
-      />
+    <section>
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <Table
+          columns={columns}
+          dataSource={reports}
+          rowKey="id"
+          pagination={false}
+          expandable={{
+            rowExpandable: () => true,
+            expandedRowRender: (record) => (
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
+                <p className="text-gray-500 italic text-sm text-center">
+                  Detalle del mes de {record.monthName} (funcionalidad en desarrollo)
+                </p>
+              </div>
+            ),
+          }}
+          className="historical-reports-table"
+        />
+      </div>
+      <OldReportsSection uploadedPdfReports={archivedPdfReports} />
 
       <ReportPdfModal
         open={!!selectedReport}
@@ -113,6 +109,6 @@ export function HistoricalReportsTable() {
         reportName={selectedReport?.name}
         onClose={() => setSelectedReport(null)}
       />
-    </>
+    </section>
   );
 }

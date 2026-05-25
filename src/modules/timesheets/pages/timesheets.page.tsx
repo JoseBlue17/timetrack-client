@@ -245,11 +245,11 @@ export function TimesheetsPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-800">Meses cerrados</h2>
                 <p className="text-gray-500 text-sm">
-                  Visualiza y edita (solo si están en borrador) los reportes de meses anteriores
+                  Visualiza (solo si están en borrador) los reportes de meses anteriores
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden p-4">
+              <div className="p-4">
                 <HistoricalReportsTable />
               </div>
             </div>

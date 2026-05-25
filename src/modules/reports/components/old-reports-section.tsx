@@ -8,7 +8,7 @@ interface IOldReportsSectionProps {
 
 export function OldReportsSection({ uploadedPdfReports }: IOldReportsSectionProps) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm mt-5">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-lg font-bold text-gray-800">Reportes antiguos (PDF)</h2>
