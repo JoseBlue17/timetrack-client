@@ -3,18 +3,8 @@ import { Http } from '@/config/http';
 import type { AxiosResponseError } from '@/config/http';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import { useShowError } from '@/hooks';
+import { dataUrlToFile } from '@/tools';
 import type { IMonthlySummaryTimesheet } from '@/modules/reports/components/reports.interface';
-
-function dataUrlToFile(dataUrl: string, filename: string): File {
-  const [meta, data] = dataUrl.split(',');
-  const mime = meta.match(/:(.*?);/)?.[1] ?? 'image/png';
-  const binary = atob(data);
-  const array = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    array[i] = binary.charCodeAt(i);
-  }
-  return new File([array], filename, { type: mime });
-}
 
 interface IUseCloseMonthParams {
   month: number;

@@ -3,14 +3,25 @@ import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
+export interface ApproveReportPayload {
+  reportId: string;
+  file?: File;
+}
+
 export function useApproveReport() {
   const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
 
   const { mutate: approveReport, isPending: isApprovingReport } = useMutation({
-    mutationFn: (reportId: string) =>
-      Http.post(`/reports/${reportId}/approve`).then(({ data }) => data),
+    mutationFn: async ({ reportId, file }: ApproveReportPayload) => {
+      const formData = new FormData();
+      if (file) {
+        formData.append('file', file);
+      }
+      const { data } = await Http.post(`/reports/${reportId}/approve`, formData);
+      return data;
+    },
     onSuccess: () => {
       showSuccess({
         title: 'Reporte aprobado',

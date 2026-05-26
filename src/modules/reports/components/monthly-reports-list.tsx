@@ -6,7 +6,8 @@ import { useApproveReport } from '../hooks/use-approve-report';
 import { useRejectReport } from '../hooks/use-reject-report';
 import type { IMonthlyReport } from './reports.interface';
 import { ReportPdfModal } from './report-pdf-modal';
-import { useLoggedUser } from '@/hooks';
+import { useAdminSignature, useLoggedUser } from '@/hooks';
+import { dataUrlToFile } from '@/tools';
 import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
 
 interface IMonthlyReportsListProps {
@@ -19,9 +20,18 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const { rejectReport, isRejectingReport } = useRejectReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
   const { loggedUser } = useLoggedUser();
+  const { adminSignatureDataUrl } = useAdminSignature();
   const userRole = loggedUser?.role ?? 'basic';
 
   const isAdmin = userRole === 'admin' || userRole === 'superAdmin';
+
+  const handleApprove = (reportId: string) => {
+    let file: File | undefined;
+    if (adminSignatureDataUrl) {
+      file = dataUrlToFile(adminSignatureDataUrl, 'admin-signature.png');
+    }
+    approveReport({ reportId, file });
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
@@ -80,7 +90,7 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                           type="text"
                           loading={isApprovingReport}
                           icon={<LuPenTool className="text-gray-400 group-hover:text-indigo-500" />}
-                          onClick={() => approveReport(reportItem.id)}
+                          onClick={() => handleApprove(reportItem.id)}
                           className="flex items-center gap-2 text-green-600 font-medium hover:text-green-700!"
                         >
                           Aprobar

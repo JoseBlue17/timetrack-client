@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { LuBell, LuWallet, LuFolder } from 'react-icons/lu';
+import { LuBell, LuWallet, LuFolder, LuClipboardList } from 'react-icons/lu';
 import { Button, Input } from 'antd';
 import { ProjectsList } from '../components/projects-list';
+import { AdminReportsSettings } from '../components/admin-reports-settings';
+import { useCanEditConfiguration } from '@/hooks';
 
-type SettingsTab = 'wallets' | 'proyectos';
+type SettingsTab = 'wallets' | 'proyectos' | 'reportes';
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('proyectos');
+  const isAdmin = useCanEditConfiguration();
 
   return (
     <div className="flex flex-col h-full">
@@ -44,6 +47,20 @@ export function SettingsPage() {
             <LuFolder />
             Timesheets
           </button>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('reportes')}
+              className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'reportes'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <LuClipboardList />
+              Reportes
+            </button>
+          )}
         </div>
 
         {activeTab === 'wallets' && (
@@ -54,6 +71,7 @@ export function SettingsPage() {
         )}
 
         {activeTab === 'proyectos' && <ProjectsList />}
+        {activeTab === 'reportes' && isAdmin && <AdminReportsSettings />}
       </main>
     </div>
   );

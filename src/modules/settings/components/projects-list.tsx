@@ -8,12 +8,13 @@ import { useDeleteProject } from '../hooks/use-delete-project';
 import { ProjectFormModal } from './project-form-modal';
 
 import type { IProject } from '../project.interface';
-import { useHourlyRate, useSignature } from '@/hooks';
+import { useHourlyRate, useSignature, useCanEditConfiguration } from '@/hooks';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
   const { hourlyRate, setHourlyRate } = useHourlyRate();
   const { signatureDataUrl, setSignatureDataUrl } = useSignature();
+  const isAdmin = useCanEditConfiguration();
 
   const { data: projects = [], isLoading } = useGetProjects();
 
@@ -107,7 +108,7 @@ export function ProjectsList() {
                       cancelText="No"
                     >
                       <Button
-                        //type="text"
+                        type="text"
                         icon={<LuTrash2 className={cn('[&_.bg-gray-200]:hover:bg-red-500')} />}
                         loading={isDeleting}
                       />
@@ -143,52 +144,54 @@ export function ProjectsList() {
           onChange={setHourlyRate}
         />
       </section>
-      <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-1">
-          <LuPenTool
-            size={20}
-            className=" text-indigo-500 text-2xl rounded inline align-text-bottom mr-2"
-          />
-          Firma digital
-        </h3>
-
-        <p className="text-sm text-gray-500 mb-3">
-          Sube tu firma para agilizar el cierre de reportes
-          <div className="border-b border-gray-200 mt-2"></div>
-        </p>
-
-        {signatureDataUrl ? (
-          <div className="flex items-center gap-4">
-            <img
-              src={signatureDataUrl}
-              alt="Firma"
-              className="h-16 rounded-lg border border-gray-200 bg-white"
+      {!isAdmin && (
+        <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-1">
+            <LuPenTool
+              size={20}
+              className=" text-indigo-500 text-2xl rounded inline align-text-bottom mr-2"
             />
-            <Button danger icon={<LuTrash2 />} onClick={() => setSignatureDataUrl(null)}>
-              Eliminar firma
-            </Button>
-          </div>
-        ) : (
-          <Upload
-            accept="image/png,image/jpeg"
-            maxCount={1}
-            showUploadList={false}
-            beforeUpload={(file) => {
-              const reader = new FileReader();
-              reader.onload = (e) => setSignatureDataUrl(e.target?.result as string);
-              reader.readAsDataURL(file);
-              return false;
-            }}
-          >
-            <Button
-              icon={<LuUpload />}
-              className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
+            Firma digital
+          </h3>
+
+          <p className="text-sm text-gray-500 mb-3">
+            Sube tu firma para agilizar el cierre de reportes
+            <div className="border-b border-gray-200 mt-2"></div>
+          </p>
+
+          {signatureDataUrl ? (
+            <div className="flex items-center gap-4">
+              <img
+                src={signatureDataUrl}
+                alt="Firma"
+                className="h-16 rounded-lg border border-gray-200 bg-white"
+              />
+              <Button danger icon={<LuTrash2 />} onClick={() => setSignatureDataUrl(null)}>
+                Eliminar firma
+              </Button>
+            </div>
+          ) : (
+            <Upload
+              accept="image/png,image/jpeg"
+              maxCount={1}
+              showUploadList={false}
+              beforeUpload={(file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => setSignatureDataUrl(e.target?.result as string);
+                reader.readAsDataURL(file);
+                return false;
+              }}
             >
-              Cargar imagen de firma
-            </Button>
-          </Upload>
-        )}
-      </section>
+              <Button
+                icon={<LuUpload />}
+                className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
+              >
+                Cargar imagen de firma
+              </Button>
+            </Upload>
+          )}
+        </section>
+      )}
     </>
   );
 }
