@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { Http } from '@/config/http';
 import type { AxiosResponseError } from '@/config/http';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import { useShowError } from '@/hooks';
@@ -13,7 +12,7 @@ interface IUseCloseMonthParams {
   timesheets: IMonthlySummaryTimesheet[] | undefined;
 }
 
-export function useCloseMonth({ month, year, signatureDataUrl, timesheets }: IUseCloseMonthParams) {
+export function useCloseMonth({ month, year, signatureDataUrl }: IUseCloseMonthParams) {
   const { createReport, isCreatingReport } = useCreateReport();
   const { showError } = useShowError();
 
@@ -22,24 +21,11 @@ export function useCloseMonth({ month, year, signatureDataUrl, timesheets }: IUs
 
     try {
       const signatureFile = dataUrlToFile(signatureDataUrl, 'signature.png');
-
-      if (timesheets?.length) {
-        await Promise.all(
-          timesheets
-            .filter((t) => Boolean(t.id))
-            .map((t) => {
-              const formData = new FormData();
-              formData.append('file', signatureFile);
-              return Http.post(`/timesheets/${t.id}/sign`, formData);
-            }),
-        );
-      }
-
-      createReport({ month, year });
+      createReport({ month, year, signatureFile });
     } catch (error) {
       showError(error as AxiosResponseError);
     }
-  }, [signatureDataUrl, timesheets, month, year, createReport, showError]);
+  }, [signatureDataUrl, month, year, createReport, showError]);
 
   return { closeMonth, isClosingMonth: isCreatingReport };
 }

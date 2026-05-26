@@ -6,6 +6,7 @@ import type { AxiosResponseError } from '@/config/http';
 interface ICreateReportPayload {
   month: number;
   year: number;
+  signatureFile?: File;
 }
 
 export function useCreateReport() {
@@ -14,8 +15,19 @@ export function useCreateReport() {
   const { showSuccess } = useShowSuccess();
 
   const { mutate: createReport, isPending: isCreatingReport } = useMutation({
-    mutationFn: (payload: ICreateReportPayload) =>
-      Http.post('/timesheets/close-month', payload).then(({ data }) => data),
+    mutationFn: (payload: ICreateReportPayload) => {
+      if (payload.signatureFile) {
+        const formData = new FormData();
+        formData.append('month', String(payload.month));
+        formData.append('year', String(payload.year));
+        formData.append('file', payload.signatureFile);
+        return Http.post('/timesheets/close-month', formData).then(({ data }) => data);
+      }
+      return Http.post('/timesheets/close-month', {
+        month: payload.month,
+        year: payload.year,
+      }).then(({ data }) => data);
+    },
     onSuccess: () => {
       showSuccess({
         title: 'Mes cerrado',

@@ -8,7 +8,6 @@ import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-su
 import type { IMonthlySummaryTimesheet } from '@/modules/reports/components/reports.interface';
 import { useCreateReport } from '@/modules/reports/hooks/use-create-report';
 import type { ICloseMonthModalProps } from './close-month.interface';
-import { Http } from '@/config/http';
 import { toast } from 'sonner';
 
 export function CloseMonthModal({
@@ -48,21 +47,6 @@ export function CloseMonthModal({
       }, 'image/png');
     });
 
-  const signMonthTimesheets = async (file: File) => {
-    const timesheets = monthlySummaryData?.timesheets;
-    if (!timesheets?.length) return;
-
-    await Promise.all(
-      timesheets
-        .filter((t) => Boolean(t.id))
-        .map((t) => {
-          const formData = new FormData();
-          formData.append('file', file);
-          return Http.post(`/timesheets/${t.id}/sign`, formData);
-        }),
-    );
-  };
-
   const handleConfirmCloseMonth = async () => {
     try {
       const signatureCanvas = signatureCanvasRef.current;
@@ -75,12 +59,12 @@ export function CloseMonthModal({
       if (!signatureFile) return;
 
       setIsSigningTimesheets(true);
-      await signMonthTimesheets(signatureFile);
 
       createReport(
         {
           month: Number(currentMonth),
           year: Number(currentYear),
+          signatureFile,
         },
         {
           onSuccess: () => {
