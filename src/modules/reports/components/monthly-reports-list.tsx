@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Button, Tag } from 'antd';
+import { Button, Tag, Modal } from 'antd';
 import { LuFileText, LuEye, LuPenTool } from 'react-icons/lu';
 import { useSignReport } from '../hooks/use-sign-report';
 import { useApproveReport } from '../hooks/use-approve-report';
 import { useRejectReport } from '../hooks/use-reject-report';
 import type { IMonthlyReport } from './reports.interface';
 import { ReportPdfModal } from './report-pdf-modal';
-import { useAdminSignature, useLoggedUser } from '@/hooks';
+import { useAdminSignature, useLoggedUser, useCanEditConfiguration } from '@/hooks';
 import { dataUrlToFile } from '@/tools';
 import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
+import { approveReportSchema, APPROVE_REPORT_SIGNATURE_REQUIRED } from './validations';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
@@ -21,16 +22,30 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
   const { loggedUser } = useLoggedUser();
   const { adminSignatureDataUrl } = useAdminSignature();
+  const isAdmin = useCanEditConfiguration();
   const userRole = loggedUser?.role ?? 'basic';
 
-  const isAdmin = userRole === 'admin' || userRole === 'superAdmin';
+  const isValidDataUrl = (url: string) => /^data:image\/[a-zA-Z]+;base64,/.test(url);
 
   const handleApprove = (reportId: string) => {
-    let file: File | undefined;
-    if (adminSignatureDataUrl) {
-      file = dataUrlToFile(adminSignatureDataUrl, 'admin-signature.png');
+    const canApprove = approveReportSchema.isValidSync({
+      adminSignatureDataUrl: adminSignatureDataUrl ?? '',
+    });
+    if (!canApprove) {
+      Modal.warning({
+        title: 'Firma de aprobación requerida',
+        content: APPROVE_REPORT_SIGNATURE_REQUIRED,
+      });
+      return;
     }
-    approveReport({ reportId, file });
+
+    if (adminSignatureDataUrl && isValidDataUrl(adminSignatureDataUrl)) {
+      const file = dataUrlToFile(adminSignatureDataUrl, 'admin-signature.png');
+      approveReport({ reportId, file });
+      return;
+    }
+
+    approveReport({ reportId });
   };
 
   return (
