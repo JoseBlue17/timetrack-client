@@ -9,6 +9,7 @@ import { ProjectFormModal } from './project-form-modal';
 
 import type { IProject } from '../project.interface';
 import { useHourlyRate, useSignature } from '@/hooks';
+import { cn } from '@/tools';
 
 export function ProjectsList() {
   const { hourlyRate, setHourlyRate } = useHourlyRate();
@@ -36,6 +37,27 @@ export function ProjectsList() {
 
   return (
     <>
+      <div className="mb-2 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-bold text-gray-800">Gestión de proyectos</h2>
+            <p className="text-sm text-gray-500">
+              Administra los proyectos en los que trabajas para usarlos en tus timesheets
+            </p>
+          </div>
+
+          <Button
+            type="primary"
+            icon={<LuFolderPlus />}
+            onClick={openCreate}
+            size="large"
+            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600! shrink-0"
+          >
+            Agregar proyecto
+          </Button>
+        </div>
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Spin size="large" />
@@ -50,29 +72,7 @@ export function ProjectsList() {
         </div>
       ) : (
         <div className={`${cardStyles} mb-6`}>
-          <section className="mb-2">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-800">Gestión de proyectos</h2>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Administra los proyectos en los que trabajas para usarlos en tus timesheets
-                </p>
-              </div>
-
-              <Button
-                type="primary"
-                icon={<LuFolderPlus />}
-                onClick={openCreate}
-                size="large"
-                className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600! shrink-0"
-              >
-                Agregar proyecto
-              </Button>
-            </div>
-
-            <div className="border-b border-gray-200 mt-4"></div>
-          </section>
+          <section className="mb-2"></section>
 
           <div>
             {projects.map((project, index) => (
@@ -107,8 +107,8 @@ export function ProjectsList() {
                       cancelText="No"
                     >
                       <Button
-                        type="text"
-                        icon={<LuTrash2 className="text-gray-400" />}
+                        //type="text"
+                        icon={<LuTrash2 className={cn('[&_.bg-gray-200]:hover:bg-red-500')} />}
                         loading={isDeleting}
                       />
                     </Popconfirm>
@@ -124,7 +124,7 @@ export function ProjectsList() {
 
       <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-1">
-          <DollarOutlined className="!text-green-500 mr-2" />
+          <DollarOutlined className="text-green-500! mr-2" />
           Costo por hora ($)
         </h3>
 
@@ -145,7 +145,10 @@ export function ProjectsList() {
       </section>
       <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-1">
-          <LuPenTool className="bg-indigo-100 text-indigo-500 w-5 h-5 rounded inline align-text-bottom mr-2" />
+          <LuPenTool
+            size={20}
+            className=" text-indigo-500 text-2xl rounded inline align-text-bottom mr-2"
+          />
           Firma digital
         </h3>
 
