@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { LuBell, LuWallet, LuFolder, LuClipboardList } from 'react-icons/lu';
+import { LuBell, LuWallet, LuFolder, LuClipboardList, LuUser } from 'react-icons/lu';
 import { Button, Input } from 'antd';
 import { ProjectsList } from '../components/projects-list';
 import { AdminReportsSettings } from '../components/admin-reports-settings';
+import { ProfileSettings } from '../components/profile-settings';
 import { useCanEditConfiguration } from '@/hooks';
 
-type SettingsTab = 'wallets' | 'proyectos' | 'reportes';
+type SettingsTab = 'perfil' | 'wallets' | 'proyectos' | 'reportes';
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('proyectos');
+  const [activeTab, setActiveTab] = useState<SettingsTab>('perfil');
   const isAdmin = useCanEditConfiguration();
 
   return (
@@ -23,6 +24,18 @@ export function SettingsPage() {
 
       <main className="flex-1 overflow-auto p-8 bg-gray-50">
         <div className="flex gap-0 border-b border-gray-200 mb-8">
+          <button
+            type="button"
+            onClick={() => setActiveTab('perfil')}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'perfil'
+                ? 'border-indigo-500 text-indigo-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <LuUser />
+            Perfil
+          </button>
           <button
             type="button"
             onClick={() => setActiveTab('wallets')}
@@ -62,6 +75,8 @@ export function SettingsPage() {
             </button>
           )}
         </div>
+
+        {activeTab === 'perfil' && <ProfileSettings />}
 
         {activeTab === 'wallets' && (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">

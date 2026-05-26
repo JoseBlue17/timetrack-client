@@ -7,6 +7,7 @@ export interface IProfile {
   lastName: string;
   email: string;
   phone: string;
+  position?: string;
 }
 
 export interface IUser {

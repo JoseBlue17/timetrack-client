@@ -10,3 +10,5 @@ export { default as useLoggedUser } from './use-logged-user';
 export { useHourlyRate } from './use-hourly-rate';
 export { useSignature } from './use-signature';
 export { useAdminSignature } from './use-admin-signature';
+export { useGetProfile } from './use-get-profile';
+export { useUpdateProfile } from './use-update-profile';
