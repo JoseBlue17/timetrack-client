@@ -17,6 +17,7 @@ export function useAuth() {
   };
 
   const onLogout = () => {
+    queryClient.clear();
     localStorage.removeItem('token');
     updateToken(null);
     updateLoggedUser(null);

@@ -1,16 +1,20 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import { useGetTimesheets } from './use-get-timesheets';
 
-export function useSignTimesheet(timesheetId: string) {
+interface ISignTimesheetPayload {
+  timesheetId: string;
+  file: File;
+}
+
+export function useSignTimesheet() {
+  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateTimesheets } = useGetTimesheets();
 
-  return useMutation({
-    mutationFn: async (file: File) => {
+  const { mutate: signTimesheet, isPending: isSigningTimesheet } = useMutation({
+    mutationFn: async ({ timesheetId, file }: ISignTimesheetPayload) => {
       const formData = new FormData();
       formData.append('file', file);
 
@@ -22,8 +26,10 @@ export function useSignTimesheet(timesheetId: string) {
         title: 'Firma subida',
         description: 'La firma se registró correctamente.',
       });
-      invalidateTimesheets();
+      queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
     },
     onError: (error: AxiosResponseError) => showError(error),
   });
+
+  return { signTimesheet, isSigningTimesheet };
 }

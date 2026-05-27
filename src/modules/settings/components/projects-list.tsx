@@ -16,7 +16,7 @@ export function ProjectsList() {
   const { signatureDataUrl, setSignatureDataUrl } = useSignature();
   const isAdmin = useCanEditConfiguration();
 
-  const { data: projects = [], isLoading } = useGetProjects();
+  const { projects = [], isLoading } = useGetProjects();
 
   const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
 

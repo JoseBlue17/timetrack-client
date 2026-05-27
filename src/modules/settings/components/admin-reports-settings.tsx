@@ -7,11 +7,6 @@ export function AdminReportsSettings() {
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-200">
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Configuración de reportes</h2>
-      <p className="text-sm text-gray-500 mb-6">
-        Configura tu firma digital para aprobar reportes mensuales de empleados
-      </p>
-
       <section>
         <h3 className="text-lg font-bold text-gray-800 mb-1">
           <LuPenTool
