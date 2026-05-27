@@ -3,23 +3,17 @@ import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
-interface ISignTimesheetPayload {
-  timesheetId: string;
-  file: File;
-}
-
-export function useSignTimesheet() {
+export function useSignTimesheet(timesheetId: string) {
   const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
 
   const { mutate: signTimesheet, isPending: isSigningTimesheet } = useMutation({
-    mutationFn: async ({ timesheetId, file }: ISignTimesheetPayload) => {
+    mutationKey: ['SIGN_TIMESHEET', timesheetId],
+    mutationFn: (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-
-      const { data } = await Http.post(`/timesheets/${timesheetId}/sign`, formData);
-      return data;
+      return Http.post(`/timesheets/${timesheetId}/sign`, formData).then(({ data }) => data);
     },
     onSuccess: () => {
       showSuccess({
@@ -28,7 +22,9 @@ export function useSignTimesheet() {
       });
       queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
     },
-    onError: (error: AxiosResponseError) => showError(error),
+    onError: (error: AxiosResponseError) => {
+      showError(error);
+    },
   });
 
   return { signTimesheet, isSigningTimesheet };
