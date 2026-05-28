@@ -25,7 +25,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
   );
   const isPending = isCreating || isUpdating;
 
-  const { data: projects = [] } = useGetProjects();
+  const { projects = [] } = useGetProjects();
 
   const projectOptions = projects.map((project) => ({ value: project.name, label: project.name }));
 
