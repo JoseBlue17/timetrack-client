@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef } from 'react';
-import { Button, Input, Modal, Spin } from 'antd';
+import { Button, Input, Modal, Spin, DatePicker } from 'antd';
 import { LuBell, LuFilter, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
@@ -20,25 +20,18 @@ export function TimesheetsPage() {
   const debouncedSearch = useDebounce(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
 
-  // Definimos el mes y año actual para filtrar la vista "Activo"
-  const currentMonth = dayjs().format('MM');
-  const currentYear = dayjs().format('YYYY');
+  const currentMonth = selectedDate.format('MM');
+  const currentYear = selectedDate.format('YYYY');
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetTimesheets({
     terms: debouncedSearch,
+    month: Number(currentMonth),
+    year: Number(currentYear),
   });
 
-  // Filtramos los timesheets para que en la vista "Activo" solo se vean los del mes actual
-  const timesheets = useMemo(() => {
-    if (!data) return [];
-    // Si estamos en la pestaña activo, solo mostramos lo del mes en curso
-    // Nota: Si el usuario necesita ver meses anteriores no cerrados, esto podría ajustarse
-    return data.filter((t) => {
-      const tDate = dayjs(t.date);
-      return tDate.format('MM') === currentMonth && tDate.format('YYYY') === currentYear;
-    });
-  }, [data, currentMonth, currentYear]);
+  const timesheets = data ?? [];
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -210,6 +203,12 @@ export function TimesheetsPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <DatePicker
+                    picker="month"
+                    value={selectedDate}
+                    onChange={(date) => date && setSelectedDate(date)}
+                    className="rounded-xl border-gray-200 w-36"
+                  />
                   <Button
                     icon={<LuFilter />}
                     className="rounded-xl border-gray-200 text-gray-600 font-medium"

@@ -13,6 +13,8 @@ export const useShowError = () => {
         SESSION_TOKEN_EXPIRED: 'Sesión expirada, inicia sesión nuevamente',
         TOKEN_INVALID: 'El token es inválido',
         USER_ALREADY_REGISTERED: 'Este correo ya está registrado',
+        FUTURE_PERIOD_NOT_ALLOWED: 'No se puede procesar un periodo futuro',
+        REPORT_ALREADY_EXISTS: 'Ya existe un reporte para este periodo',
       } as Record<string, string>,
       byHttpCode: {
         400: 'Revisa los campos ingresados',

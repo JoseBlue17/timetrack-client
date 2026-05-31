@@ -34,7 +34,6 @@ export function useCreateReport() {
         description: 'El mes ha sido cerrado y el reporte generado exitosamente.',
       });
       queryClient.invalidateQueries({ queryKey: ['MONTHLY_SUMMARY'] });
-      queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
       queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
     onError: (error: AxiosResponseError) => showError(error),
