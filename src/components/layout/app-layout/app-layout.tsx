@@ -25,6 +25,7 @@ const ALL_NAV_ITEMS = [
     key: '/timesheets',
     label: <span className={labelText}>Timesheets</span>,
     icon: <LuClock className={colorText} />,
+    employeeOnly: true,
   },
   {
     key: '/reportes',
@@ -57,7 +58,9 @@ export function AppLayout() {
   const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
   const isAdmin = role === 'admin' || role === 'superAdmin';
 
-  const navItems = ALL_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+  const navItems = ALL_NAV_ITEMS.filter(
+    (item) => (!item.adminOnly || isAdmin) && (!item.employeeOnly || !isAdmin),
+  );
 
   return (
     <Layout className="min-h-screen!">

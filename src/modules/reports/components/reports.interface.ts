@@ -9,6 +9,7 @@ export interface IMonthlyReport {
   totalAmountInUsdt: number;
   reportStatus: ReportStatus;
   isSigned: boolean;
+  userName?: string;
 }
 
 export interface IOldPdfReport {

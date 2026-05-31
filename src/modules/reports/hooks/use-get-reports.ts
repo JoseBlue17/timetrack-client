@@ -12,6 +12,8 @@ interface BackendMonthlyReport {
   totalAmount?: number;
   status?: string;
   employeeSigned?: boolean;
+  firstName?: string;
+  lastName?: string;
 }
 
 interface IReportsPaginatedResponse {
@@ -45,6 +47,10 @@ const MONTH_NAMES = [
 ];
 
 function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
+  const firstName = backend.firstName ?? '';
+  const lastName = backend.lastName ?? '';
+  const fullName = `${firstName} ${lastName}`.trim();
+
   return {
     id: backend.id || backend._id || '',
     monthName: `${MONTH_NAMES[backend.month - 1]} ${backend.year}`,
@@ -54,6 +60,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
     totalAmountInUsdt: backend.totalAmount || 0,
     reportStatus: BACKEND_TO_ENUM[backend.status ?? ''] ?? ReportStatus.Draft,
     isSigned: backend.employeeSigned || false,
+    userName: fullName || undefined,
   };
 }
 

@@ -10,6 +10,7 @@ import { useAdminSignature, useLoggedUser, useCanEditConfiguration } from '@/hoo
 import { dataUrlToFile } from '@/tools';
 import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
 import { approveReportSchema, APPROVE_REPORT_SIGNATURE_REQUIRED } from './validations';
+import { StopOutlined } from '@ant-design/icons/es/icons/index';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
@@ -73,7 +74,11 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-800 text-base">{reportItem.monthName}</h3>
+                  <h3 className="font-bold text-gray-800 text-base">
+                    {reportItem.userName
+                      ? `${reportItem.userName} - ${reportItem.monthName}`
+                      : reportItem.monthName}
+                  </h3>
                   <p className="text-gray-400 text-sm">
                     {reportItem.totalWorkedHours} horas · {reportItem.totalAmountInUsdt} USDT
                   </p>
@@ -114,7 +119,7 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                           type="text"
                           danger
                           loading={isRejectingReport}
-                          icon={<LuPenTool className="text-gray-400 group-hover:text-red-500" />}
+                          icon={<StopOutlined className="text-gray-400 group-hover:text-red-500" />}
                           onClick={() => rejectReport(reportItem.id)}
                           className="flex items-center gap-2 text-red-600 font-medium hover:text-red-700!"
                         >
