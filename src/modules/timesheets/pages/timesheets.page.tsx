@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef } from 'react';
 import { Button, Input, Modal, Spin, DatePicker } from 'antd';
-import { LuBell, LuFilter, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
+import { LuBell, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { useCloseMonth } from '../hooks/use-close-month';
@@ -209,18 +209,7 @@ export function TimesheetsPage() {
                     onChange={(date) => date && setSelectedDate(date)}
                     className="rounded-xl border-gray-200 w-36"
                   />
-                  <Button
-                    icon={<LuFilter />}
-                    className="rounded-xl border-gray-200 text-gray-600 font-medium"
-                  >
-                    Filtrar
-                  </Button>
-                  <Button
-                    icon={<LuClock className="text-gray-400" />}
-                    className="rounded-xl border-gray-200 text-gray-600 font-medium"
-                  >
-                    Esta semana
-                  </Button>
+
                   <Button
                     icon={<LuClipboardCheck className="text-indigo-500" />}
                     loading={isClosingMonth}
