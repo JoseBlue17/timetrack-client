@@ -69,7 +69,7 @@ export const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'];
 export function useGetReports() {
   const queryClient = useQueryClient();
 
-  const query = useQuery({
+  const { data: reports = [], ...rest } = useQuery({
     queryKey: REPORTS_LIST_QUERY_KEY,
     queryFn: () =>
       Http.get<IReportsPaginatedResponse>('/reports').then(({ data }) =>
@@ -77,9 +77,9 @@ export function useGetReports() {
       ),
   });
 
-  const invalidate = () => {
+  const invalidateReports = () => {
     queryClient.invalidateQueries({ queryKey: REPORTS_LIST_QUERY_KEY });
   };
 
-  return { ...query, reports: query.data, invalidate };
+  return { ...rest, reports, invalidateReports };
 }

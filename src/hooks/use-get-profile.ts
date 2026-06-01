@@ -5,10 +5,10 @@ import type { IUserMeResponse } from '@/interfaces';
 export const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'];
 
 export function useGetProfile() {
-  const query = useQuery({
+  const { data: user, ...rest } = useQuery({
     queryKey: USER_PROFILE_QUERY_KEY,
     queryFn: () => Http.get<IUserMeResponse>('/users/me').then(({ data }) => data.user),
   });
 
-  return { ...query, user: query.data };
+  return { ...rest, user };
 }
