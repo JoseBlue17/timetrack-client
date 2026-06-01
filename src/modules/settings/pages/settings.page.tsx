@@ -4,6 +4,7 @@ import { Button, Input } from 'antd';
 import { ProjectsList } from '../components/projects-list';
 import { AdminReportsSettings } from '../components/admin-reports-settings';
 import { ProfileSettings } from '../components/profile-settings';
+import { WalletList } from '../components/wallets/wallet-list';
 import { useCanEditConfiguration } from '@/hooks';
 
 type SettingsTab = 'perfil' | 'wallets' | 'proyectos' | 'reportes';
@@ -78,12 +79,7 @@ export function SettingsPage() {
 
         {activeTab === 'perfil' && <ProfileSettings />}
 
-        {activeTab === 'wallets' && (
-          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            <LuWallet className="text-[40px] mb-3" />
-            <p className="text-base">Próximamente</p>
-          </div>
-        )}
+        {activeTab === 'wallets' && <WalletList />}
 
         {activeTab === 'proyectos' && <ProjectsList />}
         {activeTab === 'reportes' && isAdmin && <AdminReportsSettings />}

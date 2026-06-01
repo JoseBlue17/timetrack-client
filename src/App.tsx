@@ -6,6 +6,7 @@ import { SignUpPage } from '@/modules/sign-up';
 import { TimesheetsPage } from '@/modules/timesheets';
 import { SettingsPage } from '@/modules/settings';
 import { ReportsPage } from '@/modules/reports';
+import { PaymentsPage } from '@/modules/payments';
 import { AppLayout } from '@/components/layout/app-layout';
 
 function App() {
@@ -44,14 +45,7 @@ function App() {
             )
           }
         />
-        <Route
-          path="/pagos"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Pagos</h1>
-            </div>
-          }
-        />
+        <Route path="/pagos" element={<PaymentsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
 

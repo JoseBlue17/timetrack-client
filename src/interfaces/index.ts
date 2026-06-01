@@ -45,3 +45,38 @@ export interface IAppContext {
   updateLoggedUser: (user: IUser | null) => void;
   updateToken: (token: string | null) => void;
 }
+
+// ─── Crypto / Payments ───────────────────────────────────────────────────────
+
+export interface IPayment {
+  _id: string;
+  id: string;
+  userId: string;
+  reportId: string;
+  network: string;
+  walletAddress: string;
+  amountExpected: number;
+  amountReceived: number;
+  txid?: string;
+  status: string;
+  confirmations: number;
+  detectedAt?: Date;
+  paidAt?: Date;
+  expiresAt: Date;
+  rawBlockchainData?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IWallet {
+  _id: string;
+  id: string;
+  userId: string;
+  network: string;
+  walletAddress: string;
+  isDefault: boolean;
+  status: string;
+  label?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

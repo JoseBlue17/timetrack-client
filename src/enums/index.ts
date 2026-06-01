@@ -45,3 +45,23 @@ export const EmployeePosition = {
   DATA_SCIENTIST: 'Cientifico de Datos',
 } as const;
 export type EmployeePosition = (typeof EmployeePosition)[keyof typeof EmployeePosition];
+
+export const PaymentStatus = {
+  Pending: 'pending',
+  Completed: 'completed',
+  Failed: 'failed',
+  Expired: 'expired',
+} as const;
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export const BlockchainNetwork = {
+  TRC20: 'TRC20',
+  BEP20: 'BEP20',
+} as const;
+export type BlockchainNetwork = (typeof BlockchainNetwork)[keyof typeof BlockchainNetwork];
+
+export const WalletStatus = {
+  Active: 'active',
+  Inactive: 'inactive',
+} as const;
+export type WalletStatus = (typeof WalletStatus)[keyof typeof WalletStatus];
