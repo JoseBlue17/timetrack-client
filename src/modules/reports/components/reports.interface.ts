@@ -2,6 +2,7 @@ import type { ReportStatus } from '@/enums';
 
 export interface IMonthlyReport {
   id: string;
+  userId: string;
   monthName: string;
   month: number;
   year: number;
@@ -10,6 +11,7 @@ export interface IMonthlyReport {
   reportStatus: ReportStatus;
   isSigned: boolean;
   userName?: string;
+  paymentId?: string | null;
 }
 
 export interface IOldPdfReport {

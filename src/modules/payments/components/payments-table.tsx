@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { Button, Tag, Spin, Popconfirm, Select } from 'antd';
-import { LuEye, LuTrash2, LuRefreshCw, LuCreditCard } from 'react-icons/lu';
+import {
+  LuEye,
+  LuTrash2,
+  LuRefreshCw,
+  LuCreditCard,
+  LuChevronDown,
+  LuCircleAlert,
+  LuExternalLink,
+} from 'react-icons/lu';
 import { useGetPayments } from '../hooks/use-get-payments';
 import { useDeletePayment } from '../hooks/use-delete-payment';
 import { useVerifyPayment } from '../hooks/use-verify-payment';
@@ -8,11 +16,11 @@ import { PaymentDetailModal } from './payment-detail-modal';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
+import { TablePastPayments } from './table-past-payments';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Todos' },
   { value: PaymentStatus.Pending, label: 'Pendiente' },
-  { value: PaymentStatus.Completed, label: 'Completado' },
   { value: PaymentStatus.Failed, label: 'Fallido' },
   { value: PaymentStatus.Expired, label: 'Expirado' },
 ];
@@ -31,14 +39,28 @@ const STATUS_LABELS: Record<string, string> = {
   [PaymentStatus.Expired]: 'Expirado',
 };
 
+function formatUserName(payment: IPayment): string {
+  const first = payment.firstName ?? '';
+  const last = payment.lastName ?? '';
+  const full = `${first} ${last}`.trim();
+  return full || 'Usuario';
+}
+
+function formatDate(date?: Date | string): string {
+  if (!date) return '--';
+  const d = new Date(date);
+  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 export function PaymentsTable() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [selectedPayment, setSelectedPayment] = useState<IPayment | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
   const isAdmin = useCanEditConfiguration();
-  const { payments, isLoading, invalidatePayments } = useGetPayments({
+  const { payments, isLoading, isError, error, nextCursor, invalidatePayments } = useGetPayments({
     status: statusFilter || undefined,
+    excludeStatus: statusFilter ? undefined : PaymentStatus.Completed,
   });
   const { mutate: deletePayment, isPending: isDeleting } = useDeletePayment();
   const { mutate: verifyPayment, isPending: isVerifying } = useVerifyPayment();
@@ -46,6 +68,10 @@ export function PaymentsTable() {
   const openDetail = (payment: IPayment) => {
     setSelectedPayment(payment);
     setDetailOpen(true);
+  };
+
+  const canDelete = (payment: IPayment) => {
+    return isAdmin && payment.status !== PaymentStatus.Completed;
   };
 
   return (
@@ -70,7 +96,22 @@ export function PaymentsTable() {
         )}
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <div className="flex flex-col items-center justify-center py-16 text-red-500 bg-white rounded-2xl border border-red-100">
+          <LuCircleAlert className="text-[40px] mb-3" />
+          <p className="text-base font-medium">Error al cargar pagos</p>
+          <p className="text-sm mt-1 text-red-400 max-w-md text-center px-4">
+            {error.response?.data?.message || error.message || 'Ocurrió un error inesperado'}
+          </p>
+          <Button
+            type="primary"
+            onClick={() => invalidatePayments()}
+            className="mt-4 rounded-lg bg-indigo-500! border-indigo-500!"
+          >
+            Reintentar
+          </Button>
+        </div>
+      ) : isLoading ? (
         <div className="flex justify-center py-12">
           <Spin size="large" />
         </div>
@@ -93,10 +134,8 @@ export function PaymentsTable() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-800 text-sm">
-                      {payment.amountExpected} USDT
-                    </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-semibold text-gray-800 text-sm">{formatUserName(payment)}</p>
                     <Tag
                       color={STATUS_COLORS[payment.status] ?? 'default'}
                       className="rounded-full px-2 py-0 text-xs border-none"
@@ -108,6 +147,26 @@ export function PaymentsTable() {
                     {payment.network} · {payment.walletAddress.slice(0, 12)}...
                     {payment.walletAddress.slice(-8)}
                   </p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-gray-600">
+                      Esperado: <span className="font-medium">{payment.amountExpected} USDT</span>
+                    </span>
+                    {payment.status === PaymentStatus.Completed && (
+                      <span className="text-xs text-green-600">
+                        Recibido: <span className="font-medium">{payment.amountReceived} USDT</span>
+                      </span>
+                    )}
+                    {payment.status === PaymentStatus.Pending && (
+                      <span className="text-xs text-gray-400">
+                        Vence: {formatDate(payment.expiresAt)}
+                      </span>
+                    )}
+                    {payment.txid && (
+                      <span className="text-xs text-gray-400 font-mono">
+                        TX: {payment.txid.slice(0, 12)}...
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
@@ -118,15 +177,29 @@ export function PaymentsTable() {
                   />
 
                   {payment.status === PaymentStatus.Pending && isAdmin && (
-                    <Button
-                      type="text"
-                      icon={<LuRefreshCw className="text-gray-400" />}
-                      loading={isVerifying}
-                      onClick={() => verifyPayment({ paymentId: payment.id })}
-                    />
+                    <>
+                      <Button
+                        type="text"
+                        icon={<LuExternalLink className="text-amber-500" />}
+                        onClick={() =>
+                          window.open(
+                            'https://www.binance.com/es-LA/my/wallet/account/withdrawal',
+                            '_blank',
+                          )
+                        }
+                        title="Abrir Binance para pagar"
+                      />
+                      <Button
+                        type="text"
+                        icon={<LuRefreshCw className="text-gray-400" />}
+                        loading={isVerifying}
+                        onClick={() => verifyPayment({ paymentId: payment.id })}
+                        title="Verificar en blockchain"
+                      />
+                    </>
                   )}
 
-                  {isAdmin && (
+                  {canDelete(payment) && (
                     <Popconfirm
                       title="¿Eliminar este pago?"
                       description="Esta acción no se puede deshacer."
@@ -145,6 +218,14 @@ export function PaymentsTable() {
               </div>
             </div>
           ))}
+
+          {nextCursor && (
+            <div className="flex justify-center py-3 border-t border-gray-100">
+              <Button type="text" icon={<LuChevronDown size={16} />} className="text-gray-500">
+                Cargar más
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
@@ -153,6 +234,7 @@ export function PaymentsTable() {
         onClose={() => setDetailOpen(false)}
         payment={selectedPayment}
       />
+      <TablePastPayments />
     </>
   );
 }

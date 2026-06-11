@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Button, Tag, Modal } from 'antd';
-import { LuFileText, LuEye, LuPenTool } from 'react-icons/lu';
+import { Button, Tag, Modal, Select } from 'antd';
+import { LuFileText, LuEye, LuPenTool, LuCreditCard } from 'react-icons/lu';
 import { useSignReport } from '../hooks/use-sign-report';
 import { useApproveReport } from '../hooks/use-approve-report';
 import { useRejectReport } from '../hooks/use-reject-report';
+import { useCreatePayment } from '@/modules/payments/hooks/use-create-payment';
+import { useGetUserWallets } from '@/modules/settings/hooks/wallets/use-get-user-wallets';
 import type { IMonthlyReport } from './reports.interface';
 import { ReportPdfModal } from './report-pdf-modal';
 import { useAdminSignature, useLoggedUser, useCanEditConfiguration } from '@/hooks';
@@ -20,11 +22,19 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const { signReport, isSigningReport } = useSignReport();
   const { approveReport, isApprovingReport } = useApproveReport();
   const { rejectReport, isRejectingReport } = useRejectReport();
+  const { mutate: createPayment, isPending: isCreatingPayment } = useCreatePayment();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [selectedReportForPayment, setSelectedReportForPayment] = useState<IMonthlyReport | null>(
+    null,
+  );
+  const [selectedWalletId, setSelectedWalletId] = useState<string>('');
   const { loggedUser } = useLoggedUser();
   const { adminSignatureDataUrl } = useAdminSignature();
   const isAdmin = useCanEditConfiguration();
   const userRole = loggedUser?.role ?? 'basic';
+
+  const { data: employeeWallets = [] } = useGetUserWallets(selectedReportForPayment?.userId);
 
   const isValidDataUrl = (url: string) => /^data:image\/[a-zA-Z]+;base64,/.test(url);
 
@@ -128,6 +138,23 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                       </>
                     )}
 
+                    {isAdmin && reportItem.reportStatus === 'approved' && !reportItem.paymentId && (
+                      <Button
+                        type="text"
+                        icon={
+                          <LuCreditCard className="text-gray-400 group-hover:text-indigo-500" />
+                        }
+                        onClick={() => {
+                          setSelectedReportForPayment(reportItem);
+                          setSelectedWalletId('');
+                          setPaymentModalOpen(true);
+                        }}
+                        className="flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700!"
+                      >
+                        Crear pago
+                      </Button>
+                    )}
+
                     {!isAdmin && reportItem.reportStatus !== 'paid' && (
                       <Button
                         type="text"
@@ -153,6 +180,50 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
         reportName={selectedReport?.name}
         onClose={() => setSelectedReport(null)}
       />
+
+      <Modal
+        open={paymentModalOpen}
+        onCancel={() => setPaymentModalOpen(false)}
+        onOk={() => {
+          if (selectedWalletId && selectedReportForPayment) {
+            createPayment(
+              { reportId: selectedReportForPayment.id, walletId: selectedWalletId },
+              { onSuccess: () => setPaymentModalOpen(false) },
+            );
+          }
+        }}
+        okText="Crear pago"
+        cancelText="Cancelar"
+        title="Crear pago"
+        confirmLoading={isCreatingPayment}
+        okButtonProps={{ disabled: !selectedWalletId }}
+      >
+        <div className="py-4 flex flex-col gap-3">
+          <p className="text-gray-600 text-sm">
+            Selecciona la wallet del empleado <strong>{selectedReportForPayment?.userName}</strong>{' '}
+            para recibir el pago de{' '}
+            <strong>{selectedReportForPayment?.totalAmountInUsdt} USDT</strong>.
+          </p>
+
+          <Select
+            value={selectedWalletId || undefined}
+            onChange={setSelectedWalletId}
+            placeholder="Selecciona una wallet"
+            className="w-full"
+            options={employeeWallets.map((w) => ({
+              value: w.id,
+              label: `${w.network} — ${w.walletAddress.slice(0, 12)}...${w.walletAddress.slice(-8)}`,
+            }))}
+          />
+
+          {employeeWallets.length === 0 && (
+            <p className="text-red-500 text-sm">
+              Este empleado no tiene wallets registradas. Debe agregar una en Configuración →
+              Wallets.
+            </p>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

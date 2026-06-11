@@ -39,7 +39,10 @@ export const useShowError = () => {
       message = byHttpCode[statusCode];
     }
 
-    triggerToast({ title: message ?? error.message, type: 'error' });
+    triggerToast({
+      title: message ?? data?.message ?? error.message,
+      type: 'error',
+    });
   };
 
   return { showError };

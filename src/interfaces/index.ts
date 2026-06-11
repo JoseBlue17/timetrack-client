@@ -1,7 +1,5 @@
 import { UserRole, UserStatus } from '@/enums';
 
-// ─── User ───────────────────────────────────────────────────────────────────
-
 export interface IProfile {
   firstName: string;
   lastName: string;
@@ -32,8 +30,6 @@ export interface IUserMeResponse {
   user: IUser;
 }
 
-// ─── Shared ──────────────────────────────────────────────────────────────────
-
 export interface IPaginatedResponse<T> {
   data: T[];
   nextCursor: string | null;
@@ -45,8 +41,6 @@ export interface IAppContext {
   updateLoggedUser: (user: IUser | null) => void;
   updateToken: (token: string | null) => void;
 }
-
-// ─── Crypto / Payments ───────────────────────────────────────────────────────
 
 export interface IPayment {
   _id: string;
@@ -66,6 +60,8 @@ export interface IPayment {
   rawBlockchainData?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface IWallet {

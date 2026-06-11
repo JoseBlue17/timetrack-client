@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Modal } from 'antd';
 import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
@@ -29,7 +30,18 @@ export function useApproveReport() {
       });
       queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
-    onError: (error: AxiosResponseError) => showError(error),
+    onError: (error: AxiosResponseError) => {
+      const code = error.response?.data?.code;
+      if (code === 'EMPLOYEE_WALLET_REQUIRED') {
+        Modal.error({
+          title: 'Wallet requerida',
+          content:
+            'No se puede aprobar este reporte porque el empleado no tiene una wallet registrada. El empleado debe ir a Configuración → Wallets y agregar una dirección de wallet predeterminada.',
+        });
+        return;
+      }
+      showError(error);
+    },
   });
 
   return {

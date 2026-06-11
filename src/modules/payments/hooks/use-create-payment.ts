@@ -2,28 +2,27 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import { useGetWallets } from './use-get-wallets';
 
-export interface IDeleteWalletPayload {
+export interface ICreatePaymentPayload {
+  reportId: string;
   walletId: string;
 }
 
-export function useDeleteWallet() {
+export function useCreatePayment() {
   const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateWallets } = useGetWallets();
 
-  return useMutation<void, AxiosResponseError, IDeleteWalletPayload>({
-    mutationKey: ['DELETE_WALLET'],
-    mutationFn: ({ walletId }: IDeleteWalletPayload) =>
-      Http.delete(`/wallets/${walletId}`).then((r) => r.data),
+  return useMutation<unknown, AxiosResponseError, ICreatePaymentPayload>({
+    mutationKey: ['CREATE_PAYMENT'],
+    mutationFn: ({ reportId, walletId }: ICreatePaymentPayload) =>
+      Http.post('/payments', { reportId, walletId }).then((r) => r.data),
     onSuccess: () => {
       showSuccess({
-        title: 'Wallet eliminada',
-        description: 'La wallet fue eliminada correctamente.',
+        title: 'Pago creado',
+        description: 'El pago ha sido creado correctamente.',
       });
-      invalidateWallets();
+      queryClient.invalidateQueries({ queryKey: ['PAYMENTS'] });
       queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
     },
     onError: (error: AxiosResponseError) => showError(error),

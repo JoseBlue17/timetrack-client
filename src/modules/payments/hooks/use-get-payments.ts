@@ -1,12 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
+import type { AxiosResponseError } from '@/config/http';
 import type { IPayment } from '@/interfaces';
 import type { IPaginatedResponse } from '@/interfaces';
 
-export const PAYMENTS_QUERY_KEY = ['PAYMENTS'];
-
 interface GetPaymentsParams {
   status?: string;
+  excludeStatus?: string;
   cursor?: string;
   limit?: number;
 }
@@ -14,19 +14,19 @@ interface GetPaymentsParams {
 export function useGetPayments(params?: GetPaymentsParams) {
   const queryClient = useQueryClient();
 
-  const { data: response, ...rest } = useQuery<IPaginatedResponse<IPayment>>({
-    queryKey: [...PAYMENTS_QUERY_KEY, params],
+  const query = useQuery<IPaginatedResponse<IPayment>, AxiosResponseError>({
+    queryKey: ['PAYMENTS', params],
     queryFn: () => Http.get('/payments', { params }).then(({ data }) => data),
   });
 
   const invalidatePayments = () => {
-    queryClient.invalidateQueries({ queryKey: PAYMENTS_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: ['PAYMENTS'] });
   };
 
   return {
-    ...rest,
-    payments: response?.data ?? [],
-    nextCursor: response?.nextCursor ?? null,
+    payments: query.data?.data ?? [],
+    nextCursor: query.data?.nextCursor ?? null,
+    ...query,
     invalidatePayments,
   };
 }

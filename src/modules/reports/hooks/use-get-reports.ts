@@ -6,6 +6,7 @@ import type { IMonthlyReport } from '../components/reports.interface';
 interface BackendMonthlyReport {
   id?: string;
   _id?: string;
+  userId?: string;
   month: number;
   year: number;
   totalHours?: number;
@@ -14,6 +15,7 @@ interface BackendMonthlyReport {
   employeeSigned?: boolean;
   firstName?: string;
   lastName?: string;
+  paymentId?: string | null;
 }
 
 interface IReportsPaginatedResponse {
@@ -53,6 +55,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
 
   return {
     id: backend.id || backend._id || '',
+    userId: backend.userId || '',
     monthName: `${MONTH_NAMES[backend.month - 1]} ${backend.year}`,
     month: backend.month,
     year: backend.year,
@@ -61,6 +64,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
     reportStatus: BACKEND_TO_ENUM[backend.status ?? ''] ?? ReportStatus.Draft,
     isSigned: backend.employeeSigned || false,
     userName: fullName || undefined,
+    paymentId: backend.paymentId ?? null,
   };
 }
 
