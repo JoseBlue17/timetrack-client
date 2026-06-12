@@ -16,7 +16,6 @@ import { PaymentDetailModal } from './payment-detail-modal';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
-import { TablePastPayments } from './table-past-payments';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Todos' },
@@ -234,7 +233,6 @@ export function PaymentsTable() {
         onClose={() => setDetailOpen(false)}
         payment={selectedPayment}
       />
-      <TablePastPayments />
     </>
   );
 }
