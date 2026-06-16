@@ -6,7 +6,6 @@ import { useCanEditConfiguration } from '@/hooks';
 import {
   PaymentStatusBadge,
   PaymentEmployeeRow,
-  PaymentNetworkRow,
   PaymentAmountRow,
   PaymentConfirmationsRow,
   PaymentBinanceCard,
@@ -39,7 +38,6 @@ export function PaymentDetailModal({ open, onClose, payment }: IPaymentDetailMod
       <div className="flex flex-col gap-4 py-2">
         <PaymentStatusBadge status={payment.status} />
         <PaymentEmployeeRow payment={payment} />
-        <PaymentNetworkRow payment={payment} />
         <PaymentAmountRow payment={payment} />
         <PaymentConfirmationsRow payment={payment} />
         {showBinanceCard && <PaymentBinanceCard payment={payment} />}

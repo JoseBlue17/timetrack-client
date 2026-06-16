@@ -77,10 +77,6 @@ export function PaymentInfoRow({ label, value, icon }: IPaymentInfoRowProps) {
 export function PaymentAmountRow({ payment }: { payment: IPayment }) {
   return (
     <>
-      <div className="flex items-center justify-between">
-        <span className="text-gray-500 text-sm">Monto esperado</span>
-        <span className="font-medium text-gray-800">{payment.amountExpected} USDT</span>
-      </div>
       {payment.amountReceived > 0 && (
         <div className="flex items-center justify-between">
           <span className="text-gray-500 text-sm">Monto recibido</span>
@@ -286,10 +282,6 @@ export function PaymentEmployeeRow({ payment }: { payment: IPayment }) {
   return (
     <PaymentInfoRow label="Empleado" value={formatUserName(payment)} icon={<LuUser size={14} />} />
   );
-}
-
-export function PaymentNetworkRow({ payment }: { payment: IPayment }) {
-  return <PaymentInfoRow label="Red blockchain" value={payment.network} />;
 }
 
 export function PaymentReportRow({ payment }: { payment: IPayment }) {

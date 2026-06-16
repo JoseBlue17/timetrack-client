@@ -73,7 +73,7 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
     >
       <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 mt-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Red blockchain</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Red blockchainm</label>
           <Select
             className="w-full"
             options={NETWORK_OPTIONS}
