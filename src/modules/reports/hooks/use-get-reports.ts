@@ -68,7 +68,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
   };
 }
 
-export const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'];
+const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'];
 
 export function useGetReports() {
   const queryClient = useQueryClient();

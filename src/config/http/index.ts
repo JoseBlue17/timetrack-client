@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosInstance, HttpStatusCode, isAxiosError } from 'axios';
+import axios, { AxiosError, type AxiosInstance, isAxiosError } from 'axios';
 
 export interface ApiError {
   name: Record<string, string>;
@@ -13,14 +13,9 @@ export type AxiosResponseError = AxiosError<ApiError>;
 
 const baseURL = import.meta.env.VITE_API_URL as string;
 
-export const Http: AxiosInstance = axios.create({ baseURL });
+export const Http: AxiosInstance = axios.create({ baseURL, withCredentials: true });
 
-export const PublicHttp: AxiosInstance = axios.create({ baseURL });
-
-export const isDomainBackendError = <T = unknown, D = unknown>(
-  error: unknown,
-): error is AxiosError<T, D> =>
-  isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity;
+export const PublicHttp: AxiosInstance = axios.create({ baseURL, withCredentials: true });
 
 Http.interceptors.response.use(
   (response) => response,

@@ -7,31 +7,22 @@ export function useVerifyToken() {
   const [isVerifyingToken, setIsVerifyingToken] = useState(true);
   const { updateLoggedUser, updateToken } = useLoggedUser();
 
-  const getMe = (token: string) =>
-    Http.get('/users/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(({ data }) => data);
+  const getMe = () => Http.get('/users/me').then(({ data }) => data);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      getMe(token)
-        .then(({ user }: IUserMeResponse) => {
-          if (user) {
-            updateLoggedUser(user);
-            updateToken(token);
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-          updateToken(null);
-        })
-        .finally(() => {
-          setIsVerifyingToken(false);
-        });
-    } else {
-      Promise.resolve().then(() => setIsVerifyingToken(false));
-    }
+    getMe()
+      .then(({ user }: IUserMeResponse) => {
+        if (user) {
+          updateLoggedUser(user);
+          updateToken('present'); // El token real vive en la cookie HttpOnly.
+        }
+      })
+      .catch(() => {
+        updateToken(null);
+      })
+      .finally(() => {
+        setIsVerifyingToken(false);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

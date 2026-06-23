@@ -62,7 +62,7 @@ export function PaymentStatusBadge({ status }: { status: string }) {
   );
 }
 
-export function PaymentInfoRow({ label, value, icon }: IPaymentInfoRowProps) {
+function PaymentInfoRow({ label, value, icon }: IPaymentInfoRowProps) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-gray-500 text-sm flex items-center gap-1.5">

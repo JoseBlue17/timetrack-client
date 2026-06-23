@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import type { IWallet } from '@/interfaces';
 
-export const WALLETS_QUERY_KEY = ['WALLETS'];
+const WALLETS_QUERY_KEY = ['WALLETS'];
 
 export function useGetWallets() {
   const queryClient = useQueryClient();

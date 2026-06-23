@@ -14,7 +14,7 @@ export function useSignIn() {
     mutationFn: (values: Omit<SignInValues, 'rememberMe'>) =>
       PublicHttp.post<SignInResponse>('/users/sign-in', values).then(({ data }) => data),
     onSuccess: ({ token, user }) => {
-      onLogin({ token, user: user as import('@/interfaces').IUser });
+      onLogin({ token: token ?? 'present', user: user as import('@/interfaces').IUser });
       showSuccess({ title: 'Bienvenido', description: `Hola, ${user.profile.firstName}!` });
     },
     onError: (error: AxiosResponseError) => showError(error),

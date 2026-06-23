@@ -9,7 +9,7 @@ export function useAuth() {
   const { updateLoggedUser, updateToken } = useLoggedUser();
 
   const onLogin = ({ token, user }: IOnLogin) => {
-    localStorage.setItem('token', token);
+    // El token se almacena en una cookie HttpOnly gestionada por el backend.
     updateToken(token);
     updateLoggedUser(user);
     queryClient.invalidateQueries({ queryKey: ['USER_PROFILE'] });
@@ -18,7 +18,6 @@ export function useAuth() {
 
   const onLogout = () => {
     queryClient.clear();
-    localStorage.removeItem('token');
     updateToken(null);
     updateLoggedUser(null);
     navigate('/sign-in');

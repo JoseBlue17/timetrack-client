@@ -1,16 +1,3 @@
-export const Language = {
-  English: 'en',
-  Spanish: 'es',
-} as const;
-export type Language = (typeof Language)[keyof typeof Language];
-
-export const DEFAULT_LANGUAGE = 'es' as const;
-
-export const HttpErrorCodesEnum = {
-  UNAUTHORIZED: 401,
-} as const;
-export type HttpErrorCodesEnum = (typeof HttpErrorCodesEnum)[keyof typeof HttpErrorCodesEnum];
-
 export const UserRole = {
   Admin: 'admin',
   Basic: 'basic',
@@ -59,9 +46,3 @@ export const BlockchainNetwork = {
   BEP20: 'BEP20',
 } as const;
 export type BlockchainNetwork = (typeof BlockchainNetwork)[keyof typeof BlockchainNetwork];
-
-export const WalletStatus = {
-  Active: 'active',
-  Inactive: 'inactive',
-} as const;
-export type WalletStatus = (typeof WalletStatus)[keyof typeof WalletStatus];

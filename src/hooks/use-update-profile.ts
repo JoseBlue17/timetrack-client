@@ -3,7 +3,7 @@ import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import useLoggedUser from './use-logged-user';
 import type { AxiosResponseError } from '@/config/http';
-import { USER_PROFILE_QUERY_KEY } from './use-get-profile';
+const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'];
 import type { IUser } from '@/interfaces';
 
 export interface IUpdateProfilePayload {

@@ -10,7 +10,7 @@ export interface ISignInFormProps {
 }
 
 export interface SignInResponse {
-  token: string;
+  token?: string;
   user: {
     _id: string;
     id: string;
