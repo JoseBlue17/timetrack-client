@@ -1,4 +1,5 @@
 import { Button, Popconfirm, Table } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { LuPencil, LuTrash2, LuMinus, LuPlus } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import type { ITimesheetDateGroup, ITimesheet } from './timesheet.interface';
@@ -94,13 +95,15 @@ export const getExpandedRowRender = ({
   onDelete,
 }: Pick<GetColumnsProps, 'onEdit' | 'onDelete'>) => {
   return (group: ITimesheetDateGroup) => {
-    const subColumns = [
+    const subColumns: ColumnsType<ITimesheet> = [
       {
         title: 'Proyecto',
         dataIndex: 'project',
         key: 'project',
+        align: 'center',
+        width: 140,
         render: (text: string) => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
             <span className="font-semibold text-gray-700">{text}</span>
           </div>
@@ -110,19 +113,29 @@ export const getExpandedRowRender = ({
         title: 'Descripción',
         dataIndex: 'description',
         key: 'description',
-        className: 'text-gray-500 text-sm',
+        align: 'center',
+        width: 240,
+        render: (description: string) => (
+          <div className="max-h-20 overflow-y-auto text-sm text-gray-500 px-2">
+            {description || 'Sin descripción'}
+          </div>
+        ),
       },
       {
         title: 'Horas',
         dataIndex: 'hours',
         key: 'hours',
+        align: 'center',
+        width: 100,
         render: (h: number) => <span className="font-bold text-gray-700">{h}h</span>,
       },
       {
         title: 'Acciones',
         key: 'actions',
+        align: 'center',
+        width: 100,
         render: (_: unknown, record: ITimesheet) => (
-          <div className="flex gap-2">
+          <div className="flex justify-center gap-2">
             <Button
               type="text"
               size="small"
@@ -168,14 +181,11 @@ interface GetExpandIconProps {
   record: ITimesheetDateGroup;
 }
 
-export const getExpandIcon = ({ onExpand, expanded, record }: GetExpandIconProps) =>
-  record.timesheets.length > 1 ? (
-    <button
-      onClick={(e) => onExpand(record, e)}
-      className="text-gray-400 hover:text-indigo-600 transition-colors border-none bg-transparent cursor-pointer"
-    >
-      {expanded ? <LuMinus size={16} /> : <LuPlus size={16} />}
-    </button>
-  ) : (
-    <div className="w-4" />
-  );
+export const getExpandIcon = ({ onExpand, expanded, record }: GetExpandIconProps) => (
+  <button
+    onClick={(e) => onExpand(record, e)}
+    className="text-gray-400 hover:text-indigo-600 transition-colors border-none bg-transparent cursor-pointer"
+  >
+    {expanded ? <LuMinus size={16} /> : <LuPlus size={16} />}
+  </button>
+);

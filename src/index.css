@@ -50,3 +50,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.timesheets-main-table .ant-table {
+  background: transparent !important;
+}
+
+.timesheets-main-table .ant-table-thead > tr > th {
+  background-color: transparent !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.timesheets-main-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.timesheets-main-table .ant-table-tbody > tr.ant-table-row:hover > td {
+  background-color: #f9fafb !important;
+}
