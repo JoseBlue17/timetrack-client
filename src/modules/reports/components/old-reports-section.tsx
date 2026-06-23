@@ -1,24 +1,31 @@
+import { useState, type ReactNode } from 'react';
 import { Button } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2 } from 'react-icons/lu';
-import type { IOldPdfReport } from './reports.interface';
+import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
+import type { IOldPdfReport, IMonthlyReport } from './reports.interface';
+import { MonthlyReportsList } from './monthly-reports-list';
+
+type ReportsTab = 'monthly' | 'old';
 
 interface IOldReportsSectionProps {
   uploadedPdfReports: IOldPdfReport[];
+  monthlyReportsData?: IMonthlyReport[];
 }
 
-export function OldReportsSection({ uploadedPdfReports }: IOldReportsSectionProps) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm mt-5">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Reportes antiguos (PDF)</h2>
-        </div>
-        <p className="text-indigo-400 text-xs font-semibold uppercase tracking-wider">
-          Sube reportes de meses anteriores
-        </p>
-      </div>
+const TABS: { value: ReportsTab; label: string; icon: ReactNode }[] = [
+  { value: 'monthly', label: 'Reportes mensuales', icon: <MdCalendarMonth size={16} /> },
+  { value: 'old', label: 'Reportes antiguos', icon: <MdOutlinePictureAsPdf size={16} /> },
+];
 
-      {/* Area de carga (Dropzone visual) */}
+export function OldReportsSection({
+  uploadedPdfReports,
+  monthlyReportsData,
+}: IOldReportsSectionProps) {
+  const [activeTab, setActiveTab] = useState<ReportsTab>('monthly');
+  const showTabs = monthlyReportsData !== undefined;
+
+  const oldReportsContent = (
+    <>
       <div className="w-full h-44 bg-stone-50/50 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-indigo-200 hover:bg-indigo-50/20 transition-all group mb-8">
         <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
           <LuCloudUpload size={24} />
@@ -69,6 +76,56 @@ export function OldReportsSection({ uploadedPdfReports }: IOldReportsSectionProp
           )}
         </div>
       </div>
+    </>
+  );
+
+  if (!showTabs) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm mt-5">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">Reportes antiguos (PDF)</h2>
+          </div>
+          <p className="text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+            Sube reportes de meses anteriores
+          </p>
+        </div>
+        {oldReportsContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm mt-5">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-lg font-bold text-gray-800">Reportes</h2>
+        </div>
+        <p className="text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+          Gestiona los reportes mensuales y antiguos
+        </p>
+      </div>
+
+      <div className="flex gap-0 border-b border-gray-200 mb-8">
+        {TABS.map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            onClick={() => setActiveTab(tab.value)}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.value
+                ? 'border-indigo-500 text-indigo-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'monthly' && <MonthlyReportsList monthlyReportsData={monthlyReportsData} />}
+      {activeTab === 'old' && oldReportsContent}
     </div>
   );
 }

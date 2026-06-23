@@ -1,6 +1,5 @@
 import { Input, Button } from 'antd';
 import { LuBell } from 'react-icons/lu';
-import { MonthlyReportsList } from '../components/monthly-reports-list';
 import { OldReportsSection } from '../components/old-reports-section';
 import { useGetReports } from '../hooks/use-get-reports';
 import type { IOldPdfReport } from '../components/reports.interface';
@@ -25,9 +24,10 @@ export function ReportsPage() {
 
       <main className="flex-1 overflow-auto p-8">
         <div className="max-w-6xl mx-auto flex flex-col gap-8">
-          <MonthlyReportsList monthlyReportsData={monthlyReportsHistory} />
-
-          <OldReportsSection uploadedPdfReports={archivedPdfReports} />
+          <OldReportsSection
+            monthlyReportsData={monthlyReportsHistory}
+            uploadedPdfReports={archivedPdfReports}
+          />
         </div>
       </main>
     </div>

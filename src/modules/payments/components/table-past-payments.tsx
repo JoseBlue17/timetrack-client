@@ -145,7 +145,7 @@ export function TablePastPayments() {
     return (
       <section className="mt-8">
         <div className="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center justify-center gap-3 text-gray-400">
-          <LuHistory className="text-[40px]" />
+          <LuHistory className="text-4xl" />
           <p className="text-base">No hay pagos completados</p>
           <p className="text-sm">
             Los pagos aparecerán aquí una vez que sean confirmados en blockchain
