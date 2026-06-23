@@ -11,22 +11,28 @@ interface GetPaymentsParams {
   limit?: number;
 }
 
+const PAYMENTS_QUERY_KEY = ['PAYMENTS'];
+
 export function useGetPayments(params?: GetPaymentsParams) {
   const queryClient = useQueryClient();
 
-  const query = useQuery<IPaginatedResponse<IPayment>, AxiosResponseError>({
-    queryKey: ['PAYMENTS', params],
-    queryFn: () => Http.get('/payments', { params }).then(({ data }) => data),
+  const { data: paymentsData, ...rest } = useQuery<
+    IPaginatedResponse<IPayment>,
+    AxiosResponseError
+  >({
+    queryKey: [...PAYMENTS_QUERY_KEY, params],
+    queryFn: () =>
+      Http.get<IPaginatedResponse<IPayment>>('/payments', { params }).then(({ data }) => data),
   });
 
   const invalidatePayments = () => {
-    queryClient.invalidateQueries({ queryKey: ['PAYMENTS'] });
+    queryClient.invalidateQueries({ queryKey: PAYMENTS_QUERY_KEY });
   };
 
   return {
-    payments: query.data?.data ?? [],
-    nextCursor: query.data?.nextCursor ?? null,
-    ...query,
+    ...rest,
+    payments: paymentsData?.data ?? [],
+    nextCursor: paymentsData?.nextCursor ?? null,
     invalidatePayments,
   };
 }
