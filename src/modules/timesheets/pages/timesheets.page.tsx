@@ -25,13 +25,12 @@ export function TimesheetsPage() {
   const currentMonth = selectedDate.format('MM');
   const currentYear = selectedDate.format('YYYY');
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetTimesheets({
-    terms: debouncedSearch,
-    month: Number(currentMonth),
-    year: Number(currentYear),
-  });
-
-  const timesheets = data ?? [];
+  const { timesheets, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetTimesheets({
+      terms: debouncedSearch,
+      month: Number(currentMonth),
+      year: Number(currentYear),
+    });
 
   const observerTarget = useRef<HTMLDivElement>(null);
 

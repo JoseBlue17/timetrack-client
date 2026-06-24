@@ -6,17 +6,27 @@ import type {
   ITimesheet,
 } from '../components/timesheet.interface';
 
+const TIMESHEETS_QUERY_KEY = ['TIMESHEETS'] as const;
+
 export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
   const queryClient = useQueryClient();
 
-  const query = useInfiniteQuery<
+  const {
+    data: timesheets = [],
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<
     IGetTimesheetsResponse,
     Error,
     ITimesheet[],
     ['TIMESHEETS', IGetTimesheetsParams],
     string | undefined
   >({
-    queryKey: ['TIMESHEETS', params],
+    queryKey: [...TIMESHEETS_QUERY_KEY, params],
     queryFn: async ({ pageParam }) => {
       const { data } = await Http.get<IGetTimesheetsResponse>('/timesheets', {
         params: {
@@ -32,8 +42,17 @@ export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
   });
 
   const invalidateTimesheets = () => {
-    queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
+    queryClient.invalidateQueries({ queryKey: TIMESHEETS_QUERY_KEY });
   };
 
-  return { ...query, invalidateTimesheets };
+  return {
+    timesheets,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    invalidateTimesheets,
+  };
 }
