@@ -4,9 +4,10 @@ import { OldReportsSection } from '../components/old-reports-section';
 import { useGetReports } from '../hooks/use-get-reports';
 import type { IOldPdfReport } from '../components/reports.interface';
 
+const ARCHIVED_PDF_REPORTS: IOldPdfReport[] = [];
+
 export function ReportsPage() {
   const { reports: monthlyReportsHistory = [] } = useGetReports();
-  const archivedPdfReports: IOldPdfReport[] = [];
 
   return (
     <div className="flex flex-col h-full bg-stone-100/40">
@@ -26,7 +27,7 @@ export function ReportsPage() {
         <div className="max-w-6xl mx-auto flex flex-col gap-8">
           <OldReportsSection
             monthlyReportsData={monthlyReportsHistory}
-            uploadedPdfReports={archivedPdfReports}
+            uploadedPdfReports={ARCHIVED_PDF_REPORTS}
           />
         </div>
       </main>

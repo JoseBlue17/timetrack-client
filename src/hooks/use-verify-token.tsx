@@ -3,11 +3,11 @@ import { Http } from '@/config/http';
 import useLoggedUser from './use-logged-user';
 import type { IUserMeResponse } from '@/interfaces';
 
+const getMe = () => Http.get('/users/me').then(({ data }) => data);
+
 export function useVerifyToken() {
   const [isVerifyingToken, setIsVerifyingToken] = useState(true);
   const { updateLoggedUser, updateToken } = useLoggedUser();
-
-  const getMe = () => Http.get('/users/me').then(({ data }) => data);
 
   useEffect(() => {
     getMe()

@@ -13,12 +13,13 @@ import {
 } from '@/modules/reports/components/report-status-mappings';
 import type { ReportStatus } from '@/enums';
 
+const ARCHIVED_PDF_REPORTS: IOldPdfReport[] = [];
+
 export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
   const { loggedUser } = useLoggedUser();
   const userRole = loggedUser?.role ?? 'basic';
-  const archivedPdfReports: IOldPdfReport[] = [];
 
   const renderStatus = (status: ReportStatus) => {
     const mapping = getReportStatusMapping(status, userRole);
@@ -106,7 +107,7 @@ export function HistoricalReportsTable() {
           className="historical-reports-table"
         />
       </div>
-      <OldReportsSection uploadedPdfReports={archivedPdfReports} />
+      <OldReportsSection uploadedPdfReports={ARCHIVED_PDF_REPORTS} />
 
       <ReportPdfModal
         open={!!selectedReport}

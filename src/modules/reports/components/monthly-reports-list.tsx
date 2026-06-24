@@ -18,6 +18,8 @@ interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
 }
 
+const isValidDataUrl = (url: string) => /^data:image\/[a-zA-Z]+;base64,/.test(url);
+
 export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
   const { signReport, isSigningReport } = useSignReport();
   const { approveReport, isApprovingReport } = useApproveReport();
@@ -35,8 +37,6 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const userRole = loggedUser?.role ?? 'basic';
 
   const { data: employeeWallets = [] } = useGetUserWallets(selectedReportForPayment?.userId);
-
-  const isValidDataUrl = (url: string) => /^data:image\/[a-zA-Z]+;base64,/.test(url);
 
   const handleApprove = (reportId: string) => {
     const canApprove = approveReportSchema.isValidSync({
