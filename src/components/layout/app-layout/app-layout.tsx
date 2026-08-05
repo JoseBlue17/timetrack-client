@@ -9,7 +9,7 @@ import {
   LuLogOut,
 } from 'react-icons/lu';
 import useLoggedUser from '@/hooks/use-logged-user';
-import { useAuth } from '@/hooks';
+import { useAuth, useCanEditConfiguration } from '@/hooks';
 
 const { Sider, Content } = Layout;
 const colorText = 'text-black! text-lg';
@@ -50,13 +50,13 @@ export function AppLayout() {
   const location = useLocation();
   const { loggedUser } = useLoggedUser();
   const { onLogout } = useAuth();
+  const isAdmin = useCanEditConfiguration();
 
   const firstName = loggedUser?.profile?.firstName ?? '';
   const lastName = loggedUser?.profile?.lastName ?? '';
   const fullName = `${firstName} ${lastName}`.trim() || 'Usuario';
   const role = loggedUser?.role ?? '';
   const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
-  const isAdmin = role === 'admin' || role === 'superAdmin';
 
   const navItems = ALL_NAV_ITEMS.filter(
     (item) => (!item.adminOnly || isAdmin) && (!item.employeeOnly || !isAdmin),
@@ -71,7 +71,7 @@ export function AppLayout() {
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">
             <span className="text-black text-xl font-bold tracking-wide">
-              <LuClock className="inline-block mr-2" /> TimeTrack
+              <LuClock className="inline-block mr-2" /> TimeSheetLedger
             </span>
           </div>
 

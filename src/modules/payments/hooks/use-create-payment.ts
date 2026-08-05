@@ -1,6 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import {
+  useShowError,
+  useShowSuccess,
+  useInvalidatePayments,
+  useInvalidateMonthlyReports,
+} from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
 export interface ICreatePaymentPayload {
@@ -9,9 +14,10 @@ export interface ICreatePaymentPayload {
 }
 
 export function useCreatePayment() {
-  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
+  const invalidatePayments = useInvalidatePayments();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
 
   return useMutation<unknown, AxiosResponseError, ICreatePaymentPayload>({
     mutationKey: ['CREATE_PAYMENT'],
@@ -22,8 +28,8 @@ export function useCreatePayment() {
         title: 'Pago creado',
         description: 'El pago ha sido creado correctamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['PAYMENTS'] });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidatePayments();
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

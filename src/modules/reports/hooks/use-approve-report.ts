@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Modal } from 'antd';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateMonthlyReports } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
 export interface ApproveReportPayload {
@@ -10,9 +10,9 @@ export interface ApproveReportPayload {
 }
 
 export function useApproveReport() {
-  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
 
   const { mutate: approveReport, isPending: isApprovingReport } = useMutation({
     mutationFn: async ({ reportId, file }: ApproveReportPayload) => {
@@ -28,7 +28,7 @@ export function useApproveReport() {
         title: 'Reporte aprobado',
         description: 'El reporte ha sido aprobado correctamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => {
       const code = error.response?.data?.code;

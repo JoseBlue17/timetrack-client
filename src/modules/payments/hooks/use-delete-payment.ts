@@ -1,8 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidatePayments } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import { useGetPayments } from './use-get-payments';
 
 export interface IDeletePaymentPayload {
   paymentId: string;
@@ -11,7 +10,7 @@ export interface IDeletePaymentPayload {
 export function useDeletePayment() {
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidatePayments } = useGetPayments();
+  const invalidatePayments = useInvalidatePayments();
 
   return useMutation<void, AxiosResponseError, IDeletePaymentPayload>({
     mutationKey: ['DELETE_PAYMENT'],

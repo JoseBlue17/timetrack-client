@@ -1,13 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateTimesheets } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import { useGetTimesheets } from './use-get-timesheets';
 
 export function useDeleteTimesheet() {
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateTimesheets } = useGetTimesheets();
+  const invalidateTimesheets = useInvalidateTimesheets();
 
   return useMutation({
     mutationFn: (id: string) => Http.delete(`/timesheets/${id}`).then((r) => r.data),

@@ -1,4 +1,4 @@
-import { ReportStatus } from '@/enums';
+import { ReportStatus, UserRole } from '@/enums';
 
 export interface StatusMapping {
   label: string;
@@ -21,9 +21,9 @@ export const EmployeeReportStatusMap: Partial<Record<ReportStatus, StatusMapping
 };
 
 const STATUS_MAPPING_BY_ROLE: Record<string, Partial<Record<ReportStatus, StatusMapping>>> = {
-  admin: AdminReportStatusMap,
-  superAdmin: AdminReportStatusMap,
-  basic: EmployeeReportStatusMap,
+  [UserRole.Admin]: AdminReportStatusMap,
+  [UserRole.SuperAdmin]: AdminReportStatusMap,
+  [UserRole.Basic]: EmployeeReportStatusMap,
 };
 
 export function getReportStatusMapping(status: ReportStatus, role: string): StatusMapping {

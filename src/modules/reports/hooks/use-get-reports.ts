@@ -1,7 +1,9 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { ReportStatus } from '@/enums';
 import type { IMonthlyReport } from '../components/reports.interface';
+import { useInvalidateMonthlyReports } from '@/hooks';
+import { REPORTS_LIST_QUERY_KEY } from '@/query-keys';
 
 interface BackendMonthlyReport {
   id?: string;
@@ -68,11 +70,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
   };
 }
 
-const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'];
-
 export function useGetReports() {
-  const queryClient = useQueryClient();
-
   const { data: reports = [], ...rest } = useQuery({
     queryKey: REPORTS_LIST_QUERY_KEY,
     queryFn: () =>
@@ -81,9 +79,7 @@ export function useGetReports() {
       ),
   });
 
-  const invalidateReports = () => {
-    queryClient.invalidateQueries({ queryKey: REPORTS_LIST_QUERY_KEY });
-  };
+  const invalidateReports = useInvalidateMonthlyReports();
 
   return { ...rest, reports, invalidateReports };
 }

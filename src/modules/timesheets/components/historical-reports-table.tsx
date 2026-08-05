@@ -12,6 +12,7 @@ import {
   STATUS_TAG_COLORS,
 } from '@/modules/reports/components/report-status-mappings';
 import type { ReportStatus } from '@/enums';
+import { UserRole } from '@/enums';
 
 const ARCHIVED_PDF_REPORTS: IOldPdfReport[] = [];
 
@@ -19,7 +20,7 @@ export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
   const { loggedUser } = useLoggedUser();
-  const userRole = loggedUser?.role ?? 'basic';
+  const userRole = loggedUser?.role ?? UserRole.Basic;
 
   const renderStatus = (status: ReportStatus) => {
     const mapping = getReportStatusMapping(status, userRole);

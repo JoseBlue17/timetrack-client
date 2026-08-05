@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Input, Modal, Spin, DatePicker } from 'antd';
 import { LuBell, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import dayjs from 'dayjs';
@@ -7,11 +7,15 @@ import { useCloseMonth } from '../hooks/use-close-month';
 import { TimesheetsTable } from '../components/timesheets-table';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
 import { HistoricalReportsTable } from '../components/historical-reports-table';
-import type { ITimesheet, ITimesheetDateGroup } from '../components/timesheet.interface';
+import type { ITimesheet } from '../components/timesheet.interface';
+import {
+  countUniqueTimesheetDays,
+  groupTimesheetsByDate,
+  sumTimesheetsHours,
+} from '../components/timesheet.utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useSignature } from '@/hooks';
-import { useGetMonthlySummary } from '@/modules/reports/hooks/use-get-monthly-summary';
 import { LoadingOutlined } from '@ant-design/icons';
 
 export function TimesheetsPage() {
@@ -43,12 +47,10 @@ export function TimesheetsPage() {
   });
 
   const { signatureDataUrl } = useSignature();
-  const { monthlySummaryData } = useGetMonthlySummary(Number(currentMonth), Number(currentYear));
   const { closeMonth, isClosingMonth } = useCloseMonth({
     month: Number(currentMonth),
     year: Number(currentYear),
     signatureDataUrl,
-    timesheets: monthlySummaryData?.timesheets,
   });
 
   const handleCloseMonth = () => {
@@ -69,42 +71,11 @@ export function TimesheetsPage() {
     });
   };
 
-  const totalHours = useMemo(() => {
-    return timesheets.reduce((total, timesheet) => total + timesheet.hours, 0);
-  }, [timesheets]);
+  const totalHours = sumTimesheetsHours(timesheets);
 
-  const uniqueDays = useMemo(() => {
-    return new Set(timesheets.map((t) => t.date.slice(0, 10))).size;
-  }, [timesheets]);
+  const uniqueDays = countUniqueTimesheetDays(timesheets);
 
-  const groups = useMemo<ITimesheetDateGroup[]>(() => {
-    const timesheetsByDate = timesheets.reduce<Map<string, ITimesheet[]>>(
-      (accumulator, timesheet) => {
-        const dateKey = timesheet.date.slice(0, 10);
-        const existingList = accumulator.get(dateKey) ?? [];
-        accumulator.set(dateKey, [...existingList, timesheet]);
-        return accumulator;
-      },
-      new Map<string, ITimesheet[]>(),
-    );
-
-    return Array.from(timesheetsByDate.entries())
-      .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
-      .map(([date, items]) => {
-        const uniqueProjectsCount = new Set(items.map((item) => item.project)).size;
-        const totalHoursForDate = items.reduce(
-          (totalForDate, item) => totalForDate + item.hours,
-          0,
-        );
-
-        return {
-          date,
-          projects: uniqueProjectsCount,
-          totalHours: totalHoursForDate,
-          timesheets: items,
-        };
-      });
-  }, [timesheets]);
+  const groups = groupTimesheetsByDate(timesheets);
 
   const handleEdit = (timesheet: ITimesheet) => {
     setSelectedTimesheet(timesheet);

@@ -3,6 +3,7 @@ import { Http } from '@/config/http';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import type { ICreateTimesheetValues, ITimesheet } from '../components/timesheet.interface';
+import { TIMESHEETS_QUERY_KEY } from '@/query-keys';
 
 export function useCreateTimesheet() {
   const queryClient = useQueryClient();
@@ -17,7 +18,7 @@ export function useCreateTimesheet() {
         title: 'Registro creado',
         description: 'El timesheet fue guardado correctamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
+      queryClient.invalidateQueries({ queryKey: TIMESHEETS_QUERY_KEY });
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

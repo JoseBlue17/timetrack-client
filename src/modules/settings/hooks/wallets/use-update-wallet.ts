@@ -1,9 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateWallets } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import type { IWallet } from '@/interfaces';
-import { useGetWallets } from './use-get-wallets';
 
 export interface IUpdateWalletValues {
   walletAddress?: string;
@@ -19,7 +18,7 @@ export interface IUpdateWalletPayload {
 export function useUpdateWallet() {
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateWallets } = useGetWallets();
+  const invalidateWallets = useInvalidateWallets();
 
   return useMutation<IWallet, AxiosResponseError, IUpdateWalletPayload>({
     mutationKey: ['UPDATE_WALLET'],

@@ -5,7 +5,6 @@ import {
   LuTrash2,
   LuRefreshCw,
   LuCreditCard,
-  LuChevronDown,
   LuCircleAlert,
   LuExternalLink,
 } from 'react-icons/lu';
@@ -13,6 +12,7 @@ import { useGetPayments } from '../hooks/use-get-payments';
 import { useDeletePayment } from '../hooks/use-delete-payment';
 import { useVerifyPayment } from '../hooks/use-verify-payment';
 import { PaymentDetailModal } from './payment-detail-modal';
+import { formatShortDate, formatUserName } from './payment-detail.utils';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
@@ -38,26 +38,13 @@ const STATUS_LABELS: Record<string, string> = {
   [PaymentStatus.Expired]: 'Expirado',
 };
 
-function formatUserName(payment: IPayment): string {
-  const first = payment.firstName ?? '';
-  const last = payment.lastName ?? '';
-  const full = `${first} ${last}`.trim();
-  return full || 'Usuario';
-}
-
-function formatDate(date?: Date | string): string {
-  if (!date) return '--';
-  const d = new Date(date);
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
 export function PaymentsTable() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [selectedPayment, setSelectedPayment] = useState<IPayment | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
   const isAdmin = useCanEditConfiguration();
-  const { payments, isLoading, isError, error, nextCursor, invalidatePayments } = useGetPayments({
+  const { payments, isLoading, isError, error, invalidatePayments } = useGetPayments({
     status: statusFilter || undefined,
     excludeStatus: statusFilter ? undefined : PaymentStatus.Completed,
   });
@@ -157,7 +144,7 @@ export function PaymentsTable() {
                     )}
                     {payment.status === PaymentStatus.Pending && (
                       <span className="text-xs text-gray-400">
-                        Vence: {formatDate(payment.expiresAt)}
+                        Vence: {formatShortDate(payment.expiresAt)}
                       </span>
                     )}
                     {payment.txid && (
@@ -217,14 +204,6 @@ export function PaymentsTable() {
               </div>
             </div>
           ))}
-
-          {nextCursor && (
-            <div className="flex justify-center py-3 border-t border-gray-100">
-              <Button type="text" icon={<LuChevronDown size={16} />} className="text-gray-500">
-                Cargar más
-              </Button>
-            </div>
-          )}
         </div>
       )}
 

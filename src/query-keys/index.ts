@@ -1,0 +1,9 @@
+export const TIMESHEETS_QUERY_KEY = ['TIMESHEETS'] as const;
+export const PAYMENTS_QUERY_KEY = ['PAYMENTS'] as const;
+export const PROJECTS_QUERY_KEY = ['PROJECTS'] as const;
+export const WALLETS_QUERY_KEY = ['WALLETS'] as const;
+export const USER_WALLETS_QUERY_KEY = ['USER_WALLETS'] as const;
+export const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'] as const;
+export const MONTHLY_SUMMARY_QUERY_KEY = ['MONTHLY_SUMMARY'] as const;
+export const REPORT_PDF_QUERY_KEY = ['report-pdf'] as const;
+export const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'] as const;

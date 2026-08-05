@@ -1,20 +1,16 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import type { IWallet } from '@/interfaces';
-
-const WALLETS_QUERY_KEY = ['WALLETS'];
+import { useInvalidateWallets } from '@/hooks';
+import { WALLETS_QUERY_KEY } from '@/query-keys';
 
 export function useGetWallets() {
-  const queryClient = useQueryClient();
-
   const { data: wallets = [], ...rest } = useQuery<IWallet[]>({
     queryKey: WALLETS_QUERY_KEY,
     queryFn: () => Http.get('/wallets').then(({ data }) => data),
   });
 
-  const invalidateWallets = () => {
-    queryClient.invalidateQueries({ queryKey: WALLETS_QUERY_KEY });
-  };
+  const invalidateWallets = useInvalidateWallets();
 
   return { ...rest, wallets, invalidateWallets };
 }

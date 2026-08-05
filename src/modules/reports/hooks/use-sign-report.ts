@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateMonthlyReports } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import useLoggedUser from '@/hooks/use-logged-user';
 
 export function useSignReport() {
-  const queryClient = useQueryClient();
   const { loggedUser } = useLoggedUser();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
 
   const { mutate: signReport, isPending: isSigningReport } = useMutation({
     mutationFn: (reportId: string) =>
@@ -20,7 +20,7 @@ export function useSignReport() {
         title: 'Reporte firmado',
         description: 'Has firmado el reporte correctamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

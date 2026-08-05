@@ -66,7 +66,7 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
         )}
       </section>
 
-      {/* Remember me + forgot password */}
+      {/* Remember me */}
       <section className="flex items-center justify-between">
         <label className="flex items-center gap-2 cursor-pointer select-none">
           <input
@@ -78,12 +78,6 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
           />
           <span className="text-sm text-slate-600">Recordarme</span>
         </label>
-        <button
-          type="button"
-          className="text-sm text-indigo-500 hover:text-indigo-700 font-medium transition"
-        >
-          ¿Olvidaste tu contraseña?
-        </button>
       </section>
 
       {/* Submit */}

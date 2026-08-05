@@ -1,9 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import {
+  useShowError,
+  useShowSuccess,
+  useInvalidateWallets,
+  useInvalidateMonthlyReports,
+} from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import type { IWallet } from '@/interfaces';
-import { useGetWallets } from './use-get-wallets';
 
 export interface IAddWalletValues {
   network: string;
@@ -13,10 +17,10 @@ export interface IAddWalletValues {
 }
 
 export function useAddWallet() {
-  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateWallets } = useGetWallets();
+  const invalidateWallets = useInvalidateWallets();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
 
   return useMutation<IWallet, AxiosResponseError, IAddWalletValues>({
     mutationKey: ['ADD_WALLET'],
@@ -28,7 +32,7 @@ export function useAddWallet() {
         description: 'La wallet fue registrada correctamente.',
       });
       invalidateWallets();
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

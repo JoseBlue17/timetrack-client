@@ -1,12 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateMonthlyReports } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
 export function useRejectReport() {
-  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
 
   const { mutate: rejectReport, isPending: isRejectingReport } = useMutation({
     mutationFn: (reportId: string) =>
@@ -16,7 +16,7 @@ export function useRejectReport() {
         title: 'Reporte rechazado',
         description: 'El reporte ha sido devuelto para corrección.',
       });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

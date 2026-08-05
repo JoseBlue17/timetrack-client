@@ -1,6 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import {
+  useShowError,
+  useShowSuccess,
+  useInvalidateMonthlyReports,
+  useInvalidateMonthlySummary,
+} from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
 interface ICreateReportPayload {
@@ -10,9 +15,10 @@ interface ICreateReportPayload {
 }
 
 export function useCreateReport() {
-  const queryClient = useQueryClient();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
+  const invalidateMonthlyReports = useInvalidateMonthlyReports();
+  const invalidateMonthlySummary = useInvalidateMonthlySummary();
 
   const { mutate: createReport, isPending: isCreatingReport } = useMutation({
     mutationFn: (payload: ICreateReportPayload) => {
@@ -33,8 +39,8 @@ export function useCreateReport() {
         title: 'Mes cerrado',
         description: 'El mes ha sido cerrado y el reporte generado exitosamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['MONTHLY_SUMMARY'] });
-      queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+      invalidateMonthlySummary();
+      invalidateMonthlyReports();
     },
     onError: (error: AxiosResponseError) => showError(error),
   });

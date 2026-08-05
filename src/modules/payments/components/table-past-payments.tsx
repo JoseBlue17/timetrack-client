@@ -7,21 +7,9 @@ import {
   LuExternalLink,
 } from 'react-icons/lu';
 import { useGetPayments } from '../hooks/use-get-payments';
+import { formatShortDate, formatUserName } from './payment-detail.utils';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus, BlockchainNetwork } from '@/enums';
-
-function formatUserName(payment: IPayment): string {
-  const first = payment.firstName ?? '';
-  const last = payment.lastName ?? '';
-  const full = `${first} ${last}`.trim();
-  return full || 'Usuario';
-}
-
-function formatDate(date?: Date | string): string {
-  if (!date) return '--';
-  const d = new Date(date);
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-}
 
 function getExplorerUrl(network: string, txid: string): string {
   if (network === BlockchainNetwork.TRC20) {
@@ -34,7 +22,7 @@ function getExplorerUrl(network: string, txid: string): string {
 }
 
 export function TablePastPayments() {
-  const { payments, isLoading, isError, error, nextCursor, invalidatePayments } = useGetPayments({
+  const { payments, isLoading, isError, error, invalidatePayments } = useGetPayments({
     status: PaymentStatus.Completed,
     limit: 20,
   });
@@ -75,7 +63,7 @@ export function TablePastPayments() {
     {
       title: 'Fecha de pago',
       key: 'paidAt',
-      render: (_: unknown, record: IPayment) => formatDate(record.paidAt),
+      render: (_: unknown, record: IPayment) => formatShortDate(record.paidAt),
     },
     {
       title: 'Transacción',
@@ -169,14 +157,6 @@ export function TablePastPayments() {
         </div>
 
         <Table columns={columns} dataSource={payments} rowKey="id" pagination={false} />
-
-        {nextCursor && (
-          <div className="flex justify-center pt-4 border-t border-gray-100 mt-4">
-            <Button type="text" className="text-gray-500 hover:text-indigo-600">
-              Cargar más
-            </Button>
-          </div>
-        )}
       </div>
     </section>
   );

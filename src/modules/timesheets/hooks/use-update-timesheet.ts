@@ -1,14 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateTimesheets } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import type { IUpdateTimesheetValues, ITimesheet } from '../components/timesheet.interface';
-import { useGetTimesheets } from './use-get-timesheets';
 
 export function useUpdateTimesheet(timesheetId: string) {
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateTimesheets } = useGetTimesheets();
+  const invalidateTimesheets = useInvalidateTimesheets();
 
   return useMutation({
     mutationFn: (values: IUpdateTimesheetValues) =>

@@ -1,14 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import { useShowError, useShowSuccess } from '@/hooks';
+import { useShowError, useShowSuccess, useInvalidateProjects } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 import type { ICreateProjectValues, IProject } from '../project.interface';
-import { useGetProjects } from './use-get-projects';
 
 export function useCreateProject() {
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const { invalidateProjects } = useGetProjects();
+  const invalidateProjects = useInvalidateProjects();
 
   return useMutation({
     mutationFn: (values: ICreateProjectValues) =>
