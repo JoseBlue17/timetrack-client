@@ -1,5 +1,6 @@
 import { Layout, Menu, Button, Avatar } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import {
   LuHouse,
   LuClock,
@@ -9,39 +10,48 @@ import {
   LuLogOut,
 } from 'react-icons/lu';
 import useLoggedUser from '@/hooks/use-logged-user';
-import { useAuth, useCanEditConfiguration } from '@/hooks';
+import { useAuth, useCurrentRole } from '@/hooks';
+import { UserRole } from '@/enums';
 
 const { Sider, Content } = Layout;
 const colorText = 'text-black! text-lg';
 const labelText = 'text-black!';
 
-const ALL_NAV_ITEMS = [
+const ALL_NAV_ITEMS: {
+  key: string;
+  label: ReactNode;
+  icon: ReactNode;
+  roles: UserRole[];
+}[] = [
   {
     key: '/',
     label: <span className={labelText}>Dashboard</span>,
     icon: <LuHouse className={colorText} />,
+    roles: [UserRole.Employee, UserRole.Supervisor, UserRole.Admin],
   },
   {
     key: '/timesheets',
     label: <span className={labelText}>Timesheets</span>,
     icon: <LuClock className={colorText} />,
-    employeeOnly: true,
+    roles: [UserRole.Employee],
   },
   {
     key: '/reportes',
     label: <span className={labelText}>Reportes</span>,
     icon: <LuClipboardList className={colorText} />,
-    adminOnly: true,
+    roles: [UserRole.Supervisor, UserRole.Admin],
   },
   {
     key: '/pagos',
     label: <span className={labelText}>Pagos</span>,
     icon: <LuCreditCard className={colorText} />,
+    roles: [UserRole.Admin],
   },
   {
     key: '/settings',
     label: <span className={labelText}>Settings</span>,
     icon: <LuSettings className={colorText} />,
+    roles: [UserRole.Employee, UserRole.Supervisor, UserRole.Admin],
   },
 ];
 
@@ -50,7 +60,7 @@ export function AppLayout() {
   const location = useLocation();
   const { loggedUser } = useLoggedUser();
   const { onLogout } = useAuth();
-  const isAdmin = useCanEditConfiguration();
+  const currentRole = useCurrentRole();
 
   const firstName = loggedUser?.profile?.firstName ?? '';
   const lastName = loggedUser?.profile?.lastName ?? '';
@@ -58,9 +68,7 @@ export function AppLayout() {
   const role = loggedUser?.role ?? '';
   const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
 
-  const navItems = ALL_NAV_ITEMS.filter(
-    (item) => (!item.adminOnly || isAdmin) && (!item.employeeOnly || !isAdmin),
-  );
+  const navItems = ALL_NAV_ITEMS.filter((item) => !currentRole || item.roles.includes(currentRole));
 
   return (
     <Layout className="min-h-screen!">

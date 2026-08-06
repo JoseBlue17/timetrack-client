@@ -7,10 +7,16 @@ import { dataUrlToFile } from '@/tools';
 interface IUseCloseMonthParams {
   month: number;
   year: number;
+  supervisorId?: string | null;
   signatureDataUrl: string | null;
 }
 
-export function useCloseMonth({ month, year, signatureDataUrl }: IUseCloseMonthParams) {
+export function useCloseMonth({
+  month,
+  year,
+  supervisorId,
+  signatureDataUrl,
+}: IUseCloseMonthParams) {
   const { createReport, isCreatingReport } = useCreateReport();
   const { showError } = useShowError();
 
@@ -19,11 +25,11 @@ export function useCloseMonth({ month, year, signatureDataUrl }: IUseCloseMonthP
 
     try {
       const signatureFile = dataUrlToFile(signatureDataUrl, 'signature.png');
-      createReport({ month, year, signatureFile });
+      createReport({ month, year, supervisorId: supervisorId ?? undefined, signatureFile });
     } catch (error) {
       showError(error as AxiosResponseError);
     }
-  }, [signatureDataUrl, month, year, createReport, showError]);
+  }, [signatureDataUrl, month, year, supervisorId, createReport, showError]);
 
   return { closeMonth, isClosingMonth: isCreatingReport };
 }

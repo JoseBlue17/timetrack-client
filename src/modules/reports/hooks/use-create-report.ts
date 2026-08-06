@@ -11,6 +11,7 @@ import type { AxiosResponseError } from '@/config/http';
 interface ICreateReportPayload {
   month: number;
   year: number;
+  supervisorId?: string;
   signatureFile?: File;
 }
 
@@ -22,16 +23,21 @@ export function useCreateReport() {
 
   const { mutate: createReport, isPending: isCreatingReport } = useMutation({
     mutationFn: (payload: ICreateReportPayload) => {
-      if (payload.signatureFile) {
+      const { month, year, supervisorId, signatureFile } = payload;
+
+      if (signatureFile) {
         const formData = new FormData();
-        formData.append('month', String(payload.month));
-        formData.append('year', String(payload.year));
-        formData.append('file', payload.signatureFile);
+        formData.append('month', String(month));
+        formData.append('year', String(year));
+        if (supervisorId) formData.append('supervisorId', supervisorId);
+        formData.append('file', signatureFile);
         return Http.post('/timesheets/close-month', formData).then(({ data }) => data);
       }
+
       return Http.post('/timesheets/close-month', {
-        month: payload.month,
-        year: payload.year,
+        month,
+        year,
+        supervisorId,
       }).then(({ data }) => data);
     },
     onSuccess: () => {

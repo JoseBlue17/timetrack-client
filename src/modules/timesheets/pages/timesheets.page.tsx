@@ -15,7 +15,7 @@ import {
 } from '../components/timesheet.utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { useSignature } from '@/hooks';
+import { useSignature, useSelectedSupervisor } from '@/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
 
 export function TimesheetsPage() {
@@ -47,9 +47,11 @@ export function TimesheetsPage() {
   });
 
   const { signatureDataUrl } = useSignature();
+  const { selectedSupervisorId } = useSelectedSupervisor();
   const { closeMonth, isClosingMonth } = useCloseMonth({
     month: Number(currentMonth),
     year: Number(currentYear),
+    supervisorId: selectedSupervisorId,
     signatureDataUrl,
   });
 
@@ -58,6 +60,15 @@ export function TimesheetsPage() {
       Modal.warning({
         title: 'Firma requerida',
         content: 'Debes subir tu firma en Configuración antes de cerrar el mes.',
+      });
+      return;
+    }
+
+    if (!selectedSupervisorId) {
+      Modal.warning({
+        title: 'Supervisor requerido',
+        content:
+          'Debes seleccionar un supervisor en Configuración → Reportes antes de cerrar el mes.',
       });
       return;
     }

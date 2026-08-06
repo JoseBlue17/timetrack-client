@@ -1,10 +1,22 @@
 import { UserRole } from '@/enums';
 import useLoggedUser from './use-logged-user';
 
-const ALLOWED_ROLES: UserRole[] = [UserRole.Admin, UserRole.SuperAdmin];
+export function useCurrentRole(): UserRole | undefined {
+  const { loggedUser } = useLoggedUser();
+  return loggedUser?.role as UserRole | undefined;
+}
 
 export function useCanEditConfiguration(): boolean {
-  const { loggedUser } = useLoggedUser();
-  if (!loggedUser?.role) return false;
-  return ALLOWED_ROLES.includes(loggedUser.role as UserRole);
+  const role = useCurrentRole();
+  return role === UserRole.Admin;
+}
+
+export function useIsSupervisor(): boolean {
+  const role = useCurrentRole();
+  return role === UserRole.Supervisor;
+}
+
+export function useIsEmployee(): boolean {
+  const role = useCurrentRole();
+  return role === UserRole.Employee;
 }

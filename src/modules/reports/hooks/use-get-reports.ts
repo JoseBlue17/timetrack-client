@@ -17,6 +17,8 @@ interface BackendMonthlyReport {
   employeeSigned?: boolean;
   firstName?: string;
   lastName?: string;
+  supervisorId?: string;
+  supervisorName?: string;
   paymentId?: string | null;
 }
 
@@ -66,6 +68,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
     reportStatus: BACKEND_TO_ENUM[backend.status ?? ''] ?? ReportStatus.Draft,
     isSigned: backend.employeeSigned || false,
     userName: fullName || undefined,
+    supervisorName: backend.supervisorName || undefined,
     paymentId: backend.paymentId ?? null,
   };
 }

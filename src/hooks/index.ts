@@ -3,6 +3,9 @@ export { useShowError } from './use-show-error';
 export { useShowSuccess } from './use-show-success';
 export { useDebounce } from './use-debounce';
 export { useCanEditConfiguration } from './use-user-role';
+export { useIsSupervisor } from './use-user-role';
+export { useIsEmployee } from './use-user-role';
+export { useCurrentRole } from './use-user-role';
 export { useVerifyToken } from './use-verify-token';
 export { useToast } from './use-toast';
 export { useInfiniteScroll } from './use-infinite-scroll';
@@ -10,6 +13,7 @@ export { default as useLoggedUser } from './use-logged-user';
 export { useHourlyRate } from './use-hourly-rate';
 export { useSignature } from './use-signature';
 export { useAdminSignature } from './use-admin-signature';
+export { useSelectedSupervisor } from './use-selected-supervisor';
 export { useUpdateProfile } from './use-update-profile';
 export {
   useInvalidateTimesheets,

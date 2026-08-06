@@ -11,6 +11,7 @@ export interface IMonthlyReport {
   reportStatus: ReportStatus;
   isSigned: boolean;
   userName?: string;
+  supervisorName?: string;
   paymentId?: string | null;
 }
 

@@ -20,10 +20,17 @@ export const EmployeeReportStatusMap: Partial<Record<ReportStatus, StatusMapping
   [ReportStatus.Paid]: { label: 'Pagado', color: 'blue' },
 };
 
+export const SupervisorReportStatusMap: Partial<Record<ReportStatus, StatusMapping>> = {
+  [ReportStatus.SignedByEmployee]: { label: 'Pendiente de Revisión', color: 'orange' },
+  [ReportStatus.Approved]: { label: 'Aprobado', color: 'green' },
+  [ReportStatus.Rejected]: { label: 'Devuelto', color: 'red' },
+  [ReportStatus.Paid]: { label: 'Pagado', color: 'blue' },
+};
+
 const STATUS_MAPPING_BY_ROLE: Record<string, Partial<Record<ReportStatus, StatusMapping>>> = {
   [UserRole.Admin]: AdminReportStatusMap,
-  [UserRole.SuperAdmin]: AdminReportStatusMap,
-  [UserRole.Basic]: EmployeeReportStatusMap,
+  [UserRole.Supervisor]: SupervisorReportStatusMap,
+  [UserRole.Employee]: EmployeeReportStatusMap,
 };
 
 export function getReportStatusMapping(status: ReportStatus, role: string): StatusMapping {

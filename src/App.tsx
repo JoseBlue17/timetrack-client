@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useVerifyToken } from '@/hooks/use-verify-token';
-import { useCanEditConfiguration } from '@/hooks/use-user-role';
+import { useCanEditConfiguration, useIsSupervisor } from '@/hooks/use-user-role';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { SignInPage } from '@/modules/sign-in';
 import { SignUpPage } from '@/modules/sign-up';
@@ -14,6 +14,8 @@ function App() {
   const { isVerifyingToken } = useVerifyToken();
   const { loggedUser } = useLoggedUser();
   const isAdmin = useCanEditConfiguration();
+  const isSupervisor = useIsSupervisor();
+  const canViewReports = isAdmin || isSupervisor;
 
   if (isVerifyingToken) {
     return (
@@ -39,9 +41,12 @@ function App() {
         <Route path="/timesheets" element={<TimesheetsPage />} />
         <Route
           path="/reportes"
-          element={isAdmin ? <ReportsPage /> : <Navigate to="/timesheets" replace />}
+          element={canViewReports ? <ReportsPage /> : <Navigate to="/timesheets" replace />}
         />
-        <Route path="/pagos" element={<PaymentsPage />} />
+        <Route
+          path="/pagos"
+          element={isAdmin ? <PaymentsPage /> : <Navigate to="/timesheets" replace />}
+        />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
 

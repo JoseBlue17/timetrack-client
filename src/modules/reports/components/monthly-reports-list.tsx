@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { Button, Tag, Modal } from 'antd';
 import { LuFileText, LuEye, LuPenTool, LuCreditCard, LuCircleStop } from 'react-icons/lu';
-import { useSignReport } from '../hooks/use-sign-report';
 import { useApproveReport } from '../hooks/use-approve-report';
 import { useRejectReport } from '../hooks/use-reject-report';
 import type { IMonthlyReport } from './reports.interface';
 import { ReportPdfModal } from './report-pdf-modal';
 import { ReportPaymentModal } from './report-payment-modal';
-import { useAdminSignature, useLoggedUser, useCanEditConfiguration } from '@/hooks';
+import {
+  useAdminSignature,
+  useLoggedUser,
+  useCanEditConfiguration,
+  useIsSupervisor,
+} from '@/hooks';
 import { dataUrlToFile } from '@/tools';
 import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
 import { approveReportSchema, APPROVE_REPORT_SIGNATURE_REQUIRED } from './validations';
@@ -20,7 +24,6 @@ interface IMonthlyReportsListProps {
 const isValidDataUrl = (url: string) => /^data:image\/[a-zA-Z]+;base64,/.test(url);
 
 export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
-  const { signReport, isSigningReport } = useSignReport();
   const { approveReport, isApprovingReport } = useApproveReport();
   const { rejectReport, isRejectingReport } = useRejectReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
@@ -30,7 +33,8 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const { loggedUser } = useLoggedUser();
   const { adminSignatureDataUrl } = useAdminSignature();
   const isAdmin = useCanEditConfiguration();
-  const userRole = loggedUser?.role ?? UserRole.Basic;
+  const isSupervisor = useIsSupervisor();
+  const userRole = loggedUser?.role ?? UserRole.Employee;
 
   const handleApprove = (reportId: string) => {
     const canApprove = approveReportSchema.isValidSync({
@@ -85,6 +89,7 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                   </h3>
                   <p className="text-gray-400 text-sm">
                     {reportItem.totalWorkedHours} horas · {reportItem.totalAmountInUsdt} USDT
+                    {reportItem.supervisorName ? ` · ${reportItem.supervisorName}` : ''}
                   </p>
                 </div>
 
@@ -108,7 +113,7 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                       Ver detalle
                     </Button>
 
-                    {isAdmin && reportItem.reportStatus === ReportStatus.SignedByEmployee && (
+                    {isSupervisor && reportItem.reportStatus === ReportStatus.SignedByEmployee && (
                       <>
                         <Button
                           type="text"
@@ -146,18 +151,6 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
                           Crear pago
                         </Button>
                       )}
-
-                    {!isAdmin && reportItem.reportStatus !== ReportStatus.Paid && (
-                      <Button
-                        type="text"
-                        icon={<LuPenTool className="text-gray-400 group-hover:text-indigo-500" />}
-                        loading={isSigningReport}
-                        onClick={() => signReport(reportItem.id)}
-                        className="flex items-center gap-2 text-gray-600 font-medium hover:text-indigo-600!"
-                      >
-                        Firmar
-                      </Button>
-                    )}
                   </div>
                 </div>
               </div>

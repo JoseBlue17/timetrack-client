@@ -20,7 +20,7 @@ export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
   const { loggedUser } = useLoggedUser();
-  const userRole = loggedUser?.role ?? UserRole.Basic;
+  const userRole = loggedUser?.role ?? UserRole.Employee;
 
   const renderStatus = (status: ReportStatus) => {
     const mapping = getReportStatusMapping(status, userRole);

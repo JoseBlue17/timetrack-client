@@ -76,3 +76,11 @@ export interface IWallet {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ISupervisor {
+  id: string;
+  profile: {
+    firstName: string;
+    lastName: string;
+  };
+}
