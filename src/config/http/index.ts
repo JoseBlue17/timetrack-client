@@ -17,6 +17,22 @@ export const Http: AxiosInstance = axios.create({ baseURL, withCredentials: true
 
 export const PublicHttp: AxiosInstance = axios.create({ baseURL, withCredentials: true });
 
+Http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+PublicHttp.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 Http.interceptors.response.use(
   (response) => response,
   (error: AxiosResponseError) => {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Button, Input, Select } from 'antd';
+import { Button, Input, Select, Avatar } from 'antd';
 import { LuUser, LuBuilding2, LuMail, LuSave } from 'react-icons/lu';
 import { useFormik } from 'formik';
 import { useLoggedUser, useUpdateProfile } from '@/hooks';
@@ -55,9 +55,13 @@ export function ProfileSettings() {
       </div>
 
       <div className="bg-white p-6 rounded-2xl border border-gray-200 flex items-center gap-5 max-w-3xl">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-500 flex items-center justify-center text-white text-xl font-bold shrink-0">
-          {initials || <LuUser size={24} />}
-        </div>
+        <Avatar
+          size={64}
+          src={loggedUser?.profile?.avatarUrl}
+          className="shrink-0 bg-indigo-500 flex items-center justify-center text-white text-xl font-bold"
+        >
+          {!loggedUser?.profile?.avatarUrl && (initials || <LuUser size={24} />)}
+        </Avatar>
         <div className="flex flex-col gap-1">
           <h3 className="text-lg font-bold text-gray-800">{fullName || 'Usuario'}</h3>
           {formik.values.position && (

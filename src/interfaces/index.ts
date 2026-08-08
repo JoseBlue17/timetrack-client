@@ -6,6 +6,8 @@ export interface IProfile {
   email: string;
   phone: string;
   position?: string;
+  slackUserId?: string;
+  avatarUrl?: string;
 }
 
 export interface IUser {
@@ -83,4 +85,11 @@ export interface ISupervisor {
     firstName: string;
     lastName: string;
   };
+}
+
+export interface ISlackProfile {
+  slackUserId: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
 }

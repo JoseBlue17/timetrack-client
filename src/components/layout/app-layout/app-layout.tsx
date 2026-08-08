@@ -96,8 +96,11 @@ export function AppLayout() {
 
           <div className="px-4 py-5 border-t border-gray-200 mt-auto">
             <div className="flex items-center gap-3 mb-3">
-              <Avatar className="shrink-0 bg-indigo-100! text-indigo-600!">
-                {initials || 'U'}
+              <Avatar
+                className="shrink-0 bg-indigo-100! text-indigo-600!"
+                src={loggedUser?.profile?.avatarUrl}
+              >
+                {!loggedUser?.profile?.avatarUrl && (initials || 'U')}
               </Avatar>
               <div className="min-w-0">
                 <p className="text-black text-sm font-semibold truncate">{fullName}</p>
