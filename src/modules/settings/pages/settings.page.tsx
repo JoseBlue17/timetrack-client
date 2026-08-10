@@ -16,7 +16,7 @@ export function SettingsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
+      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-surface">
         <h1 className="text-2xl font-bold text-gray-800">Configuración</h1>
         <PageHeaderActions />
       </header>

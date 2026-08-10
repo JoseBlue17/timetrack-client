@@ -10,7 +10,7 @@ export function ReportsPage() {
 
   return (
     <div className="flex flex-col h-full bg-stone-100/40">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
+      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-surface">
         <h1 className="text-2xl font-bold text-gray-800">Reportes</h1>
         <PageHeaderActions />
       </header>

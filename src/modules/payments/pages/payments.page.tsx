@@ -15,7 +15,7 @@ export function PaymentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
+      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-surface">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Pagos</h1>
           <p className="text-sm text-gray-500 mt-0.5">

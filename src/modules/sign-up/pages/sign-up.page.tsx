@@ -16,7 +16,7 @@ export function SignUpPage() {
           <p className="text-sm text-slate-500">Sistema de gestión de timesheets y pagos en USDT</p>
         </header>
 
-        <article className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8">
+        <article className="w-full max-w-sm bg-surface rounded-2xl shadow-xl shadow-slate-200/60 p-8">
           <header className="mb-6">
             <h2 className="text-xl font-bold text-slate-800">Crear cuenta</h2>
             <p className="text-sm text-slate-500 mt-1">Completa tus datos para registrarte</p>

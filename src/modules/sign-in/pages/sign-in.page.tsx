@@ -1,4 +1,3 @@
-import { LuClock } from 'react-icons/lu';
 import { SignInForm } from '../components/sign-in-form';
 import { useSignIn } from '../hooks/use-sign-in';
 
@@ -6,28 +5,41 @@ export function SignInPage() {
   const { signIn, isPending } = useSignIn();
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-br from-slate-100 via-indigo-50 to-slate-100 px-4 py-10">
-      <section className="flex-1 flex flex-col items-center justify-center w-full">
-        <header className="flex flex-col items-center gap-2 mb-8">
-          <span className="w-16 h-16 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-200">
-            <LuClock size={32} className="text-white" />
-          </span>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">ClockLedger</h1>
-          <p className="text-sm text-slate-500">Sistema de gestión de timesheets y pagos en USDT</p>
-        </header>
+    <main className="relative min-h-screen flex flex-col bg-[url('/fondo-1.jpg')] px-4 py-10">
+      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+      <section className="relative z-10 flex-1 flex items-center justify-center w-full">
+        <article className="flex flex-col md:flex-row w-full max-w-5xl rounded-2xl shadow-card overflow-hidden">
+          <section className="flex md:w-5/12 flex-col items-center justify-center bg-surface p-10 md:p-12 border-b md:border-b-0 md:border-r border-gray-200">
+            <figure className="flex flex-col items-center text-center">
+              <img
+                src="/LOGO.jpg.jpeg"
+                alt="TimeTrack"
+                className="h-40 md:h-50 w-auto object-contain mb-8"
+              />
+              <figcaption>
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Bienvenido a TimeTrack</h2>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Plataforma de gestión de timesheets
+                </p>
+                <p className="text-slate-600 text-sm leading-relaxed">y pagos en USDT</p>
+              </figcaption>
+            </figure>
+          </section>
 
-        <article className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8">
-          <header className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800">Iniciar sesión</h2>
-            <p className="text-sm text-slate-500 mt-1">Ingresa tus credenciales para acceder</p>
-          </header>
-          <SignInForm onSubmit={signIn} isPending={isPending} />
+          <section className="flex md:w-7/12 flex-col justify-center bg-white p-10 md:p-12">
+            <header className="mb-8">
+              <h2 className="text-2xl mt-14 font-bold text-slate-800">Iniciar sesión</h2>
+              <p className="text-sm text-slate-600 mt-2">Ingresa tus credenciales para acceder</p>
+            </header>
+            <SignInForm onSubmit={signIn} isPending={isPending} />
+          </section>
         </article>
       </section>
 
-      <footer>
-        <p className="text-xs text-slate-400 text-center mt-8">
-          Pagos seguros en blockchain • Verificación automática de transacciones
+      <footer className="relative z-10 text-center mt-auto pt-10">
+        <h2 className="text-2xl font-bold text-surface">TimeTrack</h2>
+        <p className="text-sm text-slate-400 mt-1">
+          © 2025 TimeTrack. Todos los derechos reservados.
         </p>
       </footer>
     </main>

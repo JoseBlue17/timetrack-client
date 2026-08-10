@@ -20,9 +20,15 @@ export default {
           950: '#04060a',
         },
         appBackground: '#F5F5F5',
+        brand: {
+          DEFAULT: '#261f38',
+          dark: '#1e192c',
+          darker: '#161223',
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Hoefler Text', 'Georgia', 'serif'],
+        hoefler: ['Hoefler Text', 'Georgia', 'serif'],
       },
     },
   },

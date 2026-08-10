@@ -18,7 +18,7 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
   return (
     <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 w-full">
       <section className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
+        <label htmlFor="email" className="text-sm font-medium text-slate-700 mb-2">
           Correo electrónico
         </label>
         <input
@@ -36,9 +36,8 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
         )}
       </section>
 
-      {/* Password */}
       <section className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="text-sm font-medium text-slate-700 mb-2">
           Contraseña
         </label>
         <div className="relative">
@@ -84,7 +83,7 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-xl bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700
+        className="w-full rounded-xl bg-brand hover:bg-brand-dark active:bg-brand-darker
           text-white font-semibold py-3 transition disabled:opacity-60 disabled:cursor-not-allowed
           flex items-center justify-center gap-2 mt-1"
       >
@@ -97,7 +96,7 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
         ¿No tienes cuenta?{' '}
         <Link
           to="/sign-up"
-          className="text-indigo-500 hover:text-indigo-700 font-medium transition"
+          className="text-violet-900 hover:text-indigo-700 font-medium transition"
         >
           Regístrate aquí
         </Link>
