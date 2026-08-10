@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { LuBell, LuWallet, LuFolder, LuClipboardList, LuUser } from 'react-icons/lu';
-import { Button, Input } from 'antd';
+import { LuWallet, LuFolder, LuClipboardList, LuUser } from 'react-icons/lu';
 import { ProjectsList } from '../components/projects-list';
 import { AdminReportsSettings } from '../components/admin-reports-settings';
 import { SupervisorSelection } from '../components/supervisor-selection';
 import { ProfileSettings } from '../components/profile-settings';
 import { WalletList } from '../components/wallets/wallet-list';
 import { useIsEmployee } from '@/hooks';
+import { PageHeaderActions } from '@/components/page-header-actions';
 
 type SettingsTab = 'perfil' | 'wallets' | 'proyectos' | 'reportes';
 
@@ -18,10 +18,7 @@ export function SettingsPage() {
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
         <h1 className="text-2xl font-bold text-gray-800">Configuración</h1>
-        <div className="flex items-center gap-4">
-          <Input.Search placeholder="Buscar..." allowClear className="w-60" />
-          <Button shape="circle" icon={<LuBell />} />
-        </div>
+        <PageHeaderActions />
       </header>
 
       <main className="flex-1 overflow-auto p-8 bg-gray-50">

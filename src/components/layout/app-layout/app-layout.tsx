@@ -79,7 +79,7 @@ export function AppLayout() {
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">
             <span className="text-black text-xl font-bold tracking-wide">
-              <LuClock className="inline-block mr-2" /> TimeSheetLedger
+              <LuClock className="inline-block mr-2" /> ClockLedger
             </span>
           </div>
 

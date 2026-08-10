@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { Button, Input, Modal, Spin, DatePicker } from 'antd';
-import { LuBell, LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
+import { Button, Modal, Spin, DatePicker } from 'antd';
+import { LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
 import dayjs from 'dayjs';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { useCloseMonth } from '../hooks/use-close-month';
@@ -13,15 +13,13 @@ import {
   groupTimesheetsByDate,
   sumTimesheetsHours,
 } from '../components/timesheet.utils';
-import { useDebounce } from '@/hooks/use-debounce';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useSignature, useSelectedSupervisor } from '@/hooks';
+import { PageHeaderActions } from '@/components/page-header-actions';
 import { LoadingOutlined } from '@ant-design/icons';
 
 export function TimesheetsPage() {
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -31,7 +29,6 @@ export function TimesheetsPage() {
 
   const { timesheets, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetTimesheets({
-      terms: debouncedSearch,
       month: Number(currentMonth),
       year: Number(currentYear),
     });
@@ -107,21 +104,7 @@ export function TimesheetsPage() {
     <div className="flex flex-col h-full bg-stone-100/40">
       <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
         <h1 className="text-2xl font-bold text-gray-800">Timesheets</h1>
-        <div className="flex items-center gap-4">
-          <Input.Search
-            placeholder="Buscar..."
-            allowClear
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-60"
-            variant="filled"
-          />
-          <Button
-            shape="circle"
-            icon={<LuBell />}
-            className="border-none shadow-none bg-gray-50 hover:bg-gray-100!"
-          />
-        </div>
+        <PageHeaderActions />
       </header>
 
       <main className="flex-1 overflow-auto p-8">

@@ -12,7 +12,7 @@ export function SignInPage() {
           <span className="w-16 h-16 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-200">
             <LuClock size={32} className="text-white" />
           </span>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">TimeSheetLedger</h1>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">ClockLedger</h1>
           <p className="text-sm text-slate-500">Sistema de gestión de timesheets y pagos en USDT</p>
         </header>
 
