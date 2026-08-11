@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Radio } from 'antd';
 import { LuCreditCard } from 'react-icons/lu';
 import { useCreatePayment } from '@/modules/payments/hooks/use-create-payment';
-import { useGetUserWallets } from '@/modules/settings/hooks/wallets/use-get-user-wallets';
+import { useGetWallets } from '@/modules/settings/hooks/wallets/use-get-wallets';
 import type { IMonthlyReport } from './reports.interface';
 
 interface IReportPaymentModalProps {
@@ -13,7 +13,7 @@ interface IReportPaymentModalProps {
 export function ReportPaymentModal({ report, onClose }: IReportPaymentModalProps) {
   const { mutate: createPayment, isPending: isCreatingPayment } = useCreatePayment();
   const [selectedWalletId, setSelectedWalletId] = useState<string>('');
-  const { data: employeeWallets = [] } = useGetUserWallets(report?.userId);
+  const { wallets: employeeWallets = [] } = useGetWallets(report?.userId);
 
   const handleOk = () => {
     if (report && selectedWalletId) {
