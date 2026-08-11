@@ -5,8 +5,8 @@ export function SignInPage() {
   const { signIn, isPending } = useSignIn();
 
   return (
-    <main className="relative min-h-screen flex flex-col bg-[url('/fondo-1.jpg')] px-4 py-10">
-      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+    <main className="relative min-h-screen flex flex-col bg-[url('/fondo-1.jpg.jpeg')] px-4 py-10">
+      <div className="absolute inset-0 pointer-events-none" />
       <section className="relative z-10 flex-1 flex items-center justify-center w-full">
         <article className="flex flex-col md:flex-row w-full max-w-5xl rounded-2xl shadow-card overflow-hidden">
           <section className="flex md:w-5/12 flex-col items-center justify-center bg-surface p-10 md:p-12 border-b md:border-b-0 md:border-r border-gray-200">
