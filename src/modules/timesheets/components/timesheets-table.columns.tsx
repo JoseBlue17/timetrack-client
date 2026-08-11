@@ -31,9 +31,9 @@ export const getTimesheetsColumns = ({
     dataIndex: 'projects',
     key: 'projects',
     render: (count: number) => (
-      <button className="text-indigo-500 hover:text-indigo-600 font-medium text-sm transition-colors border-none bg-transparent cursor-pointer">
+      <Button type="link" className="p-0 font-medium text-sm">
         {count} {count === 1 ? 'proyecto' : 'proyectos'}
-      </button>
+      </Button>
     ),
   },
   {
@@ -182,10 +182,10 @@ interface GetExpandIconProps {
 }
 
 export const getExpandIcon = ({ onExpand, expanded, record }: GetExpandIconProps) => (
-  <button
+  <Button
+    type="text"
+    size="small"
     onClick={(e) => onExpand(record, e)}
-    className="text-gray-400 hover:text-indigo-600 transition-colors border-none bg-transparent cursor-pointer"
-  >
-    {expanded ? <LuMinus size={16} /> : <LuPlus size={16} />}
-  </button>
+    icon={expanded ? <LuMinus size={16} /> : <LuPlus size={16} />}
+  />
 );

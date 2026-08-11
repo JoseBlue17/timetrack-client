@@ -1,7 +1,8 @@
-import { Avatar, Button } from 'antd';
+import { Button } from 'antd';
 import { LuBell, LuLogOut } from 'react-icons/lu';
 
 import { useAuth, useLoggedUser } from '@/hooks';
+import { UserAvatar } from '@/components/user-avatar';
 
 export function PageHeaderActions() {
   const { loggedUser } = useLoggedUser();
@@ -9,7 +10,6 @@ export function PageHeaderActions() {
 
   const firstName = loggedUser?.profile?.firstName ?? '';
   const lastName = loggedUser?.profile?.lastName ?? '';
-  const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
 
   return (
     <div className="flex items-center gap-4">
@@ -24,7 +24,11 @@ export function PageHeaderActions() {
         onClick={onLogout}
         className="border-none shadow-none bg-gray-50 hover:bg-red-50! hover:text-red-600!"
       />
-      <Avatar className="shrink-0 bg-indigo-100! text-indigo-600!">{initials || 'U'}</Avatar>
+      <UserAvatar
+        firstName={firstName}
+        lastName={lastName}
+        avatarUrl={loggedUser?.profile?.avatarUrl}
+      />
     </div>
   );
 }

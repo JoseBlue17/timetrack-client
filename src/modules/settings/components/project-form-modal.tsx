@@ -1,10 +1,7 @@
-import { useMemo } from 'react';
-import { Modal, Input, Button } from 'antd';
-import { useFormik } from 'formik';
-import type { IProjectFormModalProps } from '../project.interface';
+import { Modal, Form, Input, Button } from 'antd';
 import { useCreateProject } from '../hooks/use-create-project';
 import { useUpdateProject } from '../hooks/use-update-project';
-import { projectFormSchema } from '../project.validations';
+import type { IProjectFormModalProps, ICreateProjectValues } from '../project.interface';
 
 export function ProjectFormModal({ open, onClose, project }: IProjectFormModalProps) {
   const isEditing = !!project;
@@ -13,16 +10,8 @@ export function ProjectFormModal({ open, onClose, project }: IProjectFormModalPr
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject(project?.id ?? '');
   const isPending = isCreating || isUpdating;
 
-  const initialValues = useMemo(
-    () => ({ name: project?.name ?? '', description: project?.description ?? '' }),
-    [project?.description, project?.name],
-  );
-
-  const handleSubmit = (values: typeof initialValues, helpers: { resetForm: () => void }) => {
-    const onSuccess = () => {
-      helpers.resetForm();
-      onClose();
-    };
+  const handleSubmit = (values: ICreateProjectValues) => {
+    const onSuccess = () => onClose();
 
     if (isEditing) {
       updateProject(values, { onSuccess });
@@ -32,82 +21,62 @@ export function ProjectFormModal({ open, onClose, project }: IProjectFormModalPr
     createProject(values, { onSuccess });
   };
 
-  const formik = useFormik({
-    initialValues,
-    validationSchema: projectFormSchema,
-    enableReinitialize: true,
-    onSubmit: handleSubmit,
-  });
-
-  const handleClose = () => {
-    formik.resetForm();
-    onClose();
-  };
-
   return (
     <Modal
       open={open}
-      onCancel={handleClose}
+      onCancel={onClose}
       title={
         <span className="text-base font-semibold text-gray-800">
           {isEditing ? 'Editar proyecto' : 'Agregar proyecto'}
         </span>
       }
       footer={null}
-      destroyOnClose
+      destroyOnHidden
       width={480}
     >
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 mt-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <span className="text-red-500 mr-1">*</span>Nombre
-          </label>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Ej. Proyecto Alpha"
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            status={formik.touched.name && formik.errors.name ? 'error' : ''}
-          />
-          {formik.touched.name && formik.errors.name && (
-            <p className="text-red-500 text-xs mt-1">{formik.errors.name}</p>
-          )}
-        </div>
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{
+          name: project?.name ?? '',
+          description: project?.description ?? '',
+        }}
+        className="flex flex-col gap-2 mt-4"
+      >
+        <Form.Item
+          label="Nombre"
+          name="name"
+          rules={[
+            { required: true, message: 'El nombre es requerido' },
+            { max: 100, message: 'Máximo 100 caracteres' },
+          ]}
+        >
+          <Input placeholder="Ej. Proyecto Alpha" />
+        </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-          <Input.TextArea
-            id="description"
-            name="description"
-            placeholder="Ej. Desarrollo de API REST"
-            rows={3}
-            value={formik.values.description}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            status={formik.touched.description && formik.errors.description ? 'error' : ''}
-          />
-          {formik.touched.description && formik.errors.description && (
-            <p className="text-red-500 text-xs mt-1">{formik.errors.description}</p>
-          )}
-        </div>
+        <Form.Item
+          label="Descripción"
+          name="description"
+          rules={[{ max: 500, message: 'Máximo 500 caracteres' }]}
+        >
+          <Input.TextArea placeholder="Ej. Desarrollo de API REST" rows={3} />
+        </Form.Item>
 
         <div className="flex gap-3 mt-2">
-          <Button block onClick={handleClose} disabled={isPending} className="rounded-lg!">
+          <Button block onClick={onClose} disabled={isPending}>
             Cancelar
           </Button>
           <Button
-            block
             type="primary"
             htmlType="submit"
+            block
             loading={isPending}
-            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600!"
+            className="font-semibold"
           >
             {isEditing ? 'Actualizar' : 'Guardar'}
           </Button>
         </div>
-      </form>
+      </Form>
     </Modal>
   );
 }

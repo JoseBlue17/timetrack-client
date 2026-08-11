@@ -1,240 +1,84 @@
-import { useState, useRef } from 'react';
-import { Button, Modal, Spin, DatePicker } from 'antd';
-import { LuPlus, LuClipboardCheck, LuClock } from 'react-icons/lu';
-import dayjs from 'dayjs';
-import { useGetTimesheets } from '../hooks/use-get-timesheets';
-import { useCloseMonth } from '../hooks/use-close-month';
-import { TimesheetsTable } from '../components/timesheets-table';
+import { Tabs } from 'antd';
+import { LuClock, LuClipboardCheck } from 'react-icons/lu';
+import { TimesheetsActiveTab } from '../components/timesheets-active-tab';
+import { TimesheetsHistoryTab } from '../components/timesheets-history-tab';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
-import { HistoricalReportsTable } from '../components/historical-reports-table';
-import type { ITimesheet } from '../components/timesheet.interface';
-import {
-  countUniqueTimesheetDays,
-  groupTimesheetsByDate,
-  sumTimesheetsHours,
-} from '../components/timesheet.utils';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { useSignature, useSelectedSupervisor } from '@/hooks';
-import { PageHeaderActions } from '@/components/page-header-actions';
-import { LoadingOutlined } from '@ant-design/icons';
+import { useTimesheetsPage } from '../hooks/use-timesheets-page';
+import { PageHeader } from '@/components/page-header';
 
 export function TimesheetsPage() {
-  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-
-  const currentMonth = selectedDate.format('MM');
-  const currentYear = selectedDate.format('YYYY');
-
-  const { timesheets, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetTimesheets({
-      month: Number(currentMonth),
-      year: Number(currentYear),
-    });
-
-  const observerTarget = useRef<HTMLDivElement>(null);
-
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: fetchNextPage,
-    hasNextPage: hasNextPage ?? false,
+  const {
+    activeTab,
+    setActiveTab,
+    modalOpen,
+    selectedTimesheet,
+    selectedDate,
+    setSelectedDate,
     isLoading,
     isFetchingNextPage,
-  });
-
-  const { signatureDataUrl } = useSignature();
-  const { selectedSupervisorId } = useSelectedSupervisor();
-  const { closeMonth, isClosingMonth } = useCloseMonth({
-    month: Number(currentMonth),
-    year: Number(currentYear),
-    supervisorId: selectedSupervisorId,
-    signatureDataUrl,
-  });
-
-  const handleCloseMonth = () => {
-    if (!signatureDataUrl) {
-      Modal.warning({
-        title: 'Firma requerida',
-        content: 'Debes subir tu firma en Configuración antes de cerrar el mes.',
-      });
-      return;
-    }
-
-    if (!selectedSupervisorId) {
-      Modal.warning({
-        title: 'Supervisor requerido',
-        content:
-          'Debes seleccionar un supervisor en Configuración → Reportes antes de cerrar el mes.',
-      });
-      return;
-    }
-
-    Modal.confirm({
-      title: '¿Cerrar mes y generar reporte?',
-      content: 'No podrás agregar más registros a este mes después de cerrarlo.',
-      okText: 'Sí, cerrar mes',
-      cancelText: 'Cancelar',
-      onOk: () => closeMonth(),
-    });
-  };
-
-  const totalHours = sumTimesheetsHours(timesheets);
-
-  const uniqueDays = countUniqueTimesheetDays(timesheets);
-
-  const groups = groupTimesheetsByDate(timesheets);
-
-  const handleEdit = (timesheet: ITimesheet) => {
-    setSelectedTimesheet(timesheet);
-    setModalOpen(true);
-  };
-
-  const handleAdd = () => {
-    setSelectedTimesheet(undefined);
-    setModalOpen(true);
-  };
-
-  const handleClose = () => {
-    setModalOpen(false);
-    setSelectedTimesheet(undefined);
-  };
+    isClosingMonth,
+    totalHours,
+    uniqueDays,
+    groups,
+    timesheets,
+    handleCloseMonth,
+    handleEdit,
+    handleAdd,
+    handleClose,
+    observerTarget,
+  } = useTimesheetsPage();
 
   return (
     <div className="flex flex-col h-full bg-stone-100/40">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-surface">
-        <h1 className="text-2xl font-bold text-gray-800">Timesheets</h1>
-        <PageHeaderActions />
-      </header>
+      <PageHeader title="Timesheets" />
 
       <main className="flex-1 overflow-auto p-8">
         <div className="max-w-6xl mx-auto">
-          {/* Tabs Navigation */}
-          <div className="flex items-center gap-8 mb-8 border-b border-gray-100">
-            <button
-              onClick={() => setActiveTab('active')}
-              className={`flex items-center gap-2 pb-4 text-sm font-semibold transition-all relative ${
-                activeTab === 'active' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <LuClock size={18} />
-              <span>Activo</span>
-              <span
-                className={`ml-1 px-2 py-0.5 rounded-md text-[11px] ${
-                  activeTab === 'active'
-                    ? 'bg-indigo-50 text-indigo-600'
-                    : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                {uniqueDays} {uniqueDays === 1 ? 'día' : 'días'}
-              </span>
-              {activeTab === 'active' && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-full" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`flex items-center gap-2 pb-4 text-sm font-semibold transition-all relative ${
-                activeTab === 'history' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <LuClipboardCheck size={18} />
-              <span>Históricos</span>
-              <span
-                className={`ml-1 px-2 py-0.5 rounded-md text-[11px] ${
-                  activeTab === 'history'
-                    ? 'bg-indigo-50 text-indigo-600'
-                    : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                Historial
-              </span>
-              {activeTab === 'history' && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-full" />
-              )}
-            </button>
-          </div>
-
-          {activeTab === 'active' ? (
-            <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">
-                    Total de horas este mes ({dayjs().format('MMMM')})
-                  </p>
-                  <h2 className="text-3xl font-bold text-gray-800">{totalHours}h</h2>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <DatePicker
-                    picker="month"
-                    value={selectedDate}
-                    onChange={(date) => date && setSelectedDate(date)}
-                    className="rounded-xl border-gray-200 w-36"
+          <Tabs
+            activeKey={activeTab}
+            onChange={(key) => setActiveTab(key as 'active' | 'history')}
+            items={[
+              {
+                key: 'active',
+                label: (
+                  <span className="flex items-center gap-2">
+                    <LuClock size={18} />
+                    Activo
+                    <span className="ml-1 px-2 py-0.5 rounded-md text-[11px] bg-indigo-50 text-indigo-600">
+                      {uniqueDays} {uniqueDays === 1 ? 'día' : 'días'}
+                    </span>
+                  </span>
+                ),
+                children: (
+                  <TimesheetsActiveTab
+                    timesheets={timesheets}
+                    groups={groups}
+                    totalHours={totalHours}
+                    selectedDate={selectedDate}
+                    isLoading={isLoading}
+                    isClosingMonth={isClosingMonth}
+                    isFetchingNextPage={isFetchingNextPage}
+                    observerTarget={observerTarget}
+                    onDateChange={setSelectedDate}
+                    onCloseMonth={handleCloseMonth}
+                    onAdd={handleAdd}
+                    onEdit={handleEdit}
                   />
-
-                  <Button
-                    icon={<LuClipboardCheck className="text-indigo-500" />}
-                    loading={isClosingMonth}
-                    onClick={handleCloseMonth}
-                    className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
-                  >
-                    Cerrar mes y generar reporte
-                  </Button>
-                  <Button
-                    type="primary"
-                    icon={<LuPlus />}
-                    onClick={handleAdd}
-                    className="rounded-xl font-semibold shadow-md shadow-indigo-200"
-                  >
-                    Agregar registro
-                  </Button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-2 px-4 pb-4">
-                {timesheets.length > 0 ? (
-                  <TimesheetsTable groups={groups} loading={isLoading} onEdit={handleEdit} />
-                ) : (
-                  <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
-                      <LuClock size={32} />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-bold">No hay registros este mes</p>
-                      <p className="text-gray-400 text-sm">
-                        Comienza a trackear tus horas haciendo clic en "Agregar registro"
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div ref={observerTarget} className="flex justify-center py-8">
-                  {isFetchingNextPage ? (
-                    <Spin
-                      indicator={<LoadingOutlined spin />}
-                      size="large"
-                      className="text-indigo-600"
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">Meses cerrados</h2>
-                <p className="text-gray-500 text-sm">
-                  Visualiza (solo si están en borrador) los reportes de meses anteriores
-                </p>
-              </div>
-
-              <div className="p-4">
-                <HistoricalReportsTable />
-              </div>
-            </div>
-          )}
+                ),
+              },
+              {
+                key: 'history',
+                label: (
+                  <span className="flex items-center gap-2">
+                    <LuClipboardCheck size={18} />
+                    Históricos
+                  </span>
+                ),
+                children: <TimesheetsHistoryTab />,
+              },
+            ]}
+            className="mb-8"
+          />
         </div>
       </main>
 

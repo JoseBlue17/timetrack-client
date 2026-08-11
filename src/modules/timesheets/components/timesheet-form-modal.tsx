@@ -1,23 +1,21 @@
-import { useMemo } from 'react';
-import { Modal, Input, InputNumber, DatePicker, Button, Select } from 'antd';
+import { Modal, Form, Input, InputNumber, DatePicker, Button, Select } from 'antd';
 import { LuPlus } from 'react-icons/lu';
-import dayjs from 'dayjs';
-import { useFormik } from 'formik';
-import type { ITimesheetEntry, ITimesheetFormModalProps } from './timesheet.interface';
+import type { ITimesheetFormModalProps } from './timesheet.interface';
 import { useCreateTimesheet } from '../hooks/use-create-timesheet';
 import { useUpdateTimesheet } from '../hooks/use-update-timesheet';
+import { useTimesheetFormSubmit } from '../hooks/use-timesheet-form-submit';
 import { useGetProjects } from '@/modules/settings/hooks/use-get-projects';
-import { timesheetFormSchema } from './validations';
-import {
-  createEmptyEntry,
-  getTimesheetFormInitialValues,
-} from './timesheet-form-modal.initial-values';
-import { createTimesheetFormSubmit } from './timesheet-form-modal.submit';
 import { useHourlyRate } from '@/hooks';
-import { getTimesheetEntryError } from './timesheet-form-modal.errors';
+import { filterOptionByLabel } from '@/helpers/filter-option-by-label';
+import {
+  getTimesheetFormInitialValues,
+  createEmptyEntry,
+  validateTimesheetEntries,
+} from './timesheet-form.utils';
 
 export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormModalProps) {
   const isEditing = !!timesheet;
+  const [form] = Form.useForm();
 
   const { mutate: createTimesheet, isPending: isCreating } = useCreateTimesheet();
   const { mutate: updateTimesheet, isPending: isUpdating } = useUpdateTimesheet(
@@ -26,82 +24,48 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
   const isPending = isCreating || isUpdating;
 
   const { projects = [] } = useGetProjects();
+  const { hourlyRate } = useHourlyRate();
 
   const projectOptions = projects.map((project) => ({ value: project.name, label: project.name }));
 
-  const { hourlyRate } = useHourlyRate();
+  const initialValues = getTimesheetFormInitialValues(timesheet);
 
-  const initialValues = useMemo(() => getTimesheetFormInitialValues(timesheet), [timesheet]);
-
-  const formik = useFormik({
-    initialValues,
-    validationSchema: timesheetFormSchema,
-    enableReinitialize: true,
-    onSubmit: createTimesheetFormSubmit({
-      isEditing,
-      createTimesheet,
-      updateTimesheet,
-      onClose,
-      createEmptyEntry,
-      hourlyRate,
-    }),
+  const handleSubmit = useTimesheetFormSubmit({
+    form,
+    timesheet,
+    hourlyRate,
+    createTimesheet,
+    updateTimesheet,
+    onClose,
   });
-
-  const showErrors = formik.submitCount > 0;
-  const dateError =
-    showErrors && typeof formik.errors.date === 'string' ? String(formik.errors.date) : '';
-
-  const updateEntry = (
-    entryIndex: number,
-    field: keyof ITimesheetEntry,
-    value: string | number | null,
-  ) => {
-    formik.setFieldValue(
-      'entries',
-      formik.values.entries.map((previousEntry, previousIndex) =>
-        previousIndex === entryIndex ? { ...previousEntry, [field]: value } : previousEntry,
-      ),
-    );
-  };
-
-  const addEntry = () => {
-    formik.setFieldValue('entries', [...formik.values.entries, createEmptyEntry()]);
-  };
-
-  const handleClose = () => {
-    formik.resetForm();
-    onClose();
-  };
 
   return (
     <Modal
       open={open}
-      onCancel={handleClose}
+      onCancel={onClose}
       title={
         <span className="text-lg font-semibold text-gray-800">
           {isEditing ? 'Editar registro de tiempo' : 'Agregar registro de tiempo'}
         </span>
       }
       footer={null}
-      destroyOnClose
+      destroyOnHidden
       width={560}
     >
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-5 mt-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <span className="text-red-500 mr-1">*</span>Fecha
-          </label>
-          <DatePicker
-            className="w-full"
-            format="DD/MM/YYYY"
-            value={formik.values.date ? dayjs(formik.values.date) : null}
-            onChange={(selectedDate) => {
-              formik.setFieldValue('date', selectedDate ? selectedDate.format('YYYY-MM-DD') : '');
-            }}
-            status={dateError ? 'error' : ''}
-          />
-          {dateError && <p className="text-red-500 text-xs mt-1">{dateError}</p>}
-        </div>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={initialValues}
+        className="flex flex-col gap-2 mt-4"
+      >
+        <Form.Item
+          label="Fecha"
+          name="date"
+          rules={[{ required: true, message: 'La fecha es requerida' }]}
+        >
+          <DatePicker className="w-full" format="DD/MM/YYYY" />
+        </Form.Item>
 
         <div>
           <p className="font-semibold text-gray-800 mb-1">Proyectos trabajados</p>
@@ -109,129 +73,90 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
             Agrega todos los proyectos en los que trabajaste este día
           </p>
 
-          <div className="flex flex-col gap-4">
-            {formik.values.entries.map((entry, entryIndex) => {
-              const projectError = getTimesheetEntryError({
-                showErrors,
-                errors: formik.errors,
-                entryIndex,
-                field: 'project',
-              });
+          <Form.List name="entries" rules={[{ validator: validateTimesheetEntries }]}>
+            {(fields, { add, remove }) => (
+              <div className="flex flex-col gap-4">
+                {fields.map((field) => (
+                  <div key={field.key} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
+                    <Form.Item
+                      {...field}
+                      label="Proyecto"
+                      name={[field.name, 'project']}
+                      rules={[{ required: true, message: 'Requerido' }]}
+                    >
+                      <Select
+                        className="w-full"
+                        placeholder="Selecciona un proyecto"
+                        options={projectOptions}
+                        showSearch
+                        filterOption={filterOptionByLabel}
+                      />
+                    </Form.Item>
 
-              const descriptionError = getTimesheetEntryError({
-                showErrors,
-                errors: formik.errors,
-                entryIndex,
-                field: 'description',
-              });
+                    <Form.Item
+                      {...field}
+                      label="Descripción"
+                      name={[field.name, 'description']}
+                      rules={[{ required: true, message: 'Requerido' }]}
+                    >
+                      <Input.TextArea rows={3} placeholder="¿Qué hiciste en este proyecto?" />
+                    </Form.Item>
 
-              const hoursError = getTimesheetEntryError({
-                showErrors,
-                errors: formik.errors,
-                entryIndex,
-                field: 'hours',
-              });
+                    <Form.Item
+                      {...field}
+                      label="Horas"
+                      name={[field.name, 'hours']}
+                      rules={[{ required: true, message: 'Requerido' }]}
+                    >
+                      <InputNumber
+                        className="w-full"
+                        placeholder="8"
+                        min={0.25}
+                        max={24}
+                        step={0.25}
+                        addonAfter="horas"
+                      />
+                    </Form.Item>
 
-              return (
-                <div key={entryIndex} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <span className="text-red-500 mr-1">*</span>Proyecto
-                    </label>
-                    <Select
-                      className="w-full"
-                      placeholder="Selecciona un proyecto"
-                      value={entry.project || undefined}
-                      onChange={(selectedProject: string) =>
-                        updateEntry(entryIndex, 'project', selectedProject)
-                      }
-                      status={projectError ? 'error' : ''}
-                      showSearch
-                      filterOption={(inputText, option) =>
-                        String(option?.label ?? '')
-                          .toLowerCase()
-                          .includes(inputText.toLowerCase())
-                      }
-                      options={projectOptions}
-                    />
-                    {projectError && <p className="text-red-500 text-xs mt-1">{projectError}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <span className="text-red-500 mr-1">*</span>Descripción
-                    </label>
-                    <Input.TextArea
-                      rows={3}
-                      placeholder="¿Qué hiciste en este proyecto?"
-                      value={entry.description}
-                      onChange={(event) =>
-                        updateEntry(entryIndex, 'description', event.target.value)
-                      }
-                      status={descriptionError ? 'error' : ''}
-                    />
-                    {descriptionError && (
-                      <p className="text-red-500 text-xs mt-1">{descriptionError}</p>
+                    {fields.length > 1 && !isEditing && (
+                      <Button type="link" danger onClick={() => remove(field.name)}>
+                        Eliminar proyecto
+                      </Button>
                     )}
                   </div>
+                ))}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <span className="text-red-500 mr-1">*</span>Horas
-                    </label>
-                    <InputNumber
-                      className="w-full"
-                      placeholder="8"
-                      min={0.25}
-                      max={24}
-                      step={0.25}
-                      value={entry.hours}
-                      onChange={(selectedHours) => updateEntry(entryIndex, 'hours', selectedHours)}
-                      addonAfter="horas"
-                      status={hoursError ? 'error' : ''}
-                    />
-                    {hoursError && <p className="text-red-500 text-xs mt-1">{hoursError}</p>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {!isEditing && (
-            <button
-              type="button"
-              onClick={addEntry}
-              className="mt-3 w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg py-3 text-gray-600 text-sm hover:border-indigo-400 hover:text-indigo-600 transition-colors bg-white"
-            >
-              <LuPlus />
-              Agregar otro proyecto
-            </button>
-          )}
+                {!isEditing && (
+                  <Button
+                    type="dashed"
+                    onClick={() => add(createEmptyEntry())}
+                    block
+                    icon={<LuPlus />}
+                  >
+                    Agregar otro proyecto
+                  </Button>
+                )}
+              </div>
+            )}
+          </Form.List>
         </div>
 
         <div className="flex gap-3 mt-1">
-          <Button
-            block
-            size="large"
-            htmlType="button"
-            onClick={handleClose}
-            disabled={isPending}
-            className="rounded-lg!"
-          >
+          <Button block size="large" onClick={onClose} disabled={isPending}>
             Cancelar
           </Button>
           <Button
             block
             size="large"
             type="primary"
-            loading={isPending}
             htmlType="submit"
-            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600!"
+            loading={isPending}
+            className="font-semibold"
           >
             {isEditing ? 'Actualizar registro' : 'Guardar registro'}
           </Button>
         </div>
-      </form>
+      </Form>
     </Modal>
   );
 }

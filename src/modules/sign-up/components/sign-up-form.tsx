@@ -1,152 +1,110 @@
-import { useState } from 'react';
-import { useFormik } from 'formik';
+import { Button, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
-import { LuEye, LuEyeOff, LuLoader } from 'react-icons/lu';
-import { signUpValidationSchema } from './validations';
-import { signUpInitialValues } from './initial-values';
+
+import { EMAIL, PASSWORD, REQUIRED } from '@/constants/form-rules';
+import { usePasswordVisibility } from '@/hooks/use-password-visibility';
 import type { ISignUpFormProps, SignUpValues } from './sign-up.interface';
 
 export function SignUpForm({ onSubmit, isPending }: ISignUpFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const passwordVisibility = usePasswordVisibility();
+  const confirmPasswordVisibility = usePasswordVisibility();
+  const [form] = Form.useForm<SignUpValues>();
 
-  const formik = useFormik<SignUpValues>({
-    initialValues: signUpInitialValues,
-    validationSchema: signUpValidationSchema,
-    onSubmit,
-  });
-
-  const inputClass = (field: keyof SignUpValues) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-slate-700 outline-none transition
-    focus:ring-2 focus:ring-indigo-400 focus:border-transparent
-    ${formik.touched[field] && formik.errors[field] ? 'border-red-400 bg-red-50' : 'border-slate-200 bg-white'}`;
+  const handleFinish = (values: SignUpValues) => {
+    onSubmit(values);
+  };
 
   return (
-    <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 w-full">
-      <section className="flex gap-3">
-        <section className="flex flex-col gap-1 flex-1">
-          <label htmlFor="firstName" className="text-sm font-medium text-slate-700">
-            Nombre
-          </label>
-          <input
-            id="firstName"
-            type="text"
-            placeholder="Juan"
-            autoComplete="given-name"
-            {...formik.getFieldProps('firstName')}
-            className={inputClass('firstName')}
-          />
-          {formik.touched.firstName && formik.errors.firstName && (
-            <span className="text-xs text-red-500">{formik.errors.firstName}</span>
-          )}
-        </section>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleFinish}
+      initialValues={{
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      }}
+      className="flex flex-col gap-1 w-full"
+    >
+      <div className="grid grid-cols-2 gap-4">
+        <Form.Item
+          label="Nombre"
+          name="firstName"
+          rules={[REQUIRED('El nombre es requerido'), { min: 2, message: 'Mínimo 2 caracteres' }]}
+        >
+          <Input placeholder="Juan" autoComplete="given-name" size="large" />
+        </Form.Item>
 
-        <section className="flex flex-col gap-1 flex-1">
-          <label htmlFor="lastName" className="text-sm font-medium text-slate-700">
-            Apellido
-          </label>
-          <input
-            id="lastName"
-            type="text"
-            placeholder="Pérez"
-            autoComplete="family-name"
-            {...formik.getFieldProps('lastName')}
-            className={inputClass('lastName')}
-          />
-          {formik.touched.lastName && formik.errors.lastName && (
-            <span className="text-xs text-red-500">{formik.errors.lastName}</span>
-          )}
-        </section>
-      </section>
+        <Form.Item
+          label="Apellido"
+          name="lastName"
+          rules={[REQUIRED('El apellido es requerido'), { min: 2, message: 'Mínimo 2 caracteres' }]}
+        >
+          <Input placeholder="Pérez" autoComplete="family-name" size="large" />
+        </Form.Item>
+      </div>
 
-      {/* Email */}
-      <section className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
-          Correo electrónico
-        </label>
-        <input
-          id="email"
-          type="email"
-          placeholder="tu@email.com"
-          autoComplete="email"
-          {...formik.getFieldProps('email')}
-          className={inputClass('email')}
+      <Form.Item label="Correo electrónico" name="email" rules={EMAIL()}>
+        <Input type="email" placeholder="tu@email.com" autoComplete="email" size="large" />
+      </Form.Item>
+
+      <Form.Item label="Contraseña" name="password" rules={PASSWORD()}>
+        <Input.Password
+          placeholder="••••••••"
+          autoComplete="new-password"
+          size="large"
+          iconRender={passwordVisibility.iconRender}
+          visibilityToggle={{
+            visible: passwordVisibility.visible,
+            onVisibleChange: passwordVisibility.setVisible,
+          }}
         />
-        {formik.touched.email && formik.errors.email && (
-          <span className="text-xs text-red-500">{formik.errors.email}</span>
-        )}
-      </section>
+      </Form.Item>
 
-      {/* Password */}
-      <section className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium text-slate-700">
-          Contraseña
-        </label>
-        <div className="relative">
-          <input
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
-            autoComplete="new-password"
-            {...formik.getFieldProps('password')}
-            className={`${inputClass('password')} pr-11`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
-            tabIndex={-1}
-          >
-            {showPassword ? <LuEyeOff size={18} /> : <LuEye size={18} />}
-          </button>
-        </div>
-        {formik.touched.password && formik.errors.password && (
-          <span className="text-xs text-red-500">{formik.errors.password}</span>
-        )}
-      </section>
-
-      {/* Confirm password */}
-      <section className="flex flex-col gap-1">
-        <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">
-          Confirmar contraseña
-        </label>
-        <div className="relative">
-          <input
-            id="confirmPassword"
-            type={showConfirm ? 'text' : 'password'}
-            placeholder="••••••••"
-            autoComplete="new-password"
-            {...formik.getFieldProps('confirmPassword')}
-            className={`${inputClass('confirmPassword')} pr-11`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirm((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
-            tabIndex={-1}
-          >
-            {showConfirm ? <LuEyeOff size={18} /> : <LuEye size={18} />}
-          </button>
-        </div>
-        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-          <span className="text-xs text-red-500">{formik.errors.confirmPassword}</span>
-        )}
-      </section>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-xl bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700
-          text-white font-semibold py-3 transition disabled:opacity-60 disabled:cursor-not-allowed
-          flex items-center justify-center gap-2 mt-1"
+      <Form.Item
+        label="Confirmar contraseña"
+        name="confirmPassword"
+        dependencies={['password']}
+        rules={[
+          { required: true, message: 'Confirma tu contraseña' },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('Las contraseñas no coinciden'));
+            },
+          }),
+        ]}
       >
-        {isPending && <LuLoader size={16} className="animate-spin" />}
-        Crear cuenta
-      </button>
+        <Input.Password
+          placeholder="••••••••"
+          autoComplete="new-password"
+          size="large"
+          iconRender={confirmPasswordVisibility.iconRender}
+          visibilityToggle={{
+            visible: confirmPasswordVisibility.visible,
+            onVisibleChange: confirmPasswordVisibility.setVisible,
+          }}
+        />
+      </Form.Item>
 
-      {/* Login link */}
-      <p className="text-center text-sm text-slate-500 mt-1">
+      <Form.Item className="mb-0">
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          block
+          loading={isPending}
+          className="font-semibold"
+        >
+          Crear cuenta
+        </Button>
+      </Form.Item>
+
+      <p className="text-center text-sm text-slate-500 mt-4">
         ¿Ya tienes cuenta?{' '}
         <Link
           to="/sign-in"
@@ -155,6 +113,6 @@ export function SignUpForm({ onSubmit, isPending }: ISignUpFormProps) {
           Inicia sesión
         </Link>
       </p>
-    </form>
+    </Form>
   );
 }

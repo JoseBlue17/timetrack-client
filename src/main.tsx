@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ErrorBoundary } from './components/error-boundary/error-boundary.tsx';
 import { ReactQueryProvider } from '@/providers/react-query-provider';
+import { AntDProvider } from '@/providers/antd-provider';
 import AppProvider from '@/contexts/app-provider';
 
 import '@/i18n';
@@ -15,9 +16,11 @@ createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <ReactQueryProvider>
         <AppProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <AntDProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </AntDProvider>
         </AppProvider>
       </ReactQueryProvider>
     </ErrorBoundary>
