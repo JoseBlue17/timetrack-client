@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Tag, Spin, Popconfirm, Select } from 'antd';
+import { Button, Tag, Spin, Popconfirm } from 'antd';
 import {
   LuEye,
   LuTrash2,
@@ -12,17 +12,11 @@ import { useGetPayments } from '../hooks/use-get-payments';
 import { useDeletePayment } from '../hooks/use-delete-payment';
 import { useVerifyPayment } from '../hooks/use-verify-payment';
 import { PaymentDetailModal } from './payment-detail-modal';
+import { PaymentStatusFilter } from './payment-status-filter';
 import { formatShortDate, formatUserName } from './payment-detail.utils';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
-
-const STATUS_OPTIONS = [
-  { value: '', label: 'Todos' },
-  { value: PaymentStatus.Pending, label: 'Pendiente' },
-  { value: PaymentStatus.Failed, label: 'Fallido' },
-  { value: PaymentStatus.Expired, label: 'Expirado' },
-];
 
 const STATUS_COLORS: Record<string, string> = {
   [PaymentStatus.Pending]: 'gold',
@@ -63,13 +57,7 @@ export function PaymentsTable() {
   return (
     <>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <Select
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={STATUS_OPTIONS}
-          className="w-40"
-          placeholder="Filtrar por estado"
-        />
+        <PaymentStatusFilter value={statusFilter} onChange={setStatusFilter} />
 
         {isAdmin && (
           <Button

@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Avatar } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import {
@@ -12,6 +12,7 @@ import {
 import useLoggedUser from '@/hooks/use-logged-user';
 import { useAuth, useCurrentRole } from '@/hooks';
 import { UserRole } from '@/enums';
+import { UserAvatar } from '@/components/user-avatar';
 
 const { Sider, Content } = Layout;
 const colorText = 'text-black! text-lg';
@@ -66,7 +67,6 @@ export function AppLayout() {
   const lastName = loggedUser?.profile?.lastName ?? '';
   const fullName = `${firstName} ${lastName}`.trim() || 'Usuario';
   const role = loggedUser?.role ?? '';
-  const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
 
   const navItems = ALL_NAV_ITEMS.filter((item) => !currentRole || item.roles.includes(currentRole));
 
@@ -96,12 +96,11 @@ export function AppLayout() {
 
           <div className="px-4 py-5 border-t border-gray-200 mt-auto">
             <div className="flex items-center gap-3 mb-3">
-              <Avatar
-                className="shrink-0 bg-indigo-100! text-indigo-600!"
-                src={loggedUser?.profile?.avatarUrl}
-              >
-                {!loggedUser?.profile?.avatarUrl && (initials || 'U')}
-              </Avatar>
+              <UserAvatar
+                firstName={firstName}
+                lastName={lastName}
+                avatarUrl={loggedUser?.profile?.avatarUrl}
+              />
               <div className="min-w-0">
                 <p className="text-black text-sm font-semibold truncate">{fullName}</p>
                 <p className="text-gray-500 text-xs truncate capitalize">{role}</p>

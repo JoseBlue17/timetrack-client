@@ -1,22 +1,19 @@
-import { useMemo } from 'react';
-import { Modal, Button, Select } from 'antd';
-import { useFormik } from 'formik';
-import { walletValidationSchema } from './wallets.validations';
+import { Modal, Form, Button, Select, Input, Checkbox } from 'antd';
 import type { IWalletFormModalProps, IWalletFormValues } from './wallets.interface';
 import { useAddWallet } from '../../hooks/wallets/use-add-wallet';
 import { useUpdateWallet } from '../../hooks/wallets/use-update-wallet';
 import { BlockchainNetwork } from '@/enums';
+import { validateWalletAddress } from '@/helpers/validate-wallet-address';
+import { REQUIRED } from '@/constants/form-rules';
 
 const NETWORK_OPTIONS = [
   { value: BlockchainNetwork.BEP20, label: 'BEP20 (Binance Smart Chain)' },
   { value: BlockchainNetwork.TRC20, label: 'TRC20 (Tron)' },
 ];
 
-const INITIAL_VALUES: IWalletFormValues = {
-  network: BlockchainNetwork.BEP20,
-  walletAddress: '',
-  label: '',
-  isDefault: false,
+const walletAddressValidator = (_: unknown, value: string, network?: string) => {
+  const error = validateWalletAddress(value, network);
+  return error ? Promise.reject(new Error(error)) : Promise.resolve();
 };
 
 export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps) {
@@ -25,45 +22,40 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
 
   const isEditing = !!wallet;
   const isPending = isAdding || isUpdating;
+  const [form] = Form.useForm<IWalletFormValues>();
 
-  const initialValues = useMemo<IWalletFormValues>(() => {
-    if (!wallet) return INITIAL_VALUES;
-    return {
-      network: wallet.network,
-      walletAddress: wallet.walletAddress,
-      label: wallet.label ?? '',
-      isDefault: wallet.isDefault,
-    };
-  }, [wallet]);
+  const network = Form.useWatch('network', form);
 
-  const formik = useFormik<IWalletFormValues>({
-    initialValues,
-    enableReinitialize: true,
-    validationSchema: walletValidationSchema,
-    onSubmit: (values) => {
-      if (isEditing && wallet) {
-        updateWallet(
-          {
-            walletId: wallet.id,
-            values: {
-              walletAddress: values.walletAddress,
-              label: values.label,
-            },
+  const initialValues: IWalletFormValues = {
+    network: wallet?.network ?? BlockchainNetwork.BEP20,
+    walletAddress: wallet?.walletAddress ?? '',
+    label: wallet?.label ?? '',
+    isDefault: wallet?.isDefault ?? false,
+  };
+
+  const handleSubmit = (values: IWalletFormValues) => {
+    if (isEditing && wallet) {
+      updateWallet(
+        {
+          walletId: wallet.id,
+          values: {
+            walletAddress: values.walletAddress,
+            label: values.label,
           },
-          { onSuccess: onClose },
-        );
-      } else {
-        addWallet(values, { onSuccess: onClose });
-      }
-    },
-  });
+        },
+        { onSuccess: onClose },
+      );
+    } else {
+      addWallet(values, { onSuccess: onClose });
+    }
+  };
 
   return (
     <Modal
       open={open}
       onCancel={onClose}
       footer={null}
-      destroyOnClose
+      destroyOnHidden
       width={480}
       title={
         <span className="text-lg font-bold text-gray-800">
@@ -71,74 +63,48 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
         </span>
       }
     >
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 mt-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Red blockchain</label>
-          <Select
-            className="w-full"
-            options={NETWORK_OPTIONS}
-            value={formik.values.network}
-            onChange={(value) => formik.setFieldValue('network', value)}
-            disabled={isEditing}
-          />
-        </div>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={initialValues}
+        className="flex flex-col gap-2 mt-4"
+      >
+        <Form.Item
+          label="Red blockchain"
+          name="network"
+          rules={[REQUIRED('La red es obligatoria')]}
+        >
+          <Select options={NETWORK_OPTIONS} disabled={isEditing} />
+        </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Dirección de wallet
-          </label>
-          <input
-            type="text"
-            name="walletAddress"
-            value={formik.values.walletAddress}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="0x... o T..."
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-          {formik.touched.walletAddress && formik.errors.walletAddress && (
-            <p className="text-red-500 text-xs mt-1">{formik.errors.walletAddress}</p>
-          )}
-        </div>
+        <Form.Item
+          label="Dirección de wallet"
+          name="walletAddress"
+          rules={[
+            REQUIRED('La dirección de wallet es obligatoria'),
+            { validator: (_, value) => walletAddressValidator(_, value, network) },
+          ]}
+        >
+          <Input placeholder="0x... o T..." />
+        </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Etiqueta (opcional)
-          </label>
-          <input
-            type="text"
-            name="label"
-            value={formik.values.label}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Ej: Wallet principal"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
+        <Form.Item
+          label="Etiqueta (opcional)"
+          name="label"
+          rules={[{ max: 100, message: 'Máximo 100 caracteres' }]}
+        >
+          <Input placeholder="Ej: Wallet principal" />
+        </Form.Item>
 
         {!isEditing && (
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isDefault"
-              name="isDefault"
-              checked={formik.values.isDefault}
-              onChange={formik.handleChange}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-            />
-            <label htmlFor="isDefault" className="text-sm text-gray-700">
-              Establecer como wallet por defecto
-            </label>
-          </div>
+          <Form.Item name="isDefault" valuePropName="checked" className="mb-0">
+            <Checkbox>Establecer como wallet por defecto</Checkbox>
+          </Form.Item>
         )}
 
         <div className="flex gap-3 mt-2">
-          <Button
-            type="default"
-            block
-            onClick={onClose}
-            className="rounded-lg! border-gray-300! text-gray-700!"
-          >
+          <Button type="default" block onClick={onClose} disabled={isPending}>
             Cancelar
           </Button>
           <Button
@@ -146,12 +112,12 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
             htmlType="submit"
             block
             loading={isPending}
-            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600!"
+            className="font-semibold"
           >
             {isEditing ? 'Guardar cambios' : 'Agregar wallet'}
           </Button>
         </div>
-      </form>
+      </Form>
     </Modal>
   );
 }

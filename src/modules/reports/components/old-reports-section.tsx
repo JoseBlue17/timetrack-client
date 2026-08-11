@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react';
-import { Button } from 'antd';
+import { useState } from 'react';
+import { Button, Tabs } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2 } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
 import type { IOldPdfReport, IMonthlyReport } from './reports.interface';
@@ -11,11 +11,6 @@ interface IOldReportsSectionProps {
   uploadedPdfReports: IOldPdfReport[];
   monthlyReportsData?: IMonthlyReport[];
 }
-
-const TABS: { value: ReportsTab; label: string; icon: ReactNode }[] = [
-  { value: 'monthly', label: 'Reportes mensuales', icon: <MdCalendarMonth size={16} /> },
-  { value: 'old', label: 'Reportes antiguos', icon: <MdOutlinePictureAsPdf size={16} /> },
-];
 
 export function OldReportsSection({
   uploadedPdfReports,
@@ -79,6 +74,29 @@ export function OldReportsSection({
     </>
   );
 
+  const tabItems = [
+    {
+      key: 'monthly',
+      label: (
+        <span className="flex items-center gap-2">
+          <MdCalendarMonth size={16} />
+          Reportes mensuales
+        </span>
+      ),
+      children: <MonthlyReportsList monthlyReportsData={monthlyReportsData ?? []} />,
+    },
+    {
+      key: 'old',
+      label: (
+        <span className="flex items-center gap-2">
+          <MdOutlinePictureAsPdf size={16} />
+          Reportes antiguos
+        </span>
+      ),
+      children: oldReportsContent,
+    },
+  ];
+
   if (!showTabs) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm mt-5">
@@ -106,26 +124,12 @@ export function OldReportsSection({
         </p>
       </div>
 
-      <div className="flex gap-0 border-b border-gray-200 mb-8">
-        {TABS.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setActiveTab(tab.value)}
-            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab.value
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === 'monthly' && <MonthlyReportsList monthlyReportsData={monthlyReportsData} />}
-      {activeTab === 'old' && oldReportsContent}
+      <Tabs
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key as ReportsTab)}
+        items={tabItems}
+        className="mb-8"
+      />
     </div>
   );
 }
