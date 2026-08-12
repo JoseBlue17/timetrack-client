@@ -1,7 +1,8 @@
 import { Tabs } from 'antd';
-import { LuClock, LuClipboardCheck } from 'react-icons/lu';
+import { LuClock, LuClipboardCheck, LuArchive } from 'react-icons/lu';
 import { TimesheetsActiveTab } from '../components/timesheets-active-tab';
 import { TimesheetsHistoryTab } from '../components/timesheets-history-tab';
+import { TimesheetsOldReportsTab } from '../components/timesheets-old-reports-tab';
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
 import { useTimesheetsPage } from '../hooks/use-timesheets-page';
 import { PageHeader } from '@/components/page-header';
@@ -29,14 +30,14 @@ export function TimesheetsPage() {
   } = useTimesheetsPage();
 
   return (
-    <div className="flex flex-col h-full bg-stone-100/40">
+    <div className="flex flex-col h-full bg-surface">
       <PageHeader title="Timesheets" />
 
       <main className="flex-1 overflow-auto p-8">
         <div className="max-w-6xl mx-auto">
           <Tabs
             activeKey={activeTab}
-            onChange={(key) => setActiveTab(key as 'active' | 'history')}
+            onChange={(key) => setActiveTab(key as 'active' | 'history' | 'old-reports')}
             items={[
               {
                 key: 'active',
@@ -75,6 +76,16 @@ export function TimesheetsPage() {
                   </span>
                 ),
                 children: <TimesheetsHistoryTab />,
+              },
+              {
+                key: 'old-reports',
+                label: (
+                  <span className="flex items-center gap-2">
+                    <LuArchive size={18} />
+                    Reportes antiguos
+                  </span>
+                ),
+                children: <TimesheetsOldReportsTab />,
               },
             ]}
             className="mb-8"

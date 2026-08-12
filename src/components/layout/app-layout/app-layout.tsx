@@ -74,7 +74,7 @@ export function AppLayout() {
     <Layout className="min-h-screen!">
       <Sider
         width={240}
-        className="bg-gray-50! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
+        className="bg-slate-50! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
       >
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">

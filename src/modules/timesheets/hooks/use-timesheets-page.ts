@@ -13,7 +13,7 @@ import {
 } from '../components/timesheet.utils';
 
 export function useTimesheetsPage() {
-  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
+  const [activeTab, setActiveTab] = useState<'active' | 'history' | 'old-reports'>('active');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState(dayjs());

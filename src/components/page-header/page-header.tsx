@@ -13,10 +13,10 @@ export function PageHeader({
   children = <PageHeaderActions />,
 }: IPageHeaderProps) {
   return (
-    <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-surface">
+    <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-brand">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-        {subtitle && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-white">{title}</h1>
+        {subtitle && <p className="text-sm text-white mt-0.5">{subtitle}</p>}
       </div>
       {children}
     </header>

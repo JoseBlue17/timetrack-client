@@ -39,7 +39,7 @@ export function SignInPage() {
       <footer className="relative z-10 text-center mt-auto pt-10">
         <h2 className="text-2xl font-bold text-surface">TimeTrack</h2>
         <p className="text-sm text-slate-400 mt-1">
-          © 2025 TimeTrack. Todos los derechos reservados.
+          © 2026 TimeTrack. Todos los derechos reservados.
         </p>
       </footer>
     </main>

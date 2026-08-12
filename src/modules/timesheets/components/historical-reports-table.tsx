@@ -4,8 +4,6 @@ import { LuEye, LuFileText } from 'react-icons/lu';
 import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
 import type { IMonthlyReport } from '@/modules/reports/components/reports.interface';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
-import { OldReportsSection } from '@/modules/reports/components/old-reports-section';
-import type { IOldPdfReport } from '@/modules/reports/components/reports.interface';
 import { useLoggedUser } from '@/hooks';
 import {
   getReportStatusMapping,
@@ -13,8 +11,6 @@ import {
 } from '@/modules/reports/components/report-status-mappings';
 import type { ReportStatus } from '@/enums';
 import { UserRole } from '@/enums';
-
-const ARCHIVED_PDF_REPORTS: IOldPdfReport[] = [];
 
 export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
@@ -108,8 +104,6 @@ export function HistoricalReportsTable() {
           className="historical-reports-table"
         />
       </div>
-      <OldReportsSection uploadedPdfReports={ARCHIVED_PDF_REPORTS} />
-
       <ReportPdfModal
         open={!!selectedReport}
         reportId={selectedReport?.id ?? null}
