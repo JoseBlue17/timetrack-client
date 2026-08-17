@@ -90,10 +90,17 @@ export const getTimesheetsColumns = ({
   },
 ];
 
+interface IExpandedRowRenderProps {
+  onEdit: (timesheet: ITimesheet) => void;
+  onDelete: (id: string) => void;
+  triggerExplosion: (element: HTMLElement) => void;
+}
+
 export const getExpandedRowRender = ({
   onEdit,
   onDelete,
-}: Pick<GetColumnsProps, 'onEdit' | 'onDelete'>) => {
+  triggerExplosion,
+}: IExpandedRowRenderProps) => {
   return (group: ITimesheetDateGroup) => {
     const subColumns: ColumnsType<ITimesheet> = [
       {
@@ -144,7 +151,15 @@ export const getExpandedRowRender = ({
             />
             <Popconfirm
               title="¿Eliminar este registro?"
-              onConfirm={() => onDelete(record.id)}
+              onConfirm={() => {
+                const element = document.querySelector<HTMLElement>(
+                  `[data-timesheet-row-id="${record.id}"]`,
+                );
+                if (element) {
+                  triggerExplosion(element);
+                }
+                onDelete(record.id);
+              }}
               okText="Sí"
               cancelText="No"
             >
@@ -169,6 +184,11 @@ export const getExpandedRowRender = ({
           pagination={false}
           size="small"
           className="nested-timesheets-table"
+          onRow={(record) =>
+            ({
+              'data-timesheet-row-id': record.id,
+            }) as unknown as React.HTMLAttributes<HTMLElement>
+          }
         />
       </div>
     );

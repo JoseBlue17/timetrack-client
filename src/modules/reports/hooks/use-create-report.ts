@@ -6,6 +6,7 @@ import {
   useInvalidateMonthlyReports,
   useInvalidateMonthlySummary,
 } from '@/hooks';
+import { triggerConfetti } from '@/helpers/confetti';
 import type { AxiosResponseError } from '@/config/http';
 
 interface ICreateReportPayload {
@@ -45,6 +46,7 @@ export function useCreateReport() {
         title: 'Mes cerrado',
         description: 'El mes ha sido cerrado y el reporte generado exitosamente.',
       });
+      triggerConfetti();
       invalidateMonthlySummary();
       invalidateMonthlyReports();
     },

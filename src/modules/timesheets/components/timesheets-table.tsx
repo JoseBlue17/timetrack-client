@@ -6,10 +6,12 @@ import {
   getExpandedRowRender,
   getExpandIcon,
 } from './timesheets-table.columns';
+import { useExplosion } from '@/components/explosion/explosion';
 
 export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTableProps) {
   const { expandedKeys, setExpandedKeys, deleteTimesheet, isDeleting, handleToggleExpand } =
     useTimesheetsTable();
+  const { triggerExplosion, Explosion } = useExplosion();
 
   const columns = getTimesheetsColumns({
     onEdit,
@@ -22,29 +24,33 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
   const expandedRowRender = getExpandedRowRender({
     onEdit,
     onDelete: deleteTimesheet,
+    triggerExplosion,
   });
 
   return (
-    <Table
-      columns={columns}
-      dataSource={groups}
-      rowKey="date"
-      loading={loading}
-      pagination={false}
-      expandable={{
-        expandedRowRender,
-        expandedRowKeys: expandedKeys,
-        expandIcon: (props) => getExpandIcon(props),
-        onExpand: (expanded, record) => {
-          if (expanded) {
-            setExpandedKeys([...expandedKeys, record.date]);
-            return;
-          }
+    <>
+      <Explosion />
+      <Table
+        columns={columns}
+        dataSource={groups}
+        rowKey="date"
+        loading={loading}
+        pagination={false}
+        expandable={{
+          expandedRowRender,
+          expandedRowKeys: expandedKeys,
+          expandIcon: (props) => getExpandIcon(props),
+          onExpand: (expanded, record) => {
+            if (expanded) {
+              setExpandedKeys([...expandedKeys, record.date]);
+              return;
+            }
 
-          setExpandedKeys(expandedKeys.filter((key) => key !== record.date));
-        },
-      }}
-      className="timesheets-main-table"
-    />
+            setExpandedKeys(expandedKeys.filter((key) => key !== record.date));
+          },
+        }}
+        className="timesheets-main-table"
+      />
+    </>
   );
 }
