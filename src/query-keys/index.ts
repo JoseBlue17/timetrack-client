@@ -9,3 +9,4 @@ export const REPORT_PDF_QUERY_KEY = ['report-pdf'] as const;
 export const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'] as const;
 export const SUPERVISORS_QUERY_KEY = ['SUPERVISORS'] as const;
 export const SLACK_PROFILE_QUERY_KEY = ['SLACK_PROFILE'] as const;
+export const OLD_REPORTS_QUERY_KEY = ['OLD_REPORTS'] as const;

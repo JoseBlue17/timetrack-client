@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Table, Button, Tag, Spin } from 'antd';
 import { LuEye, LuFileText } from 'react-icons/lu';
 import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
+import { useGetReportPdf } from '@/modules/reports/hooks/use-get-report-pdf';
 import type { IMonthlyReport } from '@/modules/reports/components/reports.interface';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
 import { useLoggedUser } from '@/hooks';
@@ -11,6 +12,40 @@ import {
 } from '@/modules/reports/components/report-status-mappings';
 import type { ReportStatus } from '@/enums';
 import { UserRole } from '@/enums';
+
+function ReportDetailRow({ reportId, monthName }: { reportId: string; monthName: string }) {
+  const { reportPdfUrl, isLoading } = useGetReportPdf(reportId);
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center">
+        <Spin size="small" />
+        <span className="ml-2 text-gray-400 text-sm">Cargando PDF...</span>
+      </div>
+    );
+  }
+
+  if (!reportPdfUrl) {
+    return (
+      <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
+        <p className="text-gray-400 italic text-sm text-center">
+          No hay PDF generado para el mes de {monthName}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-2 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
+      <iframe
+        src={reportPdfUrl}
+        className="w-full rounded-xl border border-gray-200"
+        style={{ height: '500px' }}
+        title={`PDF ${monthName}`}
+      />
+    </div>
+  );
+}
 
 export function HistoricalReportsTable() {
   const { reports, isLoading } = useGetReports();
@@ -67,7 +102,7 @@ export function HistoricalReportsTable() {
             onClick={() => setSelectedReport({ id: record.id, name: record.monthName })}
             className="flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700! group"
           >
-            Ver detalles
+            Ver PDF
           </Button>
         </div>
       ),
@@ -94,11 +129,7 @@ export function HistoricalReportsTable() {
           expandable={{
             rowExpandable: () => true,
             expandedRowRender: (record) => (
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
-                <p className="text-gray-500 italic text-sm text-center">
-                  Detalle del mes de {record.monthName} (funcionalidad en desarrollo)
-                </p>
-              </div>
+              <ReportDetailRow reportId={record.id} monthName={record.monthName} />
             ),
           }}
           className="historical-reports-table"

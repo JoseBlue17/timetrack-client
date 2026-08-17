@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   MONTHLY_SUMMARY_QUERY_KEY,
+  OLD_REPORTS_QUERY_KEY,
   PAYMENTS_QUERY_KEY,
   PROJECTS_QUERY_KEY,
   REPORT_PDF_QUERY_KEY,
@@ -48,4 +49,9 @@ export function useInvalidateReportPdf() {
 export function useInvalidateUserProfile() {
   const queryClient = useQueryClient();
   return () => queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+}
+
+export function useInvalidateOldReports() {
+  const queryClient = useQueryClient();
+  return () => queryClient.invalidateQueries({ queryKey: OLD_REPORTS_QUERY_KEY });
 }

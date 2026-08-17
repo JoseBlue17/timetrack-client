@@ -1,7 +1,4 @@
 import { OldReportsSection } from '@/modules/reports/components/old-reports-section';
-import type { IOldPdfReport } from '@/modules/reports/components/reports.interface';
-
-const ARCHIVED_PDF_REPORTS: IOldPdfReport[] = [];
 
 export function TimesheetsOldReportsTab() {
   return (
@@ -12,7 +9,7 @@ export function TimesheetsOldReportsTab() {
       </div>
 
       <div className="p-4">
-        <OldReportsSection uploadedPdfReports={ARCHIVED_PDF_REPORTS} />
+        <OldReportsSection />
       </div>
     </div>
   );
