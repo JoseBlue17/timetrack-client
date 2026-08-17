@@ -108,9 +108,9 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
                       <InputNumber
                         className="w-full"
                         placeholder="8"
-                        min={0.25}
+                        min={1}
                         max={24}
-                        step={0.25}
+                        precision={0}
                         addonAfter="horas"
                       />
                     </Form.Item>
