@@ -1,9 +1,26 @@
 import { InputNumber } from 'antd';
 import { DollarOutlined } from '@ant-design/icons';
-import { useHourlyRate } from '@/hooks';
+import { useHourlyRate, useLoggedUser, useUpdateProfile } from '@/hooks';
 
 export function HourlyRateSection() {
   const { hourlyRate, setHourlyRate } = useHourlyRate();
+  const { loggedUser } = useLoggedUser();
+  const { updateProfile } = useUpdateProfile();
+
+  const handleChange = (rate: number | null) => {
+    const validRate = rate ?? 0;
+    setHourlyRate(validRate);
+
+    if (!loggedUser) {
+      return;
+    }
+
+    updateProfile({
+      firstName: loggedUser.profile.firstName,
+      lastName: loggedUser.profile.lastName,
+      hourlyRate: validRate,
+    });
+  };
 
   return (
     <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
@@ -24,7 +41,7 @@ export function HourlyRateSection() {
         precision={2}
         prefix="$"
         value={hourlyRate}
-        onChange={setHourlyRate}
+        onChange={handleChange}
       />
     </section>
   );

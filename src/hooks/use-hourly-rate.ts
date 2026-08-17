@@ -1,21 +1,27 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-const HOURLY_RATE_KEY = 'timetrack_hourly_rate';
+import useLoggedUser from './use-logged-user';
+import { getStoredHourlyRate, setStoredHourlyRate } from '@/helpers/hourly-rate-storage';
+
+function resolveHourlyRate(profileRate: number | undefined, localRate: number): number {
+  return typeof profileRate === 'number' ? profileRate : localRate;
+}
 
 export function useHourlyRate() {
-  const [hourlyRate, setHourlyRateState] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const storedRate = localStorage.getItem(HOURLY_RATE_KEY);
-      return storedRate ? Number(storedRate) : 0;
-    }
-    return 0;
-  });
+  const { loggedUser } = useLoggedUser();
+  const profileHourlyRate = loggedUser?.profile?.hourlyRate;
+  const [localRate, setLocalRate] = useState<number>(() => getStoredHourlyRate());
 
-  const setHourlyRate = (rate: number | null) => {
+  const hourlyRate = useMemo(
+    () => resolveHourlyRate(profileHourlyRate, localRate),
+    [profileHourlyRate, localRate],
+  );
+
+  const setHourlyRate = useCallback((rate: number | null) => {
     const validRate = rate || 0;
-    setHourlyRateState(validRate);
-    localStorage.setItem(HOURLY_RATE_KEY, validRate.toString());
-  };
+    setLocalRate(validRate);
+    setStoredHourlyRate(validRate);
+  }, []);
 
   return { hourlyRate, setHourlyRate };
 }

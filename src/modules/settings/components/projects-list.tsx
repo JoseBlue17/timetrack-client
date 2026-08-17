@@ -1,19 +1,18 @@
 import { useState } from 'react';
-import { Button, InputNumber, Popconfirm, Spin } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
+import { Button, Popconfirm, Spin } from 'antd';
 import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
 
 import { useGetProjects } from '../hooks/use-get-projects';
 import { useDeleteProject } from '../hooks/use-delete-project';
 import { ProjectFormModal } from './project-form-modal';
 import { SignatureUpload } from './signature-upload';
+import { HourlyRateSection } from './hourly-rate-section';
 
 import type { IProject } from '../project.interface';
-import { useHourlyRate, useSignature, useCanEditConfiguration } from '@/hooks';
+import { useSignature, useCanEditConfiguration } from '@/hooks';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
-  const { hourlyRate, setHourlyRate } = useHourlyRate();
   const { signatureDataUrl, setSignatureDataUrl } = useSignature();
   const isAdmin = useCanEditConfiguration();
 
@@ -124,27 +123,7 @@ export function ProjectsList() {
 
       <ProjectFormModal open={modalOpen} onClose={() => setModalOpen(false)} project={selected} />
 
-      <section className="mb-4 mt-4 bg-white p-6 rounded-2xl border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-1">
-          <DollarOutlined className="text-green-500! mr-2" />
-          Costo por hora ($)
-        </h3>
-
-        <p className="text-sm text-gray-500 mb-3">
-          Este valor se usará por defecto al registrar tus horas en tus timesheets.
-          <div className="border-b border-gray-200 mt-2"></div>
-        </p>
-
-        <InputNumber
-          className="w-full max-w-xs"
-          placeholder="0.00"
-          min={0}
-          precision={2}
-          prefix="$"
-          value={hourlyRate}
-          onChange={setHourlyRate}
-        />
-      </section>
+      <HourlyRateSection />
       {!isAdmin && (
         <div className="mb-4 mt-4">
           <SignatureUpload

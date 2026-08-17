@@ -7,6 +7,7 @@ import { dataUrlToFile } from '@/tools';
 interface IUseCloseMonthParams {
   month: number;
   year: number;
+  hourlyRate: number;
   supervisorId?: string | null;
   signatureDataUrl: string | null;
 }
@@ -14,6 +15,7 @@ interface IUseCloseMonthParams {
 export function useCloseMonth({
   month,
   year,
+  hourlyRate,
   supervisorId,
   signatureDataUrl,
 }: IUseCloseMonthParams) {
@@ -25,11 +27,17 @@ export function useCloseMonth({
 
     try {
       const signatureFile = dataUrlToFile(signatureDataUrl, 'signature.png');
-      createReport({ month, year, supervisorId: supervisorId ?? undefined, signatureFile });
+      createReport({
+        month,
+        year,
+        hourlyRate,
+        supervisorId: supervisorId ?? undefined,
+        signatureFile,
+      });
     } catch (error) {
       showError(error as AxiosResponseError);
     }
-  }, [signatureDataUrl, month, year, supervisorId, createReport, showError]);
+  }, [signatureDataUrl, month, year, hourlyRate, supervisorId, createReport, showError]);
 
   return { closeMonth, isClosingMonth: isCreatingReport };
 }

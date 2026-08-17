@@ -17,7 +17,6 @@ type UpdateTimesheet = ReturnType<typeof useUpdateTimesheet>['mutate'];
 interface UseTimesheetFormSubmitParams {
   form: FormInstance;
   timesheet?: ITimesheet;
-  hourlyRate: number;
   createTimesheet: CreateTimesheet;
   updateTimesheet: UpdateTimesheet;
   onClose: () => void;
@@ -26,7 +25,6 @@ interface UseTimesheetFormSubmitParams {
 export function useTimesheetFormSubmit({
   form,
   timesheet,
-  hourlyRate,
   createTimesheet,
   updateTimesheet,
   onClose,
@@ -52,7 +50,7 @@ export function useTimesheetFormSubmit({
       const totalCount = values.entries.length;
 
       values.entries.forEach((entryToCreate) => {
-        createTimesheet(toCreateTimesheetPayload(date, entryToCreate, hourlyRate), {
+        createTimesheet(toCreateTimesheetPayload(date, entryToCreate), {
           onSuccess: () => {
             completedCount += 1;
             if (completedCount === totalCount) closeModal();
@@ -60,6 +58,6 @@ export function useTimesheetFormSubmit({
         });
       });
     },
-    [isEditing, hourlyRate, createTimesheet, updateTimesheet, closeModal],
+    [isEditing, createTimesheet, updateTimesheet, closeModal],
   );
 }

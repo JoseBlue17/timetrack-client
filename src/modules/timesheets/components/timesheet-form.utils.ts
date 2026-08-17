@@ -18,16 +18,11 @@ export const getTimesheetFormInitialValues = (
 
 export const formatTimesheetDate = (date: dayjs.Dayjs): string => date.format('YYYY-MM-DD');
 
-export const toCreateTimesheetPayload = (
-  date: string,
-  entry: ITimesheetEntry,
-  hourlyRate: number,
-) => ({
+export const toCreateTimesheetPayload = (date: string, entry: ITimesheetEntry) => ({
   date,
   project: entry.project,
   description: entry.description,
   hours: entry.hours ?? 0,
-  hourlyRate,
 });
 
 export const toUpdateTimesheetPayload = (date: string, entry: ITimesheetEntry) => ({

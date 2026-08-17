@@ -14,6 +14,7 @@ interface ICreateReportPayload {
   year: number;
   supervisorId?: string;
   signatureFile?: File;
+  hourlyRate: number;
 }
 
 export function useCreateReport() {
@@ -24,12 +25,13 @@ export function useCreateReport() {
 
   const { mutate: createReport, isPending: isCreatingReport } = useMutation({
     mutationFn: (payload: ICreateReportPayload) => {
-      const { month, year, supervisorId, signatureFile } = payload;
+      const { month, year, supervisorId, signatureFile, hourlyRate } = payload;
 
       if (signatureFile) {
         const formData = new FormData();
         formData.append('month', String(month));
         formData.append('year', String(year));
+        formData.append('hourlyRate', String(hourlyRate));
         if (supervisorId) formData.append('supervisorId', supervisorId);
         formData.append('file', signatureFile);
         return Http.post('/timesheets/close-month', formData).then(({ data }) => data);
@@ -39,6 +41,7 @@ export function useCreateReport() {
         month,
         year,
         supervisorId,
+        hourlyRate,
       }).then(({ data }) => data);
     },
     onSuccess: () => {

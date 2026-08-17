@@ -5,7 +5,6 @@ export interface ITimesheet {
   project: string;
   description: string;
   hours: number;
-  hourlyRate: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,7 +14,6 @@ export interface ICreateTimesheetValues {
   project: string;
   description: string;
   hours: number;
-  hourlyRate: number;
 }
 
 export interface IUpdateTimesheetValues {

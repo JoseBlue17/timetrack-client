@@ -5,7 +5,6 @@ import { useCreateTimesheet } from '../hooks/use-create-timesheet';
 import { useUpdateTimesheet } from '../hooks/use-update-timesheet';
 import { useTimesheetFormSubmit } from '../hooks/use-timesheet-form-submit';
 import { useGetProjects } from '@/modules/settings/hooks/use-get-projects';
-import { useHourlyRate } from '@/hooks';
 import { filterOptionByLabel } from '@/helpers/filter-option-by-label';
 import {
   getTimesheetFormInitialValues,
@@ -24,7 +23,6 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
   const isPending = isCreating || isUpdating;
 
   const { projects = [] } = useGetProjects();
-  const { hourlyRate } = useHourlyRate();
 
   const projectOptions = projects.map((project) => ({ value: project.name, label: project.name }));
 
@@ -33,7 +31,6 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
   const handleSubmit = useTimesheetFormSubmit({
     form,
     timesheet,
-    hourlyRate,
     createTimesheet,
     updateTimesheet,
     onClose,

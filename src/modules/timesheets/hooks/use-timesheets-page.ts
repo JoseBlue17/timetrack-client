@@ -5,7 +5,7 @@ import type { ITimesheet } from '../components/timesheet.interface';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { useCloseMonth } from '../hooks/use-close-month';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { useSignature, useSelectedSupervisor } from '@/hooks';
+import { useSignature, useSelectedSupervisor, useHourlyRate } from '@/hooks';
 import {
   countUniqueTimesheetDays,
   groupTimesheetsByDate,
@@ -39,9 +39,11 @@ export function useTimesheetsPage() {
 
   const { signatureDataUrl } = useSignature();
   const { selectedSupervisorId } = useSelectedSupervisor();
+  const { hourlyRate } = useHourlyRate();
   const { closeMonth, isClosingMonth } = useCloseMonth({
     month: Number(currentMonth),
     year: Number(currentYear),
+    hourlyRate,
     supervisorId: selectedSupervisorId,
     signatureDataUrl,
   });

@@ -11,6 +11,7 @@ export interface IUpdateProfilePayload {
   lastName: string;
   email?: string;
   position?: string;
+  hourlyRate?: number;
 }
 
 export function useUpdateProfile() {
