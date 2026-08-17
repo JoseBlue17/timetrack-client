@@ -10,7 +10,7 @@ export const createEmptyEntry = (): ITimesheetEntry => ({
 export const getTimesheetFormInitialValues = (
   timesheet?: Pick<ITimesheet, 'date' | 'project' | 'description' | 'hours'>,
 ): { date: dayjs.Dayjs; entries: ITimesheetEntry[] } => ({
-  date: timesheet ? dayjs(timesheet.date) : dayjs(),
+  date: timesheet ? dayjs(timesheet.date.slice(0, 10)) : dayjs(),
   entries: timesheet
     ? [{ project: timesheet.project, description: timesheet.description, hours: timesheet.hours }]
     : [createEmptyEntry()],
