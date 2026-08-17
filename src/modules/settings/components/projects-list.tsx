@@ -13,7 +13,7 @@ import { useSignature, useCanEditConfiguration } from '@/hooks';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
-  const { signatureDataUrl, setSignatureDataUrl } = useSignature();
+  const { signatureUrl, setSignature, isUploading } = useSignature();
   const isAdmin = useCanEditConfiguration();
 
   const { projects = [], isLoading } = useGetProjects();
@@ -129,8 +129,9 @@ export function ProjectsList() {
           <SignatureUpload
             title="Firma digital"
             description="Sube tu firma para agilizar el cierre de reportes"
-            signatureDataUrl={signatureDataUrl}
-            onChange={setSignatureDataUrl}
+            signatureUrl={signatureUrl}
+            onChange={setSignature}
+            isUploading={isUploading}
           />
         </div>
       )}

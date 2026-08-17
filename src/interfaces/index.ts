@@ -8,6 +8,7 @@ export interface IProfile {
   position?: string;
   slackUserId?: string;
   avatarUrl?: string;
+  signatureImageUrl?: string;
   hourlyRate?: number;
 }
 

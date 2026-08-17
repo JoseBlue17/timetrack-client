@@ -12,6 +12,7 @@ export interface IUpdateProfilePayload {
   email?: string;
   position?: string;
   hourlyRate?: number;
+  signatureImageUrl?: string | null;
 }
 
 export function useUpdateProfile() {

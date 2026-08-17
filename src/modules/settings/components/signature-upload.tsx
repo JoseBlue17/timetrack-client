@@ -4,15 +4,17 @@ import { LuPenTool, LuTrash2, LuUpload } from 'react-icons/lu';
 interface ISignatureUploadProps {
   title: string;
   description: string;
-  signatureDataUrl: string | null;
-  onChange: (dataUrl: string | null) => void;
+  signatureUrl: string | null;
+  onChange: (file: File | null) => void;
+  isUploading?: boolean;
 }
 
 export function SignatureUpload({
   title,
   description,
-  signatureDataUrl,
+  signatureUrl,
   onChange,
+  isUploading,
 }: ISignatureUploadProps) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-200">
@@ -30,14 +32,19 @@ export function SignatureUpload({
           <div className="border-b border-gray-200 mt-2"></div>
         </p>
 
-        {signatureDataUrl ? (
+        {signatureUrl ? (
           <div className="flex items-center gap-4">
             <img
-              src={signatureDataUrl}
+              src={signatureUrl}
               alt={title}
               className="h-16 rounded-lg border border-gray-200 bg-white"
             />
-            <Button danger icon={<LuTrash2 />} onClick={() => onChange(null)}>
+            <Button
+              danger
+              icon={<LuTrash2 />}
+              onClick={() => onChange(null)}
+              disabled={isUploading}
+            >
               Eliminar firma
             </Button>
           </div>
@@ -47,17 +54,17 @@ export function SignatureUpload({
             maxCount={1}
             showUploadList={false}
             beforeUpload={(file) => {
-              const reader = new FileReader();
-              reader.onload = (e) => onChange(e.target?.result as string);
-              reader.readAsDataURL(file);
+              onChange(file);
               return false;
             }}
+            disabled={isUploading}
           >
             <Button
               icon={<LuUpload />}
+              loading={isUploading}
               className="rounded-xl border-gray-200 text-gray-600 font-medium hover:text-indigo-600! hover:border-indigo-500!"
             >
-              Cargar imagen de firma
+              {isUploading ? 'Subiendo...' : 'Cargar imagen de firma'}
             </Button>
           </Upload>
         )}

@@ -5,7 +5,7 @@ import type { ITimesheet } from '../components/timesheet.interface';
 import { useGetTimesheets } from '../hooks/use-get-timesheets';
 import { useCloseMonth } from '../hooks/use-close-month';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
-import { useSignature, useSelectedSupervisor, useHourlyRate } from '@/hooks';
+import { useSelectedSupervisor, useHourlyRate, useSignature } from '@/hooks';
 import {
   countUniqueTimesheetDays,
   groupTimesheetsByDate,
@@ -37,7 +37,7 @@ export function useTimesheetsPage() {
     isFetchingNextPage,
   });
 
-  const { signatureDataUrl } = useSignature();
+  const { signatureUrl } = useSignature();
   const { selectedSupervisorId } = useSelectedSupervisor();
   const { hourlyRate } = useHourlyRate();
   const { closeMonth, isClosingMonth } = useCloseMonth({
@@ -45,11 +45,11 @@ export function useTimesheetsPage() {
     year: Number(currentYear),
     hourlyRate,
     supervisorId: selectedSupervisorId,
-    signatureDataUrl,
+    signatureUrl,
   });
 
   const handleCloseMonth = useCallback(() => {
-    if (!signatureDataUrl) {
+    if (!signatureUrl) {
       Modal.warning({
         title: 'Firma requerida',
         content: 'Debes subir tu firma en Configuración antes de cerrar el mes.',
@@ -73,7 +73,7 @@ export function useTimesheetsPage() {
       cancelText: 'Cancelar',
       onOk: () => closeMonth(),
     });
-  }, [closeMonth, selectedSupervisorId, signatureDataUrl]);
+  }, [closeMonth, selectedSupervisorId, signatureUrl]);
 
   const totalHours = sumTimesheetsHours(timesheets);
   const uniqueDays = countUniqueTimesheetDays(timesheets);

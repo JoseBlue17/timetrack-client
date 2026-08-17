@@ -15,6 +15,7 @@ export { useSignature } from './use-signature';
 export { useAdminSignature } from './use-admin-signature';
 export { useSelectedSupervisor } from './use-selected-supervisor';
 export { useUpdateProfile } from './use-update-profile';
+export { useUploadToS3 } from './use-upload-to-s3';
 export {
   useInvalidateTimesheets,
   useInvalidatePayments,

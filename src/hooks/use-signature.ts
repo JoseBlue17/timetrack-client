@@ -1,23 +1,59 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
-const SIGNATURE_KEY = 'timetrack_signature';
+import useLoggedUser from './use-logged-user';
+import { useUploadToS3 } from './use-upload-to-s3';
+import { USER_PROFILE_QUERY_KEY } from '@/query-keys';
+
+const LEGACY_SIGNATURE_KEY = 'timetrack_signature';
+
+function removeLegacySignature(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(LEGACY_SIGNATURE_KEY);
+}
 
 export function useSignature() {
-  const [signatureDataUrl, setSignatureDataUrlState] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(SIGNATURE_KEY);
-    }
-    return null;
-  });
+  const { loggedUser, updateLoggedUser } = useLoggedUser();
+  const { uploadUserSignature, isUploading } = useUploadToS3();
+  const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
-  const setSignatureDataUrl = (dataUrl: string | null) => {
-    setSignatureDataUrlState(dataUrl);
-    if (dataUrl) {
-      localStorage.setItem(SIGNATURE_KEY, dataUrl);
-    } else {
-      localStorage.removeItem(SIGNATURE_KEY);
-    }
-  };
+  const signatureUrl = useMemo(
+    () => loggedUser?.profile?.signatureImageUrl ?? null,
+    [loggedUser?.profile?.signatureImageUrl],
+  );
 
-  return { signatureDataUrl, setSignatureDataUrl };
+  const setSignature = useCallback(
+    async (file: File | null) => {
+      if (file === null) {
+        removeLegacySignature();
+        const updatedUser = {
+          ...loggedUser!,
+          profile: { ...loggedUser!.profile!, signatureImageUrl: undefined },
+        };
+        updateLoggedUser(updatedUser);
+        queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+        return;
+      }
+
+      setIsSaving(true);
+
+      try {
+        const signatureUrl = await uploadUserSignature(file);
+        if (!signatureUrl) return;
+
+        const updatedUser = {
+          ...loggedUser!,
+          profile: { ...loggedUser!.profile!, signatureImageUrl: signatureUrl },
+        };
+        updateLoggedUser(updatedUser);
+        queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [loggedUser, uploadUserSignature, updateLoggedUser, queryClient],
+  );
+
+  return { signatureUrl, setSignature, isUploading: isUploading || isSaving };
 }

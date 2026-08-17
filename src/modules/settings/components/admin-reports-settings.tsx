@@ -8,7 +8,7 @@ export function AdminReportsSettings() {
     <SignatureUpload
       title="Firma de aprobación"
       description="Esta firma se adjuntará por defecto al aprobar reportes"
-      signatureDataUrl={adminSignatureDataUrl}
+      signatureUrl={adminSignatureDataUrl}
       onChange={setAdminSignatureDataUrl}
     />
   );
