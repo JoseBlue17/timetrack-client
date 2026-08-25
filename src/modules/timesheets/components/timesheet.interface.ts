@@ -68,6 +68,5 @@ export interface ITimesheetFormModalProps {
 
 export interface ITimesheetsTableProps {
   groups: ITimesheetDateGroup[];
-  loading?: boolean;
   onEdit: (timesheet: ITimesheet) => void;
 }

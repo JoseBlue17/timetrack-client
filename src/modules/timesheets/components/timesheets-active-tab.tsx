@@ -1,10 +1,11 @@
-import { Spin } from 'antd';
-import { LuClock } from 'react-icons/lu';
 import type { Dayjs } from 'dayjs';
+import { LuClock } from 'react-icons/lu';
+
+import { EmptyState } from '@/components/empty-state';
+import { LoadingBox } from '@/components/loading-box';
 import type { ITimesheet, ITimesheetDateGroup } from './timesheet.interface';
-import { TimesheetsTable } from './timesheets-table';
 import { TimesheetsActiveHeader } from './timesheets-active-header';
-import { LoadingOutlined } from '@ant-design/icons';
+import { TimesheetsTable } from './timesheets-table';
 
 interface ITimesheetsActiveTabProps {
   timesheets: ITimesheet[];
@@ -35,6 +36,10 @@ export function TimesheetsActiveTab({
   onAdd,
   onEdit,
 }: ITimesheetsActiveTabProps) {
+  if (isLoading) {
+    return <LoadingBox text="Cargando timesheets..." />;
+  }
+
   return (
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <TimesheetsActiveHeader
@@ -46,28 +51,18 @@ export function TimesheetsActiveTab({
         onAdd={onAdd}
       />
 
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-2 px-4 pb-4">
-        {timesheets.length > 0 ? (
-          <TimesheetsTable groups={groups} loading={isLoading} onEdit={onEdit} />
-        ) : (
-          <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
-              <LuClock size={32} />
-            </div>
-            <div>
-              <p className="text-gray-800 font-bold">No hay registros este mes</p>
-              <p className="text-gray-400 text-sm">
-                Comienza a trackear tus horas haciendo clic en &quot;Agregar registro&quot;
-              </p>
-            </div>
-          </div>
-        )}
+      {timesheets.length > 0 ? (
+        <TimesheetsTable groups={groups} onEdit={onEdit} />
+      ) : (
+        <EmptyState
+          icon={<LuClock size={32} />}
+          title="No hay registros este mes"
+          description='Comienza a trackear tus horas haciendo clic en "Agregar registro"'
+        />
+      )}
 
-        <div ref={observerTarget} className="flex justify-center py-8">
-          {isFetchingNextPage ? (
-            <Spin indicator={<LoadingOutlined spin />} size="large" className="text-indigo-600" />
-          ) : null}
-        </div>
+      <div ref={observerTarget} className="flex justify-center py-8">
+        {isFetchingNextPage ? <LoadingBox text="Cargando más..." className="p-8" /> : null}
       </div>
     </div>
   );

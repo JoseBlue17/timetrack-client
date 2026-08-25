@@ -8,7 +8,7 @@ import {
 } from './timesheets-table.columns';
 import { useExplosion } from '@/components/explosion/explosion';
 
-export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTableProps) {
+export function TimesheetsTable({ groups, onEdit }: ITimesheetsTableProps) {
   const { expandedKeys, setExpandedKeys, deleteTimesheet, isDeleting, handleToggleExpand } =
     useTimesheetsTable();
   const { triggerExplosion, Explosion } = useExplosion();
@@ -34,7 +34,6 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
         columns={columns}
         dataSource={groups}
         rowKey="date"
-        loading={loading}
         pagination={false}
         expandable={{
           expandedRowRender,
@@ -49,7 +48,6 @@ export function TimesheetsTable({ groups, loading, onEdit }: ITimesheetsTablePro
             setExpandedKeys(expandedKeys.filter((key) => key !== record.date));
           },
         }}
-        className="timesheets-main-table"
       />
     </>
   );
