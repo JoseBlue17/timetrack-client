@@ -1,140 +1,80 @@
-import { useState } from 'react';
-import { Table, Button, Tag, Spin } from 'antd';
-import { LuEye, LuFileText } from 'react-icons/lu';
-import { useGetReports } from '@/modules/reports/hooks/use-get-reports';
-import { useGetReportPdf } from '@/modules/reports/hooks/use-get-report-pdf';
-import type { IMonthlyReport } from '@/modules/reports/components/reports.interface';
+import { useRef, useState } from 'react';
+import { Table } from 'antd';
+
+import { EmptyState } from '@/components/empty-state';
+import { LoadingBox } from '@/components/loading-box';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import useLoggedUser from '@/hooks/use-logged-user';
+import { useGetReportsInfinite } from '@/modules/reports/hooks/use-get-reports-infinite';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
-import { useLoggedUser } from '@/hooks';
-import {
-  getReportStatusMapping,
-  STATUS_TAG_COLORS,
-} from '@/modules/reports/components/report-status-mappings';
-import type { ReportStatus } from '@/enums';
 import { UserRole } from '@/enums';
 
-function ReportDetailRow({ reportId, monthName }: { reportId: string; monthName: string }) {
-  const { reportPdfUrl, isLoading } = useGetReportPdf(reportId);
-
-  if (isLoading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <Spin size="small" />
-        <span className="ml-2 text-gray-400 text-sm">Cargando PDF...</span>
-      </div>
-    );
-  }
-
-  if (!reportPdfUrl) {
-    return (
-      <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
-        <p className="text-gray-400 italic text-sm text-center">
-          No hay PDF generado para el mes de {monthName}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-2 bg-stone-50 rounded-2xl border border-stone-100 ml-12">
-      <iframe
-        src={reportPdfUrl}
-        className="w-full rounded-xl border border-gray-200"
-        style={{ height: '500px' }}
-        title={`PDF ${monthName}`}
-      />
-    </div>
-  );
-}
+import { getHistoricalReportsColumns } from './historical-reports-table.columns';
+import { HistoricalReportDetailRow } from './historical-report-detail-row';
 
 export function HistoricalReportsTable() {
-  const { reports, isLoading } = useGetReports();
-  const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
+  const { reports, error, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    useGetReportsInfinite();
   const { loggedUser } = useLoggedUser();
   const userRole = loggedUser?.role ?? UserRole.Employee;
+  const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  const renderStatus = (status: ReportStatus) => {
-    const mapping = getReportStatusMapping(status, userRole);
-    return (
-      <Tag
-        color={STATUS_TAG_COLORS[mapping.color]}
-        className="rounded-full px-4 py-0.5 border-none font-medium"
-      >
-        {mapping.label}
-      </Tag>
-    );
-  };
+  useInfiniteScroll({
+    observerTarget,
+    onLoadMore: fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isFetchingNextPage,
+  });
 
-  const columns = [
-    {
-      title: 'Mes',
-      dataIndex: 'monthName',
-      key: 'monthName',
-      render: (text: string) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
-            <LuFileText size={16} />
-          </div>
-          <span className="font-bold text-gray-700">{text}</span>
-        </div>
-      ),
-    },
-    {
-      title: 'Estado',
-      dataIndex: 'reportStatus',
-      key: 'reportStatus',
-      render: renderStatus,
-    },
-    {
-      title: 'Total horas',
-      dataIndex: 'totalWorkedHours',
-      key: 'totalWorkedHours',
-      render: (hours: number) => <span className="font-semibold text-gray-600">{hours}h</span>,
-    },
-    {
-      title: 'Acciones',
-      key: 'actions',
-      render: (_: unknown, record: IMonthlyReport) => (
-        <div className="flex gap-4">
-          <Button
-            type="text"
-            icon={<LuEye size={18} className="text-gray-400 group-hover:text-indigo-500" />}
-            onClick={() => setSelectedReport({ id: record.id, name: record.monthName })}
-            className="flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700! group"
-          >
-            Ver PDF
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const columns = getHistoricalReportsColumns({
+    userRole,
+    onViewReport: (report) => setSelectedReport({ id: report.id, name: report.monthName }),
+  });
 
   if (isLoading) {
+    return <LoadingBox text="Cargando historial de reportes..." />;
+  }
+
+  if (error) {
     return (
-      <div className="p-20 flex flex-col items-center justify-center gap-4">
-        <Spin size="large" className="text-indigo-600" />
-        <p className="text-gray-400 animate-pulse font-medium">Cargando historial de reportes...</p>
-      </div>
+      <EmptyState
+        title="Error al cargar reportes"
+        description={error.response?.data?.message ?? error.message ?? 'Intenta de nuevo'}
+      />
+    );
+  }
+
+  if (!reports.length) {
+    return (
+      <EmptyState
+        title="No hay reportes históricos"
+        description="Los reportes cerrados aparecerán aquí"
+      />
     );
   }
 
   return (
     <section>
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <Table
-          columns={columns}
-          dataSource={reports}
-          rowKey="id"
-          pagination={false}
-          expandable={{
-            rowExpandable: () => true,
-            expandedRowRender: (record) => (
-              <ReportDetailRow reportId={record.id} monthName={record.monthName} />
-            ),
-          }}
-          className="historical-reports-table"
-        />
+      <Table
+        columns={columns}
+        dataSource={reports}
+        rowKey="id"
+        pagination={false}
+        className="historical-reports-table"
+        expandable={{
+          rowExpandable: () => true,
+          expandedRowRender: (record) => (
+            <HistoricalReportDetailRow reportId={record.id} monthName={record.monthName} />
+          ),
+        }}
+      />
+
+      <div ref={observerTarget} className="flex justify-center py-8">
+        {isFetchingNextPage ? <LoadingBox text="Cargando más..." className="p-8" /> : null}
       </div>
+
       <ReportPdfModal
         open={!!selectedReport}
         reportId={selectedReport?.id ?? null}

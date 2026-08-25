@@ -1,31 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { ReportStatus } from '@/enums';
-import type { IMonthlyReport } from '../components/reports.interface';
+import type {
+  BackendMonthlyReport,
+  IReportsPaginatedResponse,
+  IMonthlyReport,
+} from '../components/reports.interface';
 import { useInvalidateMonthlyReports } from '@/hooks';
 import { REPORTS_LIST_QUERY_KEY } from '@/query-keys';
-
-interface BackendMonthlyReport {
-  id?: string;
-  _id?: string;
-  userId?: string;
-  month: number;
-  year: number;
-  totalHours?: number;
-  totalAmount?: number;
-  status?: string;
-  employeeSigned?: boolean;
-  firstName?: string;
-  lastName?: string;
-  supervisorId?: string;
-  supervisorName?: string;
-  paymentId?: string | null;
-}
-
-interface IReportsPaginatedResponse {
-  data: BackendMonthlyReport[];
-  nextCursor: string | null;
-}
 
 const BACKEND_TO_ENUM: Record<string, ReportStatus> = {
   draft: ReportStatus.Draft,

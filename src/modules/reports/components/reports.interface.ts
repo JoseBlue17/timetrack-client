@@ -1,5 +1,27 @@
 import type { ReportStatus } from '@/enums';
 
+export interface BackendMonthlyReport {
+  id?: string;
+  _id?: string;
+  userId?: string;
+  month: number;
+  year: number;
+  totalHours?: number;
+  totalAmount?: number;
+  status?: string;
+  employeeSigned?: boolean;
+  firstName?: string;
+  lastName?: string;
+  supervisorId?: string;
+  supervisorName?: string;
+  paymentId?: string | null;
+}
+
+export interface IReportsPaginatedResponse {
+  data: BackendMonthlyReport[];
+  nextCursor: string | null;
+}
+
 export interface IMonthlyReport {
   id: string;
   userId: string;
