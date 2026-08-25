@@ -33,7 +33,7 @@ const ALL_SETTINGS_ITEMS: SettingsTabConfig[] = [
   },
   {
     key: 'wallets',
-    roles: [UserRole.Employee, UserRole.Supervisor],
+    roles: [UserRole.Employee],
     label: (
       <span className="flex items-center gap-2">
         <LuWallet />
@@ -44,7 +44,7 @@ const ALL_SETTINGS_ITEMS: SettingsTabConfig[] = [
   },
   {
     key: 'proyectos',
-    roles: [UserRole.Employee, UserRole.Supervisor],
+    roles: [UserRole.Employee],
     label: (
       <span className="flex items-center gap-2">
         <LuFolder />
@@ -74,7 +74,11 @@ export function useSettingsTabItems(role?: UserRoleType): TabsProps['items'] {
           key,
           label,
           children:
-            key === 'reportes' && role === UserRole.Admin ? <AdminReportsSettings /> : children,
+            key === 'reportes' && (role === UserRole.Admin || role === UserRole.Supervisor) ? (
+              <AdminReportsSettings />
+            ) : (
+              children
+            ),
         }),
       ),
     [role],
