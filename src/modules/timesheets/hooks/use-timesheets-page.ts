@@ -21,7 +21,7 @@ export function useTimesheetsPage() {
   const currentMonth = selectedDate.format('MM');
   const currentYear = selectedDate.format('YYYY');
 
-  const { timesheets, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { timesheets, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetTimesheets({
       month: Number(currentMonth),
       year: Number(currentYear),
@@ -103,6 +103,8 @@ export function useTimesheetsPage() {
       selectedDate,
       setSelectedDate,
       isLoading,
+      isError,
+      error,
       isFetchingNextPage,
       isClosingMonth,
       totalHours,
@@ -117,12 +119,14 @@ export function useTimesheetsPage() {
     }),
     [
       activeTab,
+      error,
       groups,
       handleAdd,
       handleClose,
       handleCloseMonth,
       handleEdit,
       isClosingMonth,
+      isError,
       isFetchingNextPage,
       isLoading,
       modalOpen,

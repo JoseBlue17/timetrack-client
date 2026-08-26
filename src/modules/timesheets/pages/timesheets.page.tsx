@@ -16,6 +16,8 @@ export function TimesheetsPage() {
     selectedDate,
     setSelectedDate,
     isLoading,
+    isError,
+    error,
     isFetchingNextPage,
     isClosingMonth,
     totalHours,
@@ -57,6 +59,8 @@ export function TimesheetsPage() {
                     totalHours={totalHours}
                     selectedDate={selectedDate}
                     isLoading={isLoading}
+                    isError={isError}
+                    error={error}
                     isClosingMonth={isClosingMonth}
                     isFetchingNextPage={isFetchingNextPage}
                     observerTarget={observerTarget}

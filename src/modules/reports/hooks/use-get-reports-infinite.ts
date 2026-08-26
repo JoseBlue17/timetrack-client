@@ -5,6 +5,7 @@ import { useInvalidateMonthlyReports } from '@/hooks';
 import { REPORTS_LIST_QUERY_KEY } from '@/query-keys';
 
 import { ReportStatus } from '@/enums';
+import type { AxiosResponseError } from '@/config/http';
 import type {
   BackendMonthlyReport,
   IReportsPaginatedResponse,
@@ -57,10 +58,7 @@ function mapToMonthlyReport(backend: BackendMonthlyReport): IMonthlyReport {
   };
 }
 
-async function getReportsPage(cursor?: string): Promise<{
-  reports: IMonthlyReport[];
-  nextCursor: string | null;
-}> {
+async function getReportsPage(cursor?: string): Promise<IReportsPaginatedResponse> {
   const params: Record<string, string> = {};
   if (cursor) {
     params.cursor = cursor;
@@ -70,15 +68,12 @@ async function getReportsPage(cursor?: string): Promise<{
     params: Object.keys(params).length > 0 ? params : undefined,
   });
 
-  return {
-    reports: data.data.map(mapToMonthlyReport),
-    nextCursor: data.nextCursor ?? null,
-  };
+  return data;
 }
 
 export function useGetReportsInfinite() {
   const {
-    data,
+    data: reports = [],
     error,
     isLoading,
     isFetching,
@@ -86,20 +81,25 @@ export function useGetReportsInfinite() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<
+    IReportsPaginatedResponse,
+    AxiosResponseError,
+    IMonthlyReport[],
+    string[],
+    string | undefined
+  >({
     queryKey: [...REPORTS_LIST_QUERY_KEY, 'infinite'],
     queryFn: async ({ pageParam }) => {
       const cursor = typeof pageParam === 'string' ? pageParam : undefined;
       return getReportsPage(cursor);
     },
-    initialPageParam: undefined as string | undefined,
+    initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    select: (data) => data.pages.flatMap((page) => page.data.map(mapToMonthlyReport)),
     staleTime: 30_000,
   });
 
   const invalidateReports = useInvalidateMonthlyReports();
-
-  const reports = data?.pages.flatMap((page) => page.reports) ?? [];
 
   return {
     reports,

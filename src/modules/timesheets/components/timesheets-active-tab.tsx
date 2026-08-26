@@ -13,6 +13,8 @@ interface ITimesheetsActiveTabProps {
   totalHours: number;
   selectedDate: Dayjs;
   isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
   isClosingMonth: boolean;
   isFetchingNextPage: boolean;
   observerTarget: React.RefObject<HTMLDivElement | null>;
@@ -28,6 +30,8 @@ export function TimesheetsActiveTab({
   totalHours,
   selectedDate,
   isLoading,
+  isError,
+  error,
   isClosingMonth,
   isFetchingNextPage,
   observerTarget,
@@ -38,6 +42,16 @@ export function TimesheetsActiveTab({
 }: ITimesheetsActiveTabProps) {
   if (isLoading) {
     return <LoadingBox text="Cargando timesheets..." />;
+  }
+
+  if (isError) {
+    return (
+      <EmptyState
+        icon={<LuClock size={32} />}
+        title="Error al cargar timesheets"
+        description={error?.message ?? 'Intenta de nuevo'}
+      />
+    );
   }
 
   return (

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Table } from 'antd';
+import { isAxiosError } from 'axios';
 
 import { EmptyState } from '@/components/empty-state';
 import { LoadingBox } from '@/components/loading-box';
@@ -41,7 +42,11 @@ export function HistoricalReportsTable() {
     return (
       <EmptyState
         title="Error al cargar reportes"
-        description={error.response?.data?.message ?? error.message ?? 'Intenta de nuevo'}
+        description={
+          isAxiosError(error)
+            ? (error.response?.data?.message ?? error.message)
+            : ((error as Error).message ?? 'Intenta de nuevo')
+        }
       />
     );
   }
@@ -62,12 +67,13 @@ export function HistoricalReportsTable() {
         dataSource={reports}
         rowKey="id"
         pagination={false}
-        className="historical-reports-table"
+        className="historical-reports-table shadow-sm rounded-lg"
         expandable={{
           rowExpandable: () => true,
           expandedRowRender: (record) => (
             <HistoricalReportDetailRow reportId={record.id} monthName={record.monthName} />
           ),
+          expandIcon: () => null,
         }}
       />
 
