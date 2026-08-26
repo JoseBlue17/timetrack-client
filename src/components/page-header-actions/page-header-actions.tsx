@@ -3,6 +3,7 @@ import { LuBell, LuLogOut } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth, useLoggedUser } from '@/hooks';
+import { ROUTES } from '@/constants';
 import { UserAvatar } from '@/components/user-avatar';
 
 export function PageHeaderActions() {
@@ -28,7 +29,7 @@ export function PageHeaderActions() {
         className="border-none shadow-none bg-gray-50 hover:bg-red-50! hover:text-red-600!"
       />
       <Tooltip title="Perfil">
-        <span onClick={() => navigate('/settings')} className="inline-flex cursor-pointer">
+        <span onClick={() => navigate(ROUTES.SETTINGS)} className="inline-flex cursor-pointer">
           <UserAvatar
             firstName={firstName}
             lastName={lastName}

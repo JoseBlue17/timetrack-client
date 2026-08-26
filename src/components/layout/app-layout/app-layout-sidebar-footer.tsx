@@ -34,7 +34,9 @@ export function AppLayoutSidebarFooter({
         icon={<LuLogOut />}
         onClick={onLogout}
         aria-label="Cerrar sesión"
-        className={cn('w-full bg-gray-50 hover:bg-red-50 hover:border-red-200 hover:text-red-600')}
+        className={cn(
+          'w-full bg-gray-50! hover:bg-red-50! hover:border-red-200! hover:text-red-600!',
+        )}
       >
         Cerrar sesión
       </Button>

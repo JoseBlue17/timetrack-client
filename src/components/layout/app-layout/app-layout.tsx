@@ -4,7 +4,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/hooks';
 import useLoggedUser from '@/hooks/use-logged-user';
-import { cn } from '@/tools/cn';
 import { AppLayoutSidebarFooter } from './app-layout-sidebar-footer';
 import { useNavItems } from './use-nav-items';
 
@@ -27,7 +26,7 @@ export function AppLayout() {
     <Layout className="min-h-screen">
       <Sider
         width={240}
-        className={cn('bg-slate-50 fixed left-0 top-0 bottom-0 h-screen z-50 flex flex-col')}
+        className="bg-slate-50! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
       >
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">
@@ -40,7 +39,7 @@ export function AppLayout() {
               selectedKeys={[location.pathname]}
               onClick={({ key }) => navigate(key)}
               items={navItems as unknown as MenuProps['items']}
-              className={cn('bg-transparent border-0')}
+              className="bg-transparent! border-0!"
               theme="light"
             />
           </div>
@@ -56,8 +55,8 @@ export function AppLayout() {
         </div>
       </Sider>
 
-      <Layout className={cn('ml-60 min-h-screen')}>
-        <Content className={cn('min-h-screen bg-gray-50')}>
+      <Layout className="ml-60! min-h-screen!">
+        <Content className="min-h-screen! bg-gray-50!">
           <Outlet />
         </Content>
       </Layout>

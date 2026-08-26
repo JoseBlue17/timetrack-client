@@ -2,6 +2,7 @@ import { Button, Checkbox, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
 
 import { EMAIL, PASSWORD } from '@/constants/form-rules';
+import { ROUTES } from '@/constants';
 import { usePasswordVisibility } from '@/hooks/use-password-visibility';
 import type { ISignInFormProps, SignInValues } from './sign-in.interface';
 
@@ -58,7 +59,7 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
       <p className="text-center text-sm text-slate-500 mt-4">
         ¿No tienes cuenta?{' '}
         <Link
-          to="/sign-up"
+          to={ROUTES.SIGN_UP}
           className="text-violet-900 hover:text-indigo-700 font-medium transition"
         >
           Regístrate aquí
