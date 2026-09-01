@@ -1,30 +1,23 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+
 import { Http } from '@/config/http';
 import type {
   IGetTimesheetsParams,
   IGetTimesheetsResponse,
   ITimesheet,
 } from '../components/timesheet.interface';
-import { useInvalidateTimesheets } from '@/hooks';
-import { TIMESHEETS_QUERY_KEY } from '@/query-keys';
 
 export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
-  const {
-    data: timesheets = [],
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery<
+  const queryClient = useQueryClient();
+
+  const { data: timesheets = [], ...rest } = useInfiniteQuery<
     IGetTimesheetsResponse,
     Error,
     ITimesheet[],
     ['TIMESHEETS', IGetTimesheetsParams],
     string | undefined
   >({
-    queryKey: [...TIMESHEETS_QUERY_KEY, params],
+    queryKey: ['TIMESHEETS', params],
     queryFn: async ({ pageParam }) => {
       const { data } = await Http.get<IGetTimesheetsResponse>('/timesheets', {
         params: {
@@ -39,16 +32,9 @@ export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
     select: (data) => data.pages.flatMap((page) => page.timesheets),
   });
 
-  const invalidateTimesheets = useInvalidateTimesheets();
-
-  return {
-    timesheets,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    invalidateTimesheets,
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['TIMESHEETS'] });
   };
+
+  return { timesheets, ...rest, invalidate };
 }

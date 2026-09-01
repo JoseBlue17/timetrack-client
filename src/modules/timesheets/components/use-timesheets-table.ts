@@ -3,7 +3,7 @@ import { useDeleteTimesheet } from '../hooks/use-delete-timesheet';
 
 export function useTimesheetsTable() {
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
-  const { mutate: deleteTimesheet, isPending: isDeleting } = useDeleteTimesheet();
+  const { deleteTimesheet, isDeletingTimesheet: isDeleting } = useDeleteTimesheet();
 
   const handleToggleExpand = (date: string) => {
     setExpandedKeys((previousKeys) => {

@@ -1,9 +1,10 @@
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 import { Modal } from 'antd';
-import dayjs from 'dayjs';
 import type { ITimesheet } from '../components/timesheet.interface';
-import { useGetTimesheets } from '../hooks/use-get-timesheets';
-import { useCloseMonth } from '../hooks/use-close-month';
+import { useGetTimesheets } from './use-get-timesheets';
+import { useCloseMonth } from './use-close-month';
+import { useTimesheetFilters } from './use-timesheet-filters';
+import { useTimesheetModal } from './use-timesheet-modal';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useSelectedSupervisor, useHourlyRate, useSignature } from '@/hooks';
 import {
@@ -13,18 +14,14 @@ import {
 } from '../components/timesheet.utils';
 
 export function useTimesheetsPage() {
-  const [activeTab, setActiveTab] = useState<'active' | 'history' | 'old-reports'>('active');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedTimesheet, setSelectedTimesheet] = useState<ITimesheet | undefined>(undefined);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-
-  const currentMonth = selectedDate.format('MM');
-  const currentYear = selectedDate.format('YYYY');
+  const { activeTab, setActiveTab, selectedDate, setSelectedDate, currentMonth, currentYear } =
+    useTimesheetFilters();
+  const { modalOpen, selectedTimesheet, handleEdit, handleAdd, handleClose } = useTimesheetModal();
 
   const { timesheets, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetTimesheets({
-      month: Number(currentMonth),
-      year: Number(currentYear),
+      month: currentMonth,
+      year: currentYear,
     });
 
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -41,8 +38,8 @@ export function useTimesheetsPage() {
   const { selectedSupervisorId } = useSelectedSupervisor();
   const { hourlyRate } = useHourlyRate();
   const { closeMonth, isClosingMonth } = useCloseMonth({
-    month: Number(currentMonth),
-    year: Number(currentYear),
+    month: currentMonth,
+    year: currentYear,
     hourlyRate,
     supervisorId: selectedSupervisorId,
     signatureUrl,
@@ -79,20 +76,20 @@ export function useTimesheetsPage() {
   const uniqueDays = countUniqueTimesheetDays(timesheets);
   const groups = groupTimesheetsByDate(timesheets);
 
-  const handleEdit = useCallback((timesheet: ITimesheet) => {
-    setSelectedTimesheet(timesheet);
-    setModalOpen(true);
-  }, []);
+  const wrappedHandleEdit = useCallback(
+    (timesheet: ITimesheet) => {
+      handleEdit(timesheet);
+    },
+    [handleEdit],
+  );
 
-  const handleAdd = useCallback(() => {
-    setSelectedTimesheet(undefined);
-    setModalOpen(true);
-  }, []);
+  const wrappedHandleAdd = useCallback(() => {
+    handleAdd();
+  }, [handleAdd]);
 
-  const handleClose = useCallback(() => {
-    setModalOpen(false);
-    setSelectedTimesheet(undefined);
-  }, []);
+  const wrappedHandleClose = useCallback(() => {
+    handleClose();
+  }, [handleClose]);
 
   return useMemo(
     () => ({
@@ -112,19 +109,16 @@ export function useTimesheetsPage() {
       groups,
       timesheets,
       handleCloseMonth,
-      handleEdit,
-      handleAdd,
-      handleClose,
+      handleEdit: wrappedHandleEdit,
+      handleAdd: wrappedHandleAdd,
+      handleClose: wrappedHandleClose,
       observerTarget,
     }),
     [
       activeTab,
       error,
       groups,
-      handleAdd,
-      handleClose,
       handleCloseMonth,
-      handleEdit,
       isClosingMonth,
       isError,
       isFetchingNextPage,
@@ -132,9 +126,14 @@ export function useTimesheetsPage() {
       modalOpen,
       selectedDate,
       selectedTimesheet,
+      setActiveTab,
+      setSelectedDate,
       timesheets,
       totalHours,
       uniqueDays,
+      wrappedHandleAdd,
+      wrappedHandleClose,
+      wrappedHandleEdit,
     ],
   );
 }

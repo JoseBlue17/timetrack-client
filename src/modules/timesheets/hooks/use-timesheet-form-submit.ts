@@ -11,8 +11,8 @@ import {
   toUpdateTimesheetPayload,
 } from '../components/timesheet-form.utils';
 
-type CreateTimesheet = ReturnType<typeof useCreateTimesheet>['mutate'];
-type UpdateTimesheet = ReturnType<typeof useUpdateTimesheet>['mutate'];
+type CreateTimesheet = ReturnType<typeof useCreateTimesheet>['createTimesheet'];
+type UpdateTimesheet = ReturnType<typeof useUpdateTimesheet>['updateTimesheet'];
 
 interface UseTimesheetFormSubmitParams {
   form: FormInstance;

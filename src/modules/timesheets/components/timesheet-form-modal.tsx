@@ -16,8 +16,8 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
   const isEditing = !!timesheet;
   const [form] = Form.useForm();
 
-  const { mutate: createTimesheet, isPending: isCreating } = useCreateTimesheet();
-  const { mutate: updateTimesheet, isPending: isUpdating } = useUpdateTimesheet(
+  const { createTimesheet, isCreatingTimesheet: isCreating } = useCreateTimesheet();
+  const { updateTimesheet, isUpdatingTimesheet: isUpdating } = useUpdateTimesheet(
     timesheet?.id ?? '',
   );
   const isPending = isCreating || isUpdating;
