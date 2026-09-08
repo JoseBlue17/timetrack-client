@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import type { AxiosResponseError } from '@/config/http';
 import type { IPayment } from '@/interfaces';
@@ -10,25 +10,34 @@ interface GetPaymentsParams {
   status?: string;
   excludeStatus?: string;
   cursor?: string;
-  limit?: number;
 }
 
 export function useGetPayments(params?: GetPaymentsParams) {
-  const { data: paymentsData, ...rest } = useQuery<
+  const { data: payments = [], ...rest } = useInfiniteQuery<
     IPaginatedResponse<IPayment>,
-    AxiosResponseError
+    AxiosResponseError,
+    IPayment[],
+    [string, GetPaymentsParams | undefined],
+    string | undefined
   >({
     queryKey: [...PAYMENTS_QUERY_KEY, params],
-    queryFn: () =>
-      Http.get<IPaginatedResponse<IPayment>>('/payments', { params }).then(({ data }) => data),
+    queryFn: ({ pageParam }) =>
+      Http.get<IPaginatedResponse<IPayment>>('/payments', {
+        params: {
+          ...params,
+          ...(pageParam ? { cursor: pageParam } : {}),
+        },
+      }).then(({ data }) => data),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    select: (data) => data.pages.flatMap((page) => page.data),
   });
 
   const invalidatePayments = useInvalidatePayments();
 
   return {
     ...rest,
-    payments: paymentsData?.data ?? [],
-    nextCursor: paymentsData?.nextCursor ?? null,
+    payments,
     invalidatePayments,
   };
 }

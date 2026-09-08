@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Spin } from 'antd';
 import { useApproveReportAction } from '../hooks/use-approve-report-action';
 import { useRejectReport } from '../hooks/use-reject-report';
 import type { IMonthlyReport } from './reports.interface';
@@ -6,13 +7,22 @@ import { ReportListItem } from './report-list-item';
 import { ReportPdfModal } from './report-pdf-modal';
 import { ReportPaymentModal } from './report-payment-modal';
 import { useLoggedUser, useCanEditConfiguration, useIsSupervisor } from '@/hooks';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { UserRole } from '@/enums';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
+export function MonthlyReportsList({
+  monthlyReportsData,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
+}: IMonthlyReportsListProps) {
   const { handleApprove, isApprovingReport } = useApproveReportAction();
   const { rejectReport, isRejectingReport } = useRejectReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
@@ -23,6 +33,15 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
   const isAdmin = useCanEditConfiguration();
   const isSupervisor = useIsSupervisor();
   const userRole = loggedUser?.role ?? UserRole.Employee;
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useInfiniteScroll({
+    observerTarget,
+    onLoadMore: onLoadMore ?? (() => undefined),
+    hasNextPage: hasMore ?? false,
+    isLoading: false,
+    isFetchingNextPage: isLoadingMore ?? false,
+  });
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
@@ -54,6 +73,10 @@ export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListPr
             />
           ))
         )}
+
+        <div ref={observerTarget} className="flex justify-center pt-2">
+          {isLoadingMore ? <Spin size="small" /> : null}
+        </div>
       </div>
 
       <ReportPdfModal

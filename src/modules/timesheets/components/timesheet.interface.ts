@@ -25,7 +25,6 @@ export interface IUpdateTimesheetValues {
 
 export interface IGetTimesheetsParams {
   cursor?: string;
-  limit?: number;
   terms?: string;
   month?: number;
   year?: number;

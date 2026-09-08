@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { OLD_REPORTS_QUERY_KEY } from '@/query-keys';
 import { useInvalidateOldReports } from '@/hooks';
@@ -21,6 +21,11 @@ export interface IOldReport {
   referenceMonthLabel: string;
   uploadedAtDate: string;
   pdfPath: string;
+}
+
+interface IOldReportsResponse {
+  data: IOldReportFromApi[];
+  nextCursor: string | null;
 }
 
 const MONTH_NAMES = [
@@ -55,12 +60,21 @@ function mapToOldReport(raw: IOldReportFromApi): IOldReport {
 }
 
 export function useGetOldReports() {
-  const { data: oldReports = [], ...rest } = useQuery({
+  const { data: oldReports = [], ...rest } = useInfiniteQuery<
+    IOldReportsResponse,
+    Error,
+    IOldReport[],
+    typeof OLD_REPORTS_QUERY_KEY,
+    string | undefined
+  >({
     queryKey: OLD_REPORTS_QUERY_KEY,
-    queryFn: () =>
-      Http.get<{ data: IOldReportFromApi[] }>('/reports/old-pdf').then(({ data }) =>
-        data.data.map(mapToOldReport),
-      ),
+    queryFn: ({ pageParam }) =>
+      Http.get<IOldReportsResponse>('/reports/old-pdf', {
+        params: pageParam ? { cursor: pageParam } : undefined,
+      }).then(({ data }) => data),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    select: (data) => data.pages.flatMap((page) => page.data.map(mapToOldReport)),
   });
 
   const invalidateOldReports = useInvalidateOldReports();

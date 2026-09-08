@@ -1,9 +1,14 @@
 import { OldReportsSection } from '../components/old-reports-section';
-import { useGetReports } from '../hooks/use-get-reports';
+import { useGetReportsInfinite } from '../hooks/use-get-reports-infinite';
 import { PageHeader } from '@/components/page-header';
 
 export function ReportsPage() {
-  const { reports: monthlyReportsHistory = [] } = useGetReports();
+  const {
+    reports: monthlyReportsHistory = [],
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetReportsInfinite();
 
   return (
     <div className="flex flex-col h-full bg-stone-100/40">
@@ -11,7 +16,12 @@ export function ReportsPage() {
 
       <main className="flex-1 overflow-auto p-8">
         <div className="max-w-6xl mx-auto flex flex-col gap-8">
-          <OldReportsSection monthlyReportsData={monthlyReportsHistory} />
+          <OldReportsSection
+            monthlyReportsData={monthlyReportsHistory}
+            hasMoreMonthlyReports={hasNextPage}
+            isLoadingMoreMonthlyReports={isFetchingNextPage}
+            onLoadMoreMonthlyReports={fetchNextPage}
+          />
         </div>
       </main>
     </div>

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Table, Button, Tag, Spin } from 'antd';
 import {
   LuHistory,
@@ -10,6 +11,7 @@ import { useGetPayments } from '../hooks/use-get-payments';
 import { formatShortDate, formatUserName } from './payment-detail.utils';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus, BlockchainNetwork } from '@/enums';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 
 function getExplorerUrl(network: string, txid: string): string {
   if (network === BlockchainNetwork.TRC20) {
@@ -22,9 +24,26 @@ function getExplorerUrl(network: string, txid: string): string {
 }
 
 export function TablePastPayments() {
-  const { payments, isLoading, isError, error, invalidatePayments } = useGetPayments({
+  const {
+    payments,
+    isLoading,
+    isError,
+    error,
+    invalidatePayments,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetPayments({
     status: PaymentStatus.Completed,
-    limit: 20,
+  });
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useInfiniteScroll({
+    observerTarget,
+    onLoadMore: fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isFetchingNextPage,
   });
 
   const columns = [
@@ -157,6 +176,10 @@ export function TablePastPayments() {
         </div>
 
         <Table columns={columns} dataSource={payments} rowKey="id" pagination={false} />
+
+        <div ref={observerTarget} className="flex justify-center pt-6">
+          {isFetchingNextPage ? <Spin size="small" /> : null}
+        </div>
       </div>
     </section>
   );

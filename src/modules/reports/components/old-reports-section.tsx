@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Tabs, Modal, Select, Upload, Spin } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2, LuEye } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
@@ -8,6 +8,7 @@ import { useUploadOldReport } from '../hooks/use-upload-old-report';
 import { useDeleteOldReport } from '../hooks/use-delete-old-report';
 import { useGetOldReportPdf } from '../hooks/use-get-old-report-pdf';
 import { MonthlyReportsList } from './monthly-reports-list';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 
 type ReportsTab = 'monthly' | 'old';
 
@@ -31,6 +32,9 @@ const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
 
 interface IOldReportsSectionProps {
   monthlyReportsData?: IMonthlyReport[];
+  hasMoreMonthlyReports?: boolean;
+  isLoadingMoreMonthlyReports?: boolean;
+  onLoadMoreMonthlyReports?: () => void;
 }
 
 function OldReportPdfViewer({
@@ -61,14 +65,34 @@ function OldReportPdfViewer({
   );
 }
 
-export function OldReportsSection({ monthlyReportsData }: IOldReportsSectionProps) {
+export function OldReportsSection({
+  monthlyReportsData,
+  hasMoreMonthlyReports,
+  isLoadingMoreMonthlyReports,
+  onLoadMoreMonthlyReports,
+}: IOldReportsSectionProps) {
   const [activeTab, setActiveTab] = useState<ReportsTab>('monthly');
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState<number>(CURRENT_YEAR);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [viewingPdfId, setViewingPdfId] = useState<string | null>(null);
 
-  const { oldReports, isLoading: isLoadingOld } = useGetOldReports();
+  const {
+    oldReports,
+    isLoading: isLoadingOld,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetOldReports();
+  const oldReportsObserverTarget = useRef<HTMLDivElement>(null);
+
+  useInfiniteScroll({
+    observerTarget: oldReportsObserverTarget,
+    onLoadMore: fetchNextPage,
+    hasNextPage,
+    isLoading: isLoadingOld,
+    isFetchingNextPage,
+  });
   const { uploadOldReport, isUploading } = useUploadOldReport();
   const { deleteOldReport, isDeleting } = useDeleteOldReport();
 
@@ -176,38 +200,46 @@ export function OldReportsSection({ monthlyReportsData }: IOldReportsSectionProp
               <p className="text-gray-400 text-sm italic">No hay reportes antiguos subidos</p>
             </div>
           ) : (
-            oldReports.map((pdfItem) => (
-              <div
-                key={pdfItem.id}
-                className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors group"
-              >
-                <div className="text-red-400 shrink-0">
-                  <LuFileText size={28} />
-                </div>
+            <>
+              {oldReports.map((pdfItem) => (
+                <div
+                  key={pdfItem.id}
+                  className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors group"
+                >
+                  <div className="text-red-400 shrink-0">
+                    <LuFileText size={28} />
+                  </div>
 
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-800 text-sm truncate">{pdfItem.pdfFileName}</p>
-                  <p className="text-gray-400 text-xs mt-0.5">
-                    {pdfItem.referenceMonthLabel} · Subido el {pdfItem.uploadedAtDate}
-                  </p>
-                </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-800 text-sm truncate">
+                      {pdfItem.pdfFileName}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-0.5">
+                      {pdfItem.referenceMonthLabel} · Subido el {pdfItem.uploadedAtDate}
+                    </p>
+                  </div>
 
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    type="text"
-                    icon={<LuEye size={18} className="text-indigo-500" />}
-                    onClick={() => setViewingPdfId(pdfItem.id)}
-                  />
-                  <Button
-                    type="text"
-                    danger
-                    icon={<LuTrash2 size={18} />}
-                    loading={isDeleting}
-                    onClick={() => deleteOldReport(pdfItem.id)}
-                  />
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      type="text"
+                      icon={<LuEye size={18} className="text-indigo-500" />}
+                      onClick={() => setViewingPdfId(pdfItem.id)}
+                    />
+                    <Button
+                      type="text"
+                      danger
+                      icon={<LuTrash2 size={18} />}
+                      loading={isDeleting}
+                      onClick={() => deleteOldReport(pdfItem.id)}
+                    />
+                  </div>
                 </div>
+              ))}
+
+              <div ref={oldReportsObserverTarget} className="flex justify-center pt-2">
+                {isFetchingNextPage ? <Spin size="small" /> : null}
               </div>
-            ))
+            </>
           )}
         </div>
       </div>
@@ -225,7 +257,14 @@ export function OldReportsSection({ monthlyReportsData }: IOldReportsSectionProp
           Reportes mensuales
         </span>
       ),
-      children: <MonthlyReportsList monthlyReportsData={monthlyReportsData ?? []} />,
+      children: (
+        <MonthlyReportsList
+          monthlyReportsData={monthlyReportsData ?? []}
+          hasMore={hasMoreMonthlyReports}
+          isLoadingMore={isLoadingMoreMonthlyReports}
+          onLoadMore={onLoadMoreMonthlyReports}
+        />
+      ),
     },
     {
       key: 'old',

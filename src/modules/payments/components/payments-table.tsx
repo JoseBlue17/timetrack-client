@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Tag, Spin, Popconfirm } from 'antd';
 import {
   LuEye,
@@ -17,6 +17,7 @@ import { formatShortDate, formatUserName } from './payment-detail.utils';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 
 const STATUS_COLORS: Record<string, string> = {
   [PaymentStatus.Pending]: 'gold',
@@ -38,9 +39,27 @@ export function PaymentsTable() {
   const [detailOpen, setDetailOpen] = useState(false);
 
   const isAdmin = useCanEditConfiguration();
-  const { payments, isLoading, isError, error, invalidatePayments } = useGetPayments({
+  const {
+    payments,
+    isLoading,
+    isError,
+    error,
+    invalidatePayments,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetPayments({
     status: statusFilter || undefined,
     excludeStatus: statusFilter ? undefined : PaymentStatus.Completed,
+  });
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useInfiniteScroll({
+    observerTarget,
+    onLoadMore: fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isFetchingNextPage,
   });
   const { mutate: deletePayment, isPending: isDeleting } = useDeletePayment();
   const { mutate: verifyPayment, isPending: isVerifying } = useVerifyPayment();
@@ -192,6 +211,10 @@ export function PaymentsTable() {
               </div>
             </div>
           ))}
+
+          <div ref={observerTarget} className="flex justify-center p-5 border-t border-gray-100">
+            {isFetchingNextPage ? <Spin size="small" /> : null}
+          </div>
         </div>
       )}
 

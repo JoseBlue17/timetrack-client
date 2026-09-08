@@ -4,6 +4,11 @@ export interface IProject {
   description: string;
 }
 
+export interface IProjectsResponse {
+  data: IProject[];
+  nextCursor: string | null;
+}
+
 export interface IProjectFormModalProps {
   open: boolean;
   onClose: () => void;
