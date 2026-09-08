@@ -10,3 +10,4 @@ export const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'] as const;
 export const SUPERVISORS_QUERY_KEY = ['SUPERVISORS'] as const;
 export const SLACK_PROFILE_QUERY_KEY = ['SLACK_PROFILE'] as const;
 export const OLD_REPORTS_QUERY_KEY = ['OLD_REPORTS'] as const;
+export const DASHBOARD_SUMMARY_QUERY_KEY = ['DASHBOARD_SUMMARY'] as const;

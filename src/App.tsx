@@ -10,6 +10,7 @@ import { TimesheetsPage } from '@/modules/timesheets';
 import { SettingsPage } from '@/modules/settings';
 import { ReportsPage } from '@/modules/reports';
 import { PaymentsPage } from '@/modules/payments';
+import { DashboardPage } from '@/modules/dashboard';
 import { AppLayout } from '@/components/layout/app-layout';
 
 function App() {
@@ -18,6 +19,11 @@ function App() {
   const isAdmin = useCanEditConfiguration();
   const isSupervisor = useIsSupervisor();
   const canViewReports = isAdmin || isSupervisor;
+  const defaultPrivateRoute = isAdmin
+    ? ROUTES.PAYMENTS
+    : isSupervisor
+      ? ROUTES.REPORTS
+      : ROUTES.HOME;
 
   if (isVerifyingToken) {
     return (
@@ -31,15 +37,20 @@ function App() {
     <Routes>
       <Route
         path={ROUTES.SIGN_IN}
-        element={loggedUser ? <Navigate to={ROUTES.TIMESHEETS} replace /> : <SignInPage />}
+        element={loggedUser ? <Navigate to={defaultPrivateRoute} replace /> : <SignInPage />}
       />
       <Route
         path={ROUTES.SIGN_UP}
-        element={loggedUser ? <Navigate to={ROUTES.TIMESHEETS} replace /> : <SignUpPage />}
+        element={loggedUser ? <Navigate to={defaultPrivateRoute} replace /> : <SignUpPage />}
       />
 
       <Route element={loggedUser ? <AppLayout /> : <Navigate to={ROUTES.SIGN_IN} replace />}>
-        <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.TIMESHEETS} replace />} />
+        <Route
+          path={ROUTES.HOME}
+          element={
+            !canViewReports ? <DashboardPage /> : <Navigate to={defaultPrivateRoute} replace />
+          }
+        />
         <Route path={ROUTES.TIMESHEETS} element={<TimesheetsPage />} />
         <Route
           path={ROUTES.REPORTS}

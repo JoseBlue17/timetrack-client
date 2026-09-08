@@ -16,7 +16,7 @@ export const ALL_NAV_ITEMS: INavItem[] = [
     key: ROUTES.HOME,
     label: 'Dashboard',
     icon: <LuHouse className="text-black text-lg" />,
-    roles: [UserRole.Employee, UserRole.Supervisor, UserRole.Admin],
+    roles: [UserRole.Employee],
   },
   {
     key: ROUTES.TIMESHEETS,
