@@ -22,14 +22,14 @@ export const toCreateTimesheetPayload = (date: string, entry: ITimesheetEntry) =
   date,
   project: entry.project,
   description: entry.description,
-  hours: entry.hours ?? 0,
+  hours: Number(entry.hours ?? 0),
 });
 
 export const toUpdateTimesheetPayload = (date: string, entry: ITimesheetEntry) => ({
   date,
   project: entry.project,
   description: entry.description,
-  hours: entry.hours ?? 0,
+  hours: Number(entry.hours ?? 0),
 });
 
 export const validateTimesheetEntries = async (_: unknown, entries: ITimesheetEntry[]) => {

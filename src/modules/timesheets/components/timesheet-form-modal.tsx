@@ -1,4 +1,4 @@
-import { Modal, Form, Input, InputNumber, DatePicker, Button, Select } from 'antd';
+import { Modal, Form, Input, InputNumber, DatePicker, Button, Select, Space } from 'antd';
 import { LuPlus } from 'react-icons/lu';
 import type { ITimesheetFormModalProps } from './timesheet.interface';
 import { useCreateTimesheet } from '../hooks/use-create-timesheet';
@@ -73,12 +73,12 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
           <Form.List name="entries" rules={[{ validator: validateTimesheetEntries }]}>
             {(fields, { add, remove }) => (
               <div className="flex flex-col gap-4">
-                {fields.map((field) => (
-                  <div key={field.key} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
+                {fields.map(({ key, name, ...restField }) => (
+                  <div key={key} className="bg-indigo-50 rounded-xl p-4 flex flex-col gap-3">
                     <Form.Item
-                      {...field}
+                      {...restField}
                       label="Proyecto"
-                      name={[field.name, 'project']}
+                      name={[name, 'project']}
                       rules={[{ required: true, message: 'Requerido' }]}
                     >
                       <Select
@@ -91,32 +91,36 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
                     </Form.Item>
 
                     <Form.Item
-                      {...field}
+                      {...restField}
                       label="Descripción"
-                      name={[field.name, 'description']}
+                      name={[name, 'description']}
                       rules={[{ required: true, message: 'Requerido' }]}
                     >
                       <Input.TextArea rows={3} placeholder="¿Qué hiciste en este proyecto?" />
                     </Form.Item>
 
-                    <Form.Item
-                      {...field}
-                      label="Horas"
-                      name={[field.name, 'hours']}
-                      rules={[{ required: true, message: 'Requerido' }]}
-                    >
-                      <InputNumber
-                        className="w-full"
-                        placeholder="8"
-                        min={1}
-                        max={24}
-                        precision={0}
-                        addonAfter="horas"
-                      />
+                    <Form.Item label="Horas" required>
+                      <Space.Compact className="w-full">
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'hours']}
+                          rules={[{ required: true, message: 'Requerido' }]}
+                          noStyle
+                        >
+                          <InputNumber
+                            className="w-full"
+                            placeholder="8"
+                            min={1}
+                            max={24}
+                            precision={0}
+                          />
+                        </Form.Item>
+                        <Input className="w-20 text-center" value="horas" disabled />
+                      </Space.Compact>
                     </Form.Item>
 
                     {fields.length > 1 && !isEditing && (
-                      <Button type="link" danger onClick={() => remove(field.name)}>
+                      <Button type="link" danger onClick={() => remove(name)}>
                         Eliminar proyecto
                       </Button>
                     )}
