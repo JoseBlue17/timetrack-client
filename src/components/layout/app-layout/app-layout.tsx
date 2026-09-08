@@ -26,7 +26,7 @@ export function AppLayout() {
     <Layout className="min-h-screen">
       <Sider
         width={240}
-        className="bg-slate-50! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
+        className="bg-[#ccc8d8]! fixed! left-0! top-0! bottom-0! h-screen! z-50! flex! flex-col!"
       >
         <div className="flex flex-col h-full">
           <div className="px-6 py-6">
@@ -40,7 +40,6 @@ export function AppLayout() {
               onClick={({ key }) => navigate(key)}
               items={navItems as unknown as MenuProps['items']}
               className="bg-transparent! border-0!"
-              theme="light"
             />
           </div>
 

@@ -41,7 +41,7 @@ export function WalletList() {
             icon={<LuPlus />}
             onClick={openCreate}
             size="large"
-            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600! shrink-0"
+            className="rounded-lg! bg-indigo-500! border-indigo-500! hover:bg-indigo-600! hover:border-indigo-600! shadow-indigo-200! shrink-0"
           >
             Agregar wallet
           </Button>

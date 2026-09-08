@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import useLoggedUser from './use-logged-user';
 import { useUploadToS3 } from './use-upload-to-s3';
+import { useSignatureDisplayUrl } from '@/modules/settings/hooks/signature/use-signature-display-url';
 import { USER_PROFILE_QUERY_KEY } from '@/query-keys';
 
 const LEGACY_ADMIN_SIGNATURE_KEY = 'timetrack_admin_signature';
@@ -22,6 +23,8 @@ export function useAdminSignature() {
     () => loggedUser?.profile?.signatureImageUrl ?? null,
     [loggedUser?.profile?.signatureImageUrl],
   );
+
+  const adminSignatureDisplayUrl = useSignatureDisplayUrl(adminSignatureDataUrl);
 
   const setAdminSignatureDataUrl = useCallback(
     async (file: File | null) => {
@@ -57,6 +60,7 @@ export function useAdminSignature() {
 
   return {
     adminSignatureDataUrl,
+    adminSignatureDisplayUrl,
     setAdminSignatureDataUrl,
     isUploadingAdminSignature: isUploading || isSaving,
   };

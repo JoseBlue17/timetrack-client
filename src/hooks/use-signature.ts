@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import useLoggedUser from './use-logged-user';
 import { useUploadToS3 } from './use-upload-to-s3';
+import { useShowSuccess } from './use-show-success';
 import { USER_PROFILE_QUERY_KEY } from '@/query-keys';
 
 const LEGACY_SIGNATURE_KEY = 'timetrack_signature';
@@ -15,6 +16,7 @@ function removeLegacySignature(): void {
 export function useSignature() {
   const { loggedUser, updateLoggedUser } = useLoggedUser();
   const { uploadUserSignature, isUploading } = useUploadToS3();
+  const { showSuccess } = useShowSuccess();
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
 
@@ -33,6 +35,10 @@ export function useSignature() {
         };
         updateLoggedUser(updatedUser);
         queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+        showSuccess({
+          title: 'Firma eliminada',
+          description: 'Firma digital eliminada correctamente',
+        });
         return;
       }
 
@@ -48,11 +54,15 @@ export function useSignature() {
         };
         updateLoggedUser(updatedUser);
         queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+        showSuccess({
+          title: 'Firma guardada',
+          description: 'Firma digital actualizada correctamente',
+        });
       } finally {
         setIsSaving(false);
       }
     },
-    [loggedUser, uploadUserSignature, updateLoggedUser, queryClient],
+    [loggedUser, uploadUserSignature, updateLoggedUser, queryClient, showSuccess],
   );
 
   return { signatureUrl, setSignature, isUploading: isUploading || isSaving };

@@ -43,18 +43,19 @@ export function SupervisorSelection() {
           Selecciona el supervisor que revisará y aprobará tus reportes mensuales. Presiona Guardar
           cambios para aplicar la selección.
         </p>
+        <hr className="border-gray-200"></hr>
 
-        <Select
-          placeholder="Selecciona un supervisor"
-          loading={isLoading}
-          value={pendingSupervisorId ?? undefined}
-          onChange={setPendingSupervisorId}
-          options={options}
-          allowClear
-          className="w-full max-w-md"
-        />
+        <div className="flex justify-between mt-4">
+          <Select
+            placeholder="Selecciona un supervisor"
+            loading={isLoading}
+            value={pendingSupervisorId ?? undefined}
+            onChange={setPendingSupervisorId}
+            options={options}
+            allowClear
+            className="flex items-start w-full max-w-md"
+          />
 
-        <div className="mt-4">
           <Button
             type="primary"
             icon={<LuSave size={16} />}

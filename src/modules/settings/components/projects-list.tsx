@@ -9,11 +9,12 @@ import { SignatureUpload } from './signature-upload';
 import { HourlyRateSection } from './hourly-rate-section';
 
 import type { IProject } from '../project.interface';
-import { useSignature, useCanEditConfiguration } from '@/hooks';
+import { useCanEditConfiguration } from '@/hooks';
+import { useSignatureDraft } from '../hooks/signature/use-signature-draft';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
-  const { signatureUrl, setSignature, isUploading } = useSignature();
+  const { signatureUrl, isSaving, hasChanges, onChange, onSave } = useSignatureDraft();
   const isAdmin = useCanEditConfiguration();
 
   const { projects = [], isLoading } = useGetProjects();
@@ -130,8 +131,11 @@ export function ProjectsList() {
             title="Firma digital"
             description="Sube tu firma para agilizar el cierre de reportes"
             signatureUrl={signatureUrl}
-            onChange={setSignature}
-            isUploading={isUploading}
+            onChange={onChange}
+            isUploading={isSaving}
+            onSave={onSave}
+            hasChanges={hasChanges}
+            isSaving={isSaving}
           />
         </div>
       )}

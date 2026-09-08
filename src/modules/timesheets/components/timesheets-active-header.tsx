@@ -23,7 +23,7 @@ export function TimesheetsActiveHeader({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">
+        <p className="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">
           Total de horas este mes ({dayjs().format('MMMM')})
         </p>
         <h2 className="text-3xl font-bold text-gray-800">{totalHours}h</h2>

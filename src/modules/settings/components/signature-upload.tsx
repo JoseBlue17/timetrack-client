@@ -1,5 +1,5 @@
 import { Button, Upload } from 'antd';
-import { LuPenTool, LuTrash2, LuUpload } from 'react-icons/lu';
+import { LuPenTool, LuSave, LuTrash2, LuUpload } from 'react-icons/lu';
 
 interface ISignatureUploadProps {
   title: string;
@@ -7,6 +7,9 @@ interface ISignatureUploadProps {
   signatureUrl: string | null;
   onChange: (file: File | null) => void;
   isUploading?: boolean;
+  onSave?: () => void;
+  hasChanges?: boolean;
+  isSaving?: boolean;
 }
 
 export function SignatureUpload({
@@ -15,6 +18,9 @@ export function SignatureUpload({
   signatureUrl,
   onChange,
   isUploading,
+  onSave,
+  hasChanges,
+  isSaving,
 }: ISignatureUploadProps) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-200">
@@ -39,14 +45,16 @@ export function SignatureUpload({
               alt={title}
               className="h-16 rounded-lg border border-gray-200 bg-white"
             />
-            <Button
-              danger
-              icon={<LuTrash2 />}
-              onClick={() => onChange(null)}
-              disabled={isUploading}
-            >
-              Eliminar firma
-            </Button>
+            {!onSave && (
+              <Button
+                danger
+                icon={<LuTrash2 />}
+                onClick={() => onChange(null)}
+                disabled={isUploading}
+              >
+                Eliminar firma
+              </Button>
+            )}
           </div>
         ) : (
           <Upload
@@ -67,6 +75,32 @@ export function SignatureUpload({
               {isUploading ? 'Subiendo...' : 'Cargar imagen de firma'}
             </Button>
           </Upload>
+        )}
+
+        {onSave && (
+          <div className="flex justify-end items-center gap-3 mt-4">
+            {signatureUrl && (
+              <Button
+                danger
+                icon={<LuTrash2 />}
+                onClick={() => onChange(null)}
+                disabled={isUploading || isSaving}
+              >
+                Eliminar firma
+              </Button>
+            )}
+
+            <Button
+              type="primary"
+              icon={<LuSave size={16} />}
+              onClick={onSave}
+              disabled={!hasChanges}
+              loading={isSaving}
+              className="font-semibold"
+            >
+              Guardar cambios
+            </Button>
+          </div>
         )}
       </section>
     </div>
