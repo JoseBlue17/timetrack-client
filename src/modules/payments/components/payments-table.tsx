@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button, Tag, Spin, Popconfirm } from 'antd';
 import {
   LuEye,
@@ -8,9 +7,7 @@ import {
   LuCircleAlert,
   LuExternalLink,
 } from 'react-icons/lu';
-import { useGetPayments } from '../hooks/use-get-payments';
-import { useDeletePayment } from '../hooks/use-delete-payment';
-import { useVerifyPayment } from '../hooks/use-verify-payment';
+import { usePaymentsTable } from '../hooks/use-payments-table';
 import { PaymentDetailModal } from './payment-detail-modal';
 import { PaymentStatusFilter } from './payment-status-filter';
 import { formatShortDate } from '@/helpers/format-short-date';
@@ -18,7 +15,6 @@ import { formatUserName } from '@/helpers/format-user-name';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
-import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 
 const STATUS_COLORS: Record<string, string> = {
   [PaymentStatus.Pending]: 'gold',
@@ -35,37 +31,25 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function PaymentsTable() {
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [selectedPayment, setSelectedPayment] = useState<IPayment | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
-
-  const isAdmin = useCanEditConfiguration();
   const {
+    statusFilter,
+    setStatusFilter,
     payments,
     isLoading,
     isError,
     error,
     invalidatePayments,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useGetPayments({
-    status: statusFilter || undefined,
-    excludeStatus: statusFilter ? undefined : PaymentStatus.Completed,
-  });
+    deletePayment,
+    isDeleting,
+    verifyPayment,
+    isVerifying,
+    selectedPayment,
+    detailOpen,
+    openDetail,
+    closeDetail,
+  } = usePaymentsTable();
 
-  useScrollLoadMore({
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  });
-  const { mutate: deletePayment, isPending: isDeleting } = useDeletePayment();
-  const { mutate: verifyPayment, isPending: isVerifying } = useVerifyPayment();
-
-  const openDetail = (payment: IPayment) => {
-    setSelectedPayment(payment);
-    setDetailOpen(true);
-  };
+  const isAdmin = useCanEditConfiguration();
 
   const canDelete = (payment: IPayment) => {
     return isAdmin && payment.status !== PaymentStatus.Completed;
@@ -92,7 +76,7 @@ export function PaymentsTable() {
           <LuCircleAlert className="text-[40px] mb-3" />
           <p className="text-base font-medium">Error al cargar pagos</p>
           <p className="text-sm mt-1 text-red-400 max-w-md text-center px-4">
-            {error.response?.data?.message || error.message || 'Ocurrió un error inesperado'}
+            {error?.response?.data?.message || error?.message || 'Ocurrió un error inesperado'}
           </p>
           <Button
             type="primary"
@@ -212,11 +196,7 @@ export function PaymentsTable() {
         </div>
       )}
 
-      <PaymentDetailModal
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        payment={selectedPayment}
-      />
+      <PaymentDetailModal open={detailOpen} onClose={closeDetail} payment={selectedPayment} />
     </>
   );
 }

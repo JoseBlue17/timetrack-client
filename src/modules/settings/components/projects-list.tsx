@@ -1,17 +1,13 @@
-import { useState } from 'react';
 import { Button, Popconfirm, Spin } from 'antd';
 import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
 
-import { useGetProjects } from '../hooks/use-get-projects';
-import { useDeleteProject } from '../hooks/use-delete-project';
+import { useProjectsList } from '../hooks/use-projects-list';
 import { ProjectFormModal } from './project-form-modal';
 import { SignatureUpload } from './signature-upload';
 import { HourlyRateSection } from './hourly-rate-section';
 
-import type { IProject } from '../project.interface';
 import { useCanEditConfiguration } from '@/hooks';
 import { useSignatureDraft } from '../hooks/signature/use-signature-draft';
-import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
@@ -19,36 +15,18 @@ export function ProjectsList() {
   const isAdmin = useCanEditConfiguration();
 
   const {
-    projects = [],
+    projects,
     isLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useGetProjects();
-
-  useScrollLoadMore({
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  });
-
-  const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const [selected, setSelected] = useState<IProject | undefined>(undefined);
+    isDeleting,
+    deleteProject,
+    modalOpen,
+    selected,
+    openEdit,
+    openCreate,
+    closeModal,
+  } = useProjectsList();
 
   const cardStyles = 'bg-white p-6 rounded-2xl border border-gray-200 overflow-y-auto';
-
-  const openEdit = (project: IProject) => {
-    setSelected(project);
-    setModalOpen(true);
-  };
-
-  const openCreate = () => {
-    setSelected(undefined);
-    setModalOpen(true);
-  };
 
   return (
     <>
@@ -135,7 +113,7 @@ export function ProjectsList() {
         </div>
       )}
 
-      <ProjectFormModal open={modalOpen} onClose={() => setModalOpen(false)} project={selected} />
+      <ProjectFormModal open={modalOpen} onClose={closeModal} project={selected} />
 
       <HourlyRateSection />
       {!isAdmin && (

@@ -3,38 +3,18 @@ import { Button, Tabs, Modal, Select, Upload, Spin } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2, LuEye } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
 import type { IMonthlyReport } from './reports.interface';
-import { useGetOldReports } from '../hooks/use-get-old-reports';
-import { useUploadOldReport } from '../hooks/use-upload-old-report';
-import { useDeleteOldReport } from '../hooks/use-delete-old-report';
+import {
+  useOldReportsList,
+  OLD_REPORTS_MONTH_NAMES,
+  OLD_REPORTS_YEAR_OPTIONS,
+} from '../hooks/use-old-reports-list';
 import { useGetOldReportPdf } from '../hooks/use-get-old-report-pdf';
 import { MonthlyReportsList } from './monthly-reports-list';
-import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 
 type ReportsTab = 'monthly' | 'old';
 
-const MONTH_NAMES = [
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre',
-];
-
-const CURRENT_YEAR = new Date().getFullYear();
-const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
-
 interface IOldReportsSectionProps {
   monthlyReportsData?: IMonthlyReport[];
-  hasMoreMonthlyReports?: boolean;
-  isLoadingMoreMonthlyReports?: boolean;
-  onLoadMoreMonthlyReports?: () => void;
 }
 
 function OldReportPdfViewer({
@@ -65,53 +45,27 @@ function OldReportPdfViewer({
   );
 }
 
-export function OldReportsSection({
-  monthlyReportsData,
-  hasMoreMonthlyReports,
-  isLoadingMoreMonthlyReports,
-  onLoadMoreMonthlyReports,
-}: IOldReportsSectionProps) {
+export function OldReportsSection({ monthlyReportsData }: IOldReportsSectionProps) {
   const [activeTab, setActiveTab] = useState<ReportsTab>('monthly');
-  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState<number>(CURRENT_YEAR);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [viewingPdfId, setViewingPdfId] = useState<string | null>(null);
 
   const {
     oldReports,
-    isLoading: isLoadingOld,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useGetOldReports();
-
-  useScrollLoadMore({
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  });
-  const { uploadOldReport, isUploading } = useUploadOldReport();
-  const { deleteOldReport, isDeleting } = useDeleteOldReport();
+    isLoadingOld,
+    selectedMonth,
+    setSelectedMonth,
+    selectedYear,
+    setSelectedYear,
+    pendingFile,
+    setPendingFile,
+    isUploading,
+    handleUpload,
+    deleteOldReport,
+    isDeleting,
+    viewingPdfId,
+    setViewingPdfId,
+  } = useOldReportsList();
 
   const showTabs = monthlyReportsData !== undefined;
-
-  const handleUpload = () => {
-    if (!pendingFile) return;
-
-    uploadOldReport(
-      {
-        file: pendingFile,
-        pdfFileName: pendingFile.name,
-        referenceMonth: selectedMonth,
-        referenceYear: selectedYear,
-      },
-      {
-        onSuccess: () => {
-          setPendingFile(null);
-        },
-      },
-    );
-  };
 
   const oldReportsContent = (
     <>
@@ -125,7 +79,7 @@ export function OldReportsSection({
                 onChange={setSelectedMonth}
                 className="w-full"
                 size="large"
-                options={MONTH_NAMES.map((name, i) => ({ label: name, value: i + 1 }))}
+                options={OLD_REPORTS_MONTH_NAMES.map((name, i) => ({ label: name, value: i + 1 }))}
               />
             </div>
 
@@ -136,7 +90,7 @@ export function OldReportsSection({
                 onChange={setSelectedYear}
                 className="w-full"
                 size="large"
-                options={YEAR_OPTIONS.map((y) => ({ label: String(y), value: y }))}
+                options={OLD_REPORTS_YEAR_OPTIONS.map((y) => ({ label: String(y), value: y }))}
               />
             </div>
           </div>
@@ -250,14 +204,7 @@ export function OldReportsSection({
           Reportes mensuales
         </span>
       ),
-      children: (
-        <MonthlyReportsList
-          monthlyReportsData={monthlyReportsData ?? []}
-          hasMore={hasMoreMonthlyReports}
-          isLoadingMore={isLoadingMoreMonthlyReports}
-          onLoadMore={onLoadMoreMonthlyReports}
-        />
-      ),
+      children: <MonthlyReportsList monthlyReportsData={monthlyReportsData ?? []} />,
     },
     {
       key: 'old',

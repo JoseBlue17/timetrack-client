@@ -6,22 +6,13 @@ import { ReportListItem } from './report-list-item';
 import { ReportPdfModal } from './report-pdf-modal';
 import { ReportPaymentModal } from './report-payment-modal';
 import { useLoggedUser, useCanEditConfiguration, useIsSupervisor } from '@/hooks';
-import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import { UserRole } from '@/enums';
 
 interface IMonthlyReportsListProps {
   monthlyReportsData: IMonthlyReport[];
-  hasMore?: boolean;
-  isLoadingMore?: boolean;
-  onLoadMore?: () => void;
 }
 
-export function MonthlyReportsList({
-  monthlyReportsData,
-  hasMore,
-  isLoadingMore,
-  onLoadMore,
-}: IMonthlyReportsListProps) {
+export function MonthlyReportsList({ monthlyReportsData }: IMonthlyReportsListProps) {
   const { handleApprove, isApprovingReport } = useApproveReportAction();
   const { rejectReport, isRejectingReport } = useRejectReport();
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
@@ -32,12 +23,6 @@ export function MonthlyReportsList({
   const isAdmin = useCanEditConfiguration();
   const isSupervisor = useIsSupervisor();
   const userRole = loggedUser?.role ?? UserRole.Employee;
-
-  useScrollLoadMore({
-    fetchNextPage: onLoadMore ?? (() => undefined),
-    hasNextPage: hasMore ?? false,
-    isFetchingNextPage: isLoadingMore ?? false,
-  });
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">

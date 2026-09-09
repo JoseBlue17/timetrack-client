@@ -100,7 +100,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
                     </Form.Item>
 
                     <Form.Item label="Horas" required>
-                      <Space.Compact className="w-full">
+                      <Space.Compact className="w-40">
                         <Form.Item
                           {...restField}
                           name={[name, 'hours']}
@@ -115,7 +115,7 @@ export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormM
                             precision={0}
                           />
                         </Form.Item>
-                        <Input className="w-20 text-center" value="horas" disabled />
+                        <Input className="text-center" value="horas" disabled />
                       </Space.Compact>
                     </Form.Item>
 

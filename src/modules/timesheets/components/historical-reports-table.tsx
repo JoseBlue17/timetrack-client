@@ -4,9 +4,8 @@ import { isAxiosError } from 'axios';
 
 import { EmptyState } from '@/components/empty-state';
 import { LoadingBox } from '@/components/loading-box';
-import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import useLoggedUser from '@/hooks/use-logged-user';
-import { useGetReportsInfinite } from '@/modules/reports/hooks/use-get-reports-infinite';
+import { useReportsList } from '@/modules/reports/hooks/use-reports-list';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
 import { UserRole } from '@/enums';
 
@@ -14,17 +13,10 @@ import { getHistoricalReportsColumns } from './historical-reports-table.columns'
 import { HistoricalReportDetailRow } from './historical-report-detail-row';
 
 export function HistoricalReportsTable() {
-  const { reports, error, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useGetReportsInfinite();
+  const { reports, error, isLoading } = useReportsList();
   const { loggedUser } = useLoggedUser();
   const userRole = loggedUser?.role ?? UserRole.Employee;
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
-
-  useScrollLoadMore({
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  });
 
   const columns = getHistoricalReportsColumns({
     userRole,
