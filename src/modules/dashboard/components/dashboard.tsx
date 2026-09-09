@@ -10,15 +10,14 @@ import { DashboardMetricCard } from './dashboard-metric-card';
 import { LatestReportsList } from './latest-reports-list';
 import { PaymentHistoryList } from './payment-history-list';
 import { WeeklyHoursChart } from './weekly-hours-chart';
+import { formatHours } from '@/helpers/format-hours';
+import { formatUsdt } from '@/helpers/format-usdt';
 import {
-  formatHours,
-  formatUsdt,
   getPaymentAmount,
   getPaymentStatusColor,
   getPaymentStatusLabel,
-  getReportStatusColor,
-  getReportStatusLabel,
-} from './dashboard.utils';
+} from '@/helpers/payment-status';
+import { getReportStatusColor, getReportStatusLabel } from '@/helpers/report-status';
 
 export function DashboardPageComponent() {
   const { dashboardSummary, isLoading, isError, error } = useGetDashboardSummary();

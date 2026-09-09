@@ -11,7 +11,7 @@ import {
   countUniqueTimesheetDays,
   groupTimesheetsByDate,
   sumTimesheetsHours,
-} from '../components/timesheet.utils';
+} from '@/helpers/group-timesheets-by-date';
 
 export function useTimesheetsPage() {
   const { activeTab, setActiveTab, selectedDate, setSelectedDate, currentMonth, currentYear } =

@@ -10,7 +10,7 @@ import {
   getTimesheetFormInitialValues,
   createEmptyEntry,
   validateTimesheetEntries,
-} from './timesheet-form.utils';
+} from '@/helpers/timesheet-form';
 
 export function TimesheetFormModal({ open, onClose, timesheet }: ITimesheetFormModalProps) {
   const isEditing = !!timesheet;

@@ -16,13 +16,10 @@ import {
 } from 'react-icons/lu';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
-import {
-  formatDate,
-  formatUserName,
-  copyToClipboard,
-  copyPaymentDetails,
-  openBinanceWithdrawal,
-} from './payment-detail.utils';
+import { openBinanceWithdrawal } from '@/helpers/binance-withdrawal';
+import { copyPaymentDetails, copyToClipboard } from '@/helpers/copy-to-clipboard';
+import { formatDateTime } from '@/helpers/format-date-time';
+import { formatUserName } from '@/helpers/format-user-name';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   [PaymentStatus.Pending]: { label: 'Pendiente', color: 'gold', icon: <LuClock size={18} /> },
@@ -215,7 +212,9 @@ export function PaymentDatesGrid({ payment }: { payment: IPayment }) {
           <LuCalendar size={12} />
           Creado
         </span>
-        <p className="text-sm font-medium text-gray-700 mt-0.5">{formatDate(payment.createdAt)}</p>
+        <p className="text-sm font-medium text-gray-700 mt-0.5">
+          {formatDateTime(payment.createdAt)}
+        </p>
       </div>
 
       {payment.paidAt && (
@@ -224,7 +223,9 @@ export function PaymentDatesGrid({ payment }: { payment: IPayment }) {
             <LuCircleCheck size={12} />
             Pagado
           </span>
-          <p className="text-sm font-medium text-green-700 mt-0.5">{formatDate(payment.paidAt)}</p>
+          <p className="text-sm font-medium text-green-700 mt-0.5">
+            {formatDateTime(payment.paidAt)}
+          </p>
         </div>
       )}
 
@@ -235,7 +236,7 @@ export function PaymentDatesGrid({ payment }: { payment: IPayment }) {
             Vence
           </span>
           <p className="text-sm font-medium text-gray-700 mt-0.5">
-            {formatDate(payment.expiresAt)}
+            {formatDateTime(payment.expiresAt)}
           </p>
         </div>
       )}
@@ -247,7 +248,7 @@ export function PaymentDatesGrid({ payment }: { payment: IPayment }) {
             Detectado
           </span>
           <p className="text-sm font-medium text-gray-700 mt-0.5">
-            {formatDate(payment.detectedAt)}
+            {formatDateTime(payment.detectedAt)}
           </p>
         </div>
       )}

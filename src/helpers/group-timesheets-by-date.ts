@@ -1,4 +1,7 @@
-import type { ITimesheet, ITimesheetDateGroup } from './timesheet.interface';
+import type {
+  ITimesheet,
+  ITimesheetDateGroup,
+} from '@/modules/timesheets/components/timesheet.interface';
 
 const getDateKey = (date: string) => date.slice(0, 10);
 

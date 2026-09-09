@@ -8,7 +8,8 @@ import {
   LuExternalLink,
 } from 'react-icons/lu';
 import { useGetPayments } from '../hooks/use-get-payments';
-import { formatShortDate, formatUserName } from './payment-detail.utils';
+import { formatShortDate } from '@/helpers/format-short-date';
+import { formatUserName } from '@/helpers/format-user-name';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus, BlockchainNetwork } from '@/enums';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';

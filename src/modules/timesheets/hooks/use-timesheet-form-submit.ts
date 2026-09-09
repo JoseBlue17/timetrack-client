@@ -9,7 +9,7 @@ import {
   formatTimesheetDate,
   toCreateTimesheetPayload,
   toUpdateTimesheetPayload,
-} from '../components/timesheet-form.utils';
+} from '@/helpers/timesheet-form';
 
 type CreateTimesheet = ReturnType<typeof useCreateTimesheet>['createTimesheet'];
 type UpdateTimesheet = ReturnType<typeof useUpdateTimesheet>['updateTimesheet'];
