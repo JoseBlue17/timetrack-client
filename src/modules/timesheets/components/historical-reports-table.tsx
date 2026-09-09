@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Table } from 'antd';
 import { isAxiosError } from 'axios';
 
 import { EmptyState } from '@/components/empty-state';
 import { LoadingBox } from '@/components/loading-box';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { useGetReportsInfinite } from '@/modules/reports/hooks/use-get-reports-infinite';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
@@ -14,18 +14,15 @@ import { getHistoricalReportsColumns } from './historical-reports-table.columns'
 import { HistoricalReportDetailRow } from './historical-report-detail-row';
 
 export function HistoricalReportsTable() {
-  const { reports, error, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+  const { reports, error, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useGetReportsInfinite();
   const { loggedUser } = useLoggedUser();
   const userRole = loggedUser?.role ?? UserRole.Employee;
   const [selectedReport, setSelectedReport] = useState<{ id: string; name: string } | null>(null);
-  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: fetchNextPage,
+  useScrollLoadMore({
+    fetchNextPage,
     hasNextPage,
-    isLoading,
     isFetchingNextPage,
   });
 
@@ -76,10 +73,6 @@ export function HistoricalReportsTable() {
           expandIcon: () => null,
         }}
       />
-
-      <div ref={observerTarget} className="flex justify-center py-8">
-        {isFetchingNextPage ? <LoadingBox text="Cargando más..." className="p-8" /> : null}
-      </div>
 
       <ReportPdfModal
         open={!!selectedReport}

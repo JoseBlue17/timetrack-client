@@ -1,11 +1,11 @@
-import { useRef, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Modal } from 'antd';
 import type { ITimesheet } from '../components/timesheet.interface';
 import { useGetTimesheets } from './use-get-timesheets';
 import { useCloseMonth } from './use-close-month';
 import { useTimesheetFilters } from './use-timesheet-filters';
 import { useTimesheetModal } from './use-timesheet-modal';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import { useSelectedSupervisor, useHourlyRate, useSignature } from '@/hooks';
 import {
   countUniqueTimesheetDays,
@@ -24,13 +24,9 @@ export function useTimesheetsPage() {
       year: currentYear,
     });
 
-  const observerTarget = useRef<HTMLDivElement>(null);
-
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: fetchNextPage,
+  useScrollLoadMore({
+    fetchNextPage,
     hasNextPage: hasNextPage ?? false,
-    isLoading,
     isFetchingNextPage,
   });
 
@@ -112,7 +108,6 @@ export function useTimesheetsPage() {
       handleEdit: wrappedHandleEdit,
       handleAdd: wrappedHandleAdd,
       handleClose: wrappedHandleClose,
-      observerTarget,
     }),
     [
       activeTab,

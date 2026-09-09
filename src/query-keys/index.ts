@@ -6,6 +6,7 @@ export const USER_WALLETS_QUERY_KEY = ['USER_WALLETS'] as const;
 export const REPORTS_LIST_QUERY_KEY = ['REPORTS_LIST'] as const;
 export const MONTHLY_SUMMARY_QUERY_KEY = ['MONTHLY_SUMMARY'] as const;
 export const REPORT_PDF_QUERY_KEY = ['report-pdf'] as const;
+export const OLD_REPORT_PDF_QUERY_KEY = ['old-report-pdf'] as const;
 export const USER_PROFILE_QUERY_KEY = ['USER_PROFILE'] as const;
 export const SIGNATURE_URL_QUERY_KEY = ['SIGNATURE_URL'] as const;
 export const SUPERVISORS_QUERY_KEY = ['SUPERVISORS'] as const;

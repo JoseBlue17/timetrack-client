@@ -6,8 +6,10 @@ import { TimesheetsOldReportsTab } from '../components/timesheets-old-reports-ta
 import { TimesheetFormModal } from '../components/timesheet-form-modal';
 import { useTimesheetsPage } from '../hooks/use-timesheets-page';
 import { PageHeader } from '@/components/page-header';
+import { useScrollHandlers } from '@/contexts/scroll-handlers-context';
 
 export function TimesheetsPage() {
+  const { handleScroll } = useScrollHandlers();
   const {
     activeTab,
     setActiveTab,
@@ -18,7 +20,6 @@ export function TimesheetsPage() {
     isLoading,
     isError,
     error,
-    isFetchingNextPage,
     isClosingMonth,
     totalHours,
     uniqueDays,
@@ -28,14 +29,13 @@ export function TimesheetsPage() {
     handleEdit,
     handleAdd,
     handleClose,
-    observerTarget,
   } = useTimesheetsPage();
 
   return (
     <div className="flex flex-col h-full bg-surface">
       <PageHeader title="Timesheets" />
 
-      <main className="flex-1 overflow-auto p-8">
+      <main className="flex-1 overflow-auto p-8" onScroll={handleScroll}>
         <div className="max-w-6xl mx-auto">
           <Tabs
             activeKey={activeTab}
@@ -62,8 +62,6 @@ export function TimesheetsPage() {
                     isError={isError}
                     error={error}
                     isClosingMonth={isClosingMonth}
-                    isFetchingNextPage={isFetchingNextPage}
-                    observerTarget={observerTarget}
                     onDateChange={setSelectedDate}
                     onCloseMonth={handleCloseMonth}
                     onAdd={handleAdd}

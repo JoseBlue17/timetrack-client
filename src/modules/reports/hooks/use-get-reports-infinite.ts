@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Http } from '@/config/http';
 import type { AxiosResponseError } from '@/config/http';
+import { REPORTS_LIST_QUERY_KEY } from '@/query-keys';
 import type { IReportsPaginatedResponse, IMonthlyReport } from '../components/reports.interface';
 import { mapToMonthlyReport } from '../helpers/map-monthly-report';
 
@@ -25,10 +26,10 @@ export function useGetReportsInfinite() {
     IReportsPaginatedResponse,
     AxiosResponseError,
     IMonthlyReport[],
-    ['REPORTS_LIST', 'infinite'],
+    readonly ['REPORTS_LIST', 'infinite'],
     string | undefined
   >({
-    queryKey: ['REPORTS_LIST', 'infinite'],
+    queryKey: [...REPORTS_LIST_QUERY_KEY, 'infinite'],
     queryFn: async ({ pageParam }) => getReportsPage(pageParam),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -37,7 +38,7 @@ export function useGetReportsInfinite() {
   });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['REPORTS_LIST'] });
+    queryClient.invalidateQueries({ queryKey: REPORTS_LIST_QUERY_KEY });
   };
 
   return { ...rest, reports, invalidate };

@@ -1,8 +1,10 @@
 import { OldReportsSection } from '../components/old-reports-section';
 import { useGetReportsInfinite } from '../hooks/use-get-reports-infinite';
 import { PageHeader } from '@/components/page-header';
+import { useScrollHandlers } from '@/contexts/scroll-handlers-context';
 
 export function ReportsPage() {
+  const { handleScroll } = useScrollHandlers();
   const {
     reports: monthlyReportsHistory = [],
     hasNextPage,
@@ -14,7 +16,7 @@ export function ReportsPage() {
     <div className="flex flex-col h-full bg-stone-100/40">
       <PageHeader title="Reportes" />
 
-      <main className="flex-1 overflow-auto p-8">
+      <main className="flex-1 overflow-auto p-8" onScroll={handleScroll}>
         <div className="max-w-6xl mx-auto flex flex-col gap-8">
           <OldReportsSection
             monthlyReportsData={monthlyReportsHistory}

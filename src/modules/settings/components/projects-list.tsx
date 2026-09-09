@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Button, Popconfirm, Spin } from 'antd';
 import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
 
@@ -11,7 +11,7 @@ import { HourlyRateSection } from './hourly-rate-section';
 import type { IProject } from '../project.interface';
 import { useCanEditConfiguration } from '@/hooks';
 import { useSignatureDraft } from '../hooks/signature/use-signature-draft';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import { cn } from '@/tools';
 
 export function ProjectsList() {
@@ -25,13 +25,10 @@ export function ProjectsList() {
     fetchNextPage,
     isFetchingNextPage,
   } = useGetProjects();
-  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: fetchNextPage,
+  useScrollLoadMore({
+    fetchNextPage,
     hasNextPage,
-    isLoading,
     isFetchingNextPage,
   });
 
@@ -134,10 +131,6 @@ export function ProjectsList() {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div ref={observerTarget} className="flex justify-center pt-5">
-            {isFetchingNextPage ? <Spin size="small" /> : null}
           </div>
         </div>
       )}

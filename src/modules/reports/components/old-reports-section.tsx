@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Button, Tabs, Modal, Select, Upload, Spin } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2, LuEye } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
@@ -8,7 +8,7 @@ import { useUploadOldReport } from '../hooks/use-upload-old-report';
 import { useDeleteOldReport } from '../hooks/use-delete-old-report';
 import { useGetOldReportPdf } from '../hooks/use-get-old-report-pdf';
 import { MonthlyReportsList } from './monthly-reports-list';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 
 type ReportsTab = 'monthly' | 'old';
 
@@ -84,13 +84,10 @@ export function OldReportsSection({
     fetchNextPage,
     isFetchingNextPage,
   } = useGetOldReports();
-  const oldReportsObserverTarget = useRef<HTMLDivElement>(null);
 
-  useInfiniteScroll({
-    observerTarget: oldReportsObserverTarget,
-    onLoadMore: fetchNextPage,
+  useScrollLoadMore({
+    fetchNextPage,
     hasNextPage,
-    isLoading: isLoadingOld,
     isFetchingNextPage,
   });
   const { uploadOldReport, isUploading } = useUploadOldReport();
@@ -235,10 +232,6 @@ export function OldReportsSection({
                   </div>
                 </div>
               ))}
-
-              <div ref={oldReportsObserverTarget} className="flex justify-center pt-2">
-                {isFetchingNextPage ? <Spin size="small" /> : null}
-              </div>
             </>
           )}
         </div>

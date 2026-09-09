@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { AppLayoutSidebarFooter } from './app-layout-sidebar-footer';
 import { useNavItems } from './use-nav-items';
+import { ScrollHandlersProvider } from '@/contexts/scroll-handlers-provider';
 
 const { Sider, Content } = Layout;
 
@@ -54,9 +55,11 @@ export function AppLayout() {
         </div>
       </Sider>
 
-      <Layout className="ml-60! min-h-screen!">
-        <Content className="min-h-screen! bg-gray-50!">
-          <Outlet />
+      <Layout className="ml-60! h-screen!">
+        <Content className="h-full! bg-gray-50! overflow-hidden!">
+          <ScrollHandlersProvider>
+            <Outlet />
+          </ScrollHandlersProvider>
         </Content>
       </Layout>
     </Layout>

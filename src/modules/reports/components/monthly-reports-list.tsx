@@ -1,5 +1,4 @@
-import { useRef, useState } from 'react';
-import { Spin } from 'antd';
+import { useState } from 'react';
 import { useApproveReportAction } from '../hooks/use-approve-report-action';
 import { useRejectReport } from '../hooks/use-reject-report';
 import type { IMonthlyReport } from './reports.interface';
@@ -7,7 +6,7 @@ import { ReportListItem } from './report-list-item';
 import { ReportPdfModal } from './report-pdf-modal';
 import { ReportPaymentModal } from './report-payment-modal';
 import { useLoggedUser, useCanEditConfiguration, useIsSupervisor } from '@/hooks';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 import { UserRole } from '@/enums';
 
 interface IMonthlyReportsListProps {
@@ -33,13 +32,10 @@ export function MonthlyReportsList({
   const isAdmin = useCanEditConfiguration();
   const isSupervisor = useIsSupervisor();
   const userRole = loggedUser?.role ?? UserRole.Employee;
-  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: onLoadMore ?? (() => undefined),
+  useScrollLoadMore({
+    fetchNextPage: onLoadMore ?? (() => undefined),
     hasNextPage: hasMore ?? false,
-    isLoading: false,
     isFetchingNextPage: isLoadingMore ?? false,
   });
 
@@ -73,10 +69,6 @@ export function MonthlyReportsList({
             />
           ))
         )}
-
-        <div ref={observerTarget} className="flex justify-center pt-2">
-          {isLoadingMore ? <Spin size="small" /> : null}
-        </div>
       </div>
 
       <ReportPdfModal

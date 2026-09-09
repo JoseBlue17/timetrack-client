@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Button, Tag, Spin, Popconfirm } from 'antd';
 import {
   LuEye,
@@ -18,7 +18,7 @@ import { formatUserName } from '@/helpers/format-user-name';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useScrollLoadMore } from '@/hooks/use-scroll-load-more';
 
 const STATUS_COLORS: Record<string, string> = {
   [PaymentStatus.Pending]: 'gold',
@@ -53,13 +53,10 @@ export function PaymentsTable() {
     status: statusFilter || undefined,
     excludeStatus: statusFilter ? undefined : PaymentStatus.Completed,
   });
-  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useInfiniteScroll({
-    observerTarget,
-    onLoadMore: fetchNextPage,
+  useScrollLoadMore({
+    fetchNextPage,
     hasNextPage,
-    isLoading,
     isFetchingNextPage,
   });
   const { mutate: deletePayment, isPending: isDeleting } = useDeletePayment();
@@ -212,10 +209,6 @@ export function PaymentsTable() {
               </div>
             </div>
           ))}
-
-          <div ref={observerTarget} className="flex justify-center p-5 border-t border-gray-100">
-            {isFetchingNextPage ? <Spin size="small" /> : null}
-          </div>
         </div>
       )}
 

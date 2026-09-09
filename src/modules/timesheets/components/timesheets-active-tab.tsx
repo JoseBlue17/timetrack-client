@@ -16,8 +16,6 @@ interface ITimesheetsActiveTabProps {
   isError: boolean;
   error: Error | null;
   isClosingMonth: boolean;
-  isFetchingNextPage: boolean;
-  observerTarget: React.RefObject<HTMLDivElement | null>;
   onDateChange: (date: Dayjs) => void;
   onCloseMonth: () => void;
   onAdd: () => void;
@@ -33,8 +31,6 @@ export function TimesheetsActiveTab({
   isError,
   error,
   isClosingMonth,
-  isFetchingNextPage,
-  observerTarget,
   onDateChange,
   onCloseMonth,
   onAdd,
@@ -74,10 +70,6 @@ export function TimesheetsActiveTab({
           description='Comienza a trackear tus horas haciendo clic en "Agregar registro"'
         />
       )}
-
-      <div ref={observerTarget} className="flex justify-center py-8">
-        {isFetchingNextPage ? <LoadingBox text="Cargando más..." className="p-8" /> : null}
-      </div>
     </div>
   );
 }
