@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
 import { DASHBOARD_SUMMARY_QUERY_KEY } from '@/query-keys';
 
-import type { IDashboardSummary } from '../components/dashboard.interface';
+import type { IDashboardSummary } from '../dashboard.interface';
 
 interface GetDashboardSummaryParams {
   month?: number;

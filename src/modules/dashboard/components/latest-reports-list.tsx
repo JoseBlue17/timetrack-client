@@ -3,7 +3,7 @@ import { LuFileText } from 'react-icons/lu';
 
 import { EmptyState } from '@/components/empty-state';
 
-import type { IDashboardReport } from './dashboard.interface';
+import type { IDashboardReport } from '../dashboard.interface';
 import { formatHours } from '@/helpers/format-hours';
 import { formatMonthYear } from '@/helpers/format-month-year';
 import { formatUsdt } from '@/helpers/format-usdt';

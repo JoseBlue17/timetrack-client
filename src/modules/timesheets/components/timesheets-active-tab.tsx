@@ -3,7 +3,7 @@ import { LuClock } from 'react-icons/lu';
 
 import { EmptyState } from '@/components/empty-state';
 import { LoadingBox } from '@/components/loading-box';
-import type { ITimesheet, ITimesheetDateGroup } from './timesheet.interface';
+import type { ITimesheet, ITimesheetDateGroup } from '../timesheet.interface';
 import { TimesheetsActiveHeader } from './timesheets-active-header';
 import { TimesheetsTable } from './timesheets-table';
 

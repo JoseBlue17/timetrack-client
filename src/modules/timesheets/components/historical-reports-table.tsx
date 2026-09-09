@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Table } from 'antd';
-import { isAxiosError } from 'axios';
 
 import { EmptyState } from '@/components/empty-state';
 import { LoadingBox } from '@/components/loading-box';
 import useLoggedUser from '@/hooks/use-logged-user';
 import { useReportsList } from '@/modules/reports/hooks/use-reports-list';
 import { ReportPdfModal } from '@/modules/reports/components/report-pdf-modal';
+import { getHttpErrorMessage } from '@/config/http/error';
 import { UserRole } from '@/enums';
 
 import { getHistoricalReportsColumns } from './historical-reports-table.columns';
@@ -28,16 +28,7 @@ export function HistoricalReportsTable() {
   }
 
   if (error) {
-    return (
-      <EmptyState
-        title="Error al cargar reportes"
-        description={
-          isAxiosError(error)
-            ? (error.response?.data?.message ?? error.message)
-            : ((error as Error).message ?? 'Intenta de nuevo')
-        }
-      />
-    );
+    return <EmptyState title="Error al cargar reportes" description={getHttpErrorMessage(error)} />;
   }
 
   if (!reports.length) {

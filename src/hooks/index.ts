@@ -10,6 +10,7 @@ export { useVerifyToken } from './use-verify-token';
 export { useToast } from './use-toast';
 export { useInfiniteScrollTrigger } from './use-infinite-scroll-trigger';
 export { useScrollLoadMore } from './use-scroll-load-more';
+export { useFormErrorHandler } from './use-form-error-handler';
 export { default as useLoggedUser } from './use-logged-user';
 export { useHourlyRate } from './use-hourly-rate';
 export { useSignature } from './use-signature';

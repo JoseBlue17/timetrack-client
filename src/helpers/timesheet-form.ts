@@ -1,8 +1,5 @@
 import dayjs from 'dayjs';
-import type {
-  ITimesheet,
-  ITimesheetEntry,
-} from '@/modules/timesheets/components/timesheet.interface';
+import type { ITimesheet, ITimesheetEntry } from '@/modules/timesheets/timesheet.interface';
 
 export const createEmptyEntry = (): ITimesheetEntry => ({
   project: '',

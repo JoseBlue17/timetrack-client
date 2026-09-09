@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import type dayjs from 'dayjs';
 import type { FormInstance } from 'antd';
-import type { ITimesheet, ITimesheetEntry } from '../components/timesheet.interface';
+import type { ITimesheet, ITimesheetEntry } from '../timesheet.interface';
 import type { useCreateTimesheet } from './use-create-timesheet';
 import type { useUpdateTimesheet } from './use-update-timesheet';
 import {

@@ -1,4 +1,4 @@
-import { Table, Button, Tag, Spin } from 'antd';
+import { Table, Button, Tag } from 'antd';
 import {
   LuHistory,
   LuCreditCard,
@@ -7,6 +7,9 @@ import {
   LuExternalLink,
 } from 'react-icons/lu';
 import { useGetPayments } from '../hooks/use-get-payments';
+import { LoadingBox } from '@/components/loading-box';
+import { EmptyState } from '@/components/empty-state';
+import { getHttpErrorMessage } from '@/config/http/error';
 import { formatShortDate } from '@/helpers/format-short-date';
 import { formatUserName } from '@/helpers/format-user-name';
 import type { IPayment } from '@/interfaces';
@@ -115,9 +118,8 @@ export function TablePastPayments() {
   if (isLoading) {
     return (
       <section className="mt-8">
-        <div className="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center justify-center gap-4">
-          <Spin size="large" />
-          <p className="text-gray-400 animate-pulse font-medium">Cargando historial de pagos...</p>
+        <div className="bg-white rounded-2xl border border-gray-200">
+          <LoadingBox text="Cargando historial de pagos..." />
         </div>
       </section>
     );
@@ -130,7 +132,7 @@ export function TablePastPayments() {
           <LuCircleAlert className="text-[40px]" />
           <p className="text-base font-medium">Error al cargar el historial</p>
           <p className="text-sm text-red-400 max-w-md text-center">
-            {error.response?.data?.message || error.message || 'Ocurrió un error inesperado'}
+            {error ? getHttpErrorMessage(error) : 'Ocurrió un error inesperado'}
           </p>
           <Button
             type="primary"
@@ -148,12 +150,12 @@ export function TablePastPayments() {
   if (payments.length === 0) {
     return (
       <section className="mt-8">
-        <div className="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center justify-center gap-3 text-gray-400">
-          <LuHistory className="text-4xl" />
-          <p className="text-base">No hay pagos completados</p>
-          <p className="text-sm">
-            Los pagos aparecerán aquí una vez que sean confirmados en blockchain
-          </p>
+        <div className="bg-white rounded-2xl border border-gray-200">
+          <EmptyState
+            icon={<LuHistory className="text-2xl" />}
+            title="No hay pagos completados"
+            description="Los pagos aparecerán aquí una vez que sean confirmados en blockchain"
+          />
         </div>
       </section>
     );

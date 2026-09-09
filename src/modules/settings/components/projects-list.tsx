@@ -1,10 +1,12 @@
-import { Button, Popconfirm, Spin } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { LuPencil, LuTrash2, LuFolderPlus } from 'react-icons/lu';
 
 import { useProjectsList } from '../hooks/use-projects-list';
 import { ProjectFormModal } from './project-form-modal';
 import { SignatureUpload } from './signature-upload';
 import { HourlyRateSection } from './hourly-rate-section';
+import { LoadingBox } from '@/components/loading-box';
+import { EmptyState } from '@/components/empty-state';
 
 import { useCanEditConfiguration } from '@/hooks';
 import { useSignatureDraft } from '../hooks/signature/use-signature-draft';
@@ -52,17 +54,13 @@ export function ProjectsList() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Spin size="large" />
-        </div>
+        <LoadingBox />
       ) : projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-          <LuFolderPlus className="text-[40px] mb-3" />
-
-          <p className="text-base">No tienes proyectos aún</p>
-
-          <p className="text-sm mt-1">Agrega tu primer proyecto para comenzar</p>
-        </div>
+        <EmptyState
+          icon={<LuFolderPlus className="text-2xl" />}
+          title="No tienes proyectos aún"
+          description="Agrega tu primer proyecto para comenzar"
+        />
       ) : (
         <div className={`${cardStyles} mb-6`}>
           <section className="mb-2"></section>

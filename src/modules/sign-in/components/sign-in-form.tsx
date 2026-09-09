@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL, PASSWORD } from '@/constants/form-rules';
 import { ROUTES } from '@/constants';
 import { usePasswordVisibility } from '@/hooks/use-password-visibility';
-import type { ISignInFormProps, SignInValues } from './sign-in.interface';
+import type { ISignInFormProps, SignInValues } from '../sign-in.interface';
 
 export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
   const [form] = Form.useForm<SignInValues>();

@@ -1,6 +1,6 @@
 import { Button, Tag } from 'antd';
 import { LuEye, LuPenTool, LuCreditCard, LuCircleStop, LuFileText } from 'react-icons/lu';
-import type { IMonthlyReport } from './reports.interface';
+import type { IMonthlyReport } from '../reports.interface';
 import { getReportStatusMapping, STATUS_TAG_COLORS } from './report-status-mappings';
 import { ReportStatus, UserRole } from '@/enums';
 

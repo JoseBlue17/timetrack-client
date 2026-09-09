@@ -4,7 +4,7 @@ import { LuClock3 } from 'react-icons/lu';
 import { EmptyState } from '@/components/empty-state';
 import { getBarHeight } from '@/helpers/get-bar-height';
 
-import type { IDashboardWeeklyHours } from './dashboard.interface';
+import type { IDashboardWeeklyHours } from '../dashboard.interface';
 
 interface WeeklyHoursChartProps {
   weeklyHours?: IDashboardWeeklyHours[];

@@ -7,7 +7,7 @@ import {
   getReportStatusMapping,
   STATUS_TAG_COLORS,
 } from '@/modules/reports/components/report-status-mappings';
-import type { IMonthlyReport } from '@/modules/reports/components/reports.interface';
+import type { IMonthlyReport } from '@/modules/reports/reports.interface';
 
 interface GetHistoricalReportsColumnsProps {
   userRole: string;

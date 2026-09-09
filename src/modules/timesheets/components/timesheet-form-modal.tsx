@@ -1,6 +1,6 @@
 import { Modal, Form, Input, InputNumber, DatePicker, Button, Select, Space } from 'antd';
 import { LuPlus } from 'react-icons/lu';
-import type { ITimesheetFormModalProps } from './timesheet.interface';
+import type { ITimesheetFormModalProps } from '../timesheet.interface';
 import { useCreateTimesheet } from '../hooks/use-create-timesheet';
 import { useUpdateTimesheet } from '../hooks/use-update-timesheet';
 import { useTimesheetFormSubmit } from '../hooks/use-timesheet-form-submit';

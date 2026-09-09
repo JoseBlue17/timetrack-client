@@ -1,15 +1,23 @@
 import axios, { AxiosError, type AxiosInstance, isAxiosError } from 'axios';
 
+export interface HttpFieldError {
+  name: string;
+  errors: string[];
+}
+
 export interface ApiError {
-  name: Record<string, string>;
+  name?: Record<string, string>;
+  fieldErrors?: HttpFieldError[];
   code: string | number;
   message: string;
-  request: {
+  request?: {
     url: string;
   };
 }
 
-export type AxiosResponseError = AxiosError<ApiError>;
+export type HttpError = AxiosError<ApiError>;
+
+export type AxiosResponseError = HttpError;
 
 const baseURL = import.meta.env.VITE_API_URL as string;
 

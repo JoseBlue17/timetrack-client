@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
+import { cursorParams } from '@/helpers/cursor-params';
 import type { IProject, IProjectsResponse } from '../project.interface';
 import { useInvalidateProjects } from '@/hooks';
 import { PROJECTS_QUERY_KEY } from '@/query-keys';
@@ -15,7 +16,7 @@ export function useGetProjects() {
     queryKey: PROJECTS_QUERY_KEY,
     queryFn: ({ pageParam }) =>
       Http.get<IProjectsResponse>('/projects', {
-        params: pageParam ? { cursor: pageParam } : undefined,
+        params: cursorParams(pageParam),
       }).then(({ data }) => data),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

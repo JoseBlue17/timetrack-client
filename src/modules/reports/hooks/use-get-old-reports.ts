@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
+import { cursorParams } from '@/helpers/cursor-params';
 import { OLD_REPORTS_QUERY_KEY } from '@/query-keys';
 import { useInvalidateOldReports } from '@/hooks';
 
@@ -70,7 +71,7 @@ export function useGetOldReports() {
     queryKey: OLD_REPORTS_QUERY_KEY,
     queryFn: ({ pageParam }) =>
       Http.get<IOldReportsResponse>('/reports/old-pdf', {
-        params: pageParam ? { cursor: pageParam } : undefined,
+        params: cursorParams(pageParam),
       }).then(({ data }) => data),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

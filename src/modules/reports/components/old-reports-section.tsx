@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Tabs, Modal, Select, Upload, Spin } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2, LuEye } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
-import type { IMonthlyReport } from './reports.interface';
+import type { IMonthlyReport } from '../reports.interface';
 import {
   useOldReportsList,
   OLD_REPORTS_MONTH_NAMES,

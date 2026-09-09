@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Button, Popconfirm, Spin, Tag } from 'antd';
+import { Button, Popconfirm, Tag } from 'antd';
 import { LuWallet, LuPencil, LuTrash2, LuStar, LuPlus } from 'react-icons/lu';
 import { useGetWallets } from '../../hooks/wallets/use-get-wallets';
 import { useDeleteWallet } from '../../hooks/wallets/use-delete-wallet';
 import { useSetDefaultWallet } from '../../hooks/wallets/use-set-default-wallet';
 import { WalletFormModal } from './wallet-form-modal';
+import { LoadingBox } from '@/components/loading-box';
+import { EmptyState } from '@/components/empty-state';
 import type { IWallet } from '@/interfaces';
 
 export function WalletList() {
@@ -49,14 +51,14 @@ export function WalletList() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Spin size="large" />
-        </div>
+        <LoadingBox />
       ) : wallets.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-200">
-          <LuWallet className="text-[40px] mb-3" />
-          <p className="text-base">No tienes wallets registradas</p>
-          <p className="text-sm mt-1">Agrega una wallet para recibir pagos</p>
+        <div className="bg-white rounded-2xl border border-gray-200">
+          <EmptyState
+            icon={<LuWallet className="text-2xl" />}
+            title="No tienes wallets registradas"
+            description="Agrega una wallet para recibir pagos"
+          />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">

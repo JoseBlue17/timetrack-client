@@ -2,7 +2,7 @@ import { Button, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import { LuPencil, LuTrash2, LuMinus, LuPlus } from 'react-icons/lu';
 
-import type { ITimesheetDateGroup, ITimesheet } from './timesheet.interface';
+import type { ITimesheetDateGroup, ITimesheet } from '../timesheet.interface';
 
 interface GetColumnsProps {
   onEdit: (timesheet: ITimesheet) => void;

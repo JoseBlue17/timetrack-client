@@ -1,4 +1,4 @@
-import { Button, Tag, Spin, Popconfirm } from 'antd';
+import { Button, Tag, Popconfirm } from 'antd';
 import {
   LuEye,
   LuTrash2,
@@ -10,11 +10,14 @@ import {
 import { usePaymentsTable } from '../hooks/use-payments-table';
 import { PaymentDetailModal } from './payment-detail-modal';
 import { PaymentStatusFilter } from './payment-status-filter';
+import { LoadingBox } from '@/components/loading-box';
+import { EmptyState } from '@/components/empty-state';
 import { formatShortDate } from '@/helpers/format-short-date';
 import { formatUserName } from '@/helpers/format-user-name';
 import type { IPayment } from '@/interfaces';
 import { PaymentStatus } from '@/enums';
 import { useCanEditConfiguration } from '@/hooks';
+import { getHttpErrorMessage } from '@/config/http/error';
 
 const STATUS_COLORS: Record<string, string> = {
   [PaymentStatus.Pending]: 'gold',
@@ -76,7 +79,7 @@ export function PaymentsTable() {
           <LuCircleAlert className="text-[40px] mb-3" />
           <p className="text-base font-medium">Error al cargar pagos</p>
           <p className="text-sm mt-1 text-red-400 max-w-md text-center px-4">
-            {error?.response?.data?.message || error?.message || 'Ocurrió un error inesperado'}
+            {error ? getHttpErrorMessage(error) : 'Ocurrió un error inesperado'}
           </p>
           <Button
             type="primary"
@@ -87,14 +90,14 @@ export function PaymentsTable() {
           </Button>
         </div>
       ) : isLoading ? (
-        <div className="flex justify-center py-12">
-          <Spin size="large" />
-        </div>
+        <LoadingBox />
       ) : payments.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-200">
-          <LuCreditCard className="text-[40px] mb-3" />
-          <p className="text-base">No hay pagos registrados</p>
-          <p className="text-sm mt-1">Los pagos aparecerán cuando un reporte sea aprobado</p>
+        <div className="bg-white rounded-2xl border border-gray-200">
+          <EmptyState
+            icon={<LuCreditCard className="text-2xl" />}
+            title="No hay pagos registrados"
+            description="Los pagos aparecerán cuando un reporte sea aprobado"
+          />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">

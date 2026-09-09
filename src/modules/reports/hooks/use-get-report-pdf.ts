@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import type { IReportPdfResponse } from '../components/reports.interface';
+import type { IReportPdfResponse } from '../reports.interface';
 import { useInvalidateReportPdf } from '@/hooks';
 import { REPORT_PDF_QUERY_KEY } from '@/query-keys';
 

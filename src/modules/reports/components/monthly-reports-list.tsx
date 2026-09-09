@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApproveReportAction } from '../hooks/use-approve-report-action';
 import { useRejectReport } from '../hooks/use-reject-report';
-import type { IMonthlyReport } from './reports.interface';
+import type { IMonthlyReport } from '../reports.interface';
 import { ReportListItem } from './report-list-item';
 import { ReportPdfModal } from './report-pdf-modal';
 import { ReportPaymentModal } from './report-payment-modal';

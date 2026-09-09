@@ -3,7 +3,7 @@ import { Http } from '@/config/http';
 import { TIMESHEETS_QUERY_KEY } from '@/query-keys';
 import { useShowError, useShowSuccess } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
-import type { IUpdateTimesheetValues, ITimesheet } from '../components/timesheet.interface';
+import type { IUpdateTimesheetValues, ITimesheet } from '../timesheet.interface';
 
 export function useUpdateTimesheet(timesheetId: string) {
   const queryClient = useQueryClient();

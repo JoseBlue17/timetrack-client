@@ -1,12 +1,13 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Http } from '@/config/http';
+import { cursorParams } from '@/helpers/cursor-params';
 import { TIMESHEETS_QUERY_KEY } from '@/query-keys';
 import type {
   IGetTimesheetsParams,
   IGetTimesheetsResponse,
   ITimesheet,
-} from '../components/timesheet.interface';
+} from '../timesheet.interface';
 
 export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
   const queryClient = useQueryClient();
@@ -21,10 +22,7 @@ export function useGetTimesheets(params: IGetTimesheetsParams = {}) {
     queryKey: [...TIMESHEETS_QUERY_KEY, params],
     queryFn: async ({ pageParam }) => {
       const { data } = await Http.get<IGetTimesheetsResponse>('/timesheets', {
-        params: {
-          ...params,
-          ...(pageParam ? { cursor: pageParam } : {}),
-        },
+        params: cursorParams(pageParam, params),
       });
       return data;
     },

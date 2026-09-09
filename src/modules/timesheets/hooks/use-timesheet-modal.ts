@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import type { ITimesheet } from '../components/timesheet.interface';
+import type { ITimesheet } from '../timesheet.interface';
 
 export function useTimesheetModal() {
   const [modalOpen, setModalOpen] = useState(false);

@@ -1,5 +1,5 @@
 import { ReportStatus } from '@/enums';
-import type { BackendMonthlyReport, IMonthlyReport } from '../components/reports.interface';
+import type { BackendMonthlyReport, IMonthlyReport } from '../reports.interface';
 
 const MONTH_NAMES = [
   'Enero',

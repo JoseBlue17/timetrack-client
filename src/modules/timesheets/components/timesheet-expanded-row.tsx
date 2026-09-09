@@ -2,7 +2,7 @@ import { Button, Popconfirm, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { LuPencil, LuTrash2 } from 'react-icons/lu';
 
-import type { ITimesheet, ITimesheetDateGroup } from './timesheet.interface';
+import type { ITimesheet, ITimesheetDateGroup } from '../timesheet.interface';
 
 interface ITimesheetExpandedRowProps {
   group: ITimesheetDateGroup;

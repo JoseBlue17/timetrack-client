@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Http } from '@/config/http';
-import type { IMonthlySummaryResponse } from '../components/reports.interface';
+import type { IMonthlySummaryResponse } from '../reports.interface';
 import { MONTHLY_SUMMARY_QUERY_KEY } from '@/query-keys';
 
 export const useGetMonthlySummary = (month: number, year: number) => {

@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Http } from '@/config/http';
+import { cursorParams } from '@/helpers/cursor-params';
 import type { AxiosResponseError } from '@/config/http';
 import type { IPayment } from '@/interfaces';
 import type { IPaginatedResponse } from '@/interfaces';
@@ -23,10 +24,7 @@ export function useGetPayments(params?: GetPaymentsParams) {
     queryKey: [...PAYMENTS_QUERY_KEY, params],
     queryFn: ({ pageParam }) =>
       Http.get<IPaginatedResponse<IPayment>>('/payments', {
-        params: {
-          ...params,
-          ...(pageParam ? { cursor: pageParam } : {}),
-        },
+        params: cursorParams(pageParam, params),
       }).then(({ data }) => data),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

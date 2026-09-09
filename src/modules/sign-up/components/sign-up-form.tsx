@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL, PASSWORD, REQUIRED } from '@/constants/form-rules';
 import { ROUTES } from '@/constants';
 import { usePasswordVisibility } from '@/hooks/use-password-visibility';
-import type { ISignUpFormProps, SignUpValues } from './sign-up.interface';
+import type { ISignUpFormProps, SignUpValues } from '../sign-up.interface';
 
 export function SignUpForm({ onSubmit, isPending }: ISignUpFormProps) {
   const passwordVisibility = usePasswordVisibility();

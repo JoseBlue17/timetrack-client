@@ -3,7 +3,7 @@ import { LuCreditCard } from 'react-icons/lu';
 
 import { EmptyState } from '@/components/empty-state';
 
-import type { IDashboardPayment } from './dashboard.interface';
+import type { IDashboardPayment } from '../dashboard.interface';
 import { formatDate } from '@/helpers/format-date';
 import { formatUsdt } from '@/helpers/format-usdt';
 import {

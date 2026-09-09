@@ -3,7 +3,7 @@ import { Modal, Radio } from 'antd';
 import { LuCreditCard } from 'react-icons/lu';
 import { useCreatePayment } from '@/modules/payments/hooks/use-create-payment';
 import { useGetWallets } from '@/modules/settings/hooks/wallets/use-get-wallets';
-import type { IMonthlyReport } from './reports.interface';
+import type { IMonthlyReport } from '../reports.interface';
 
 interface IReportPaymentModalProps {
   report: IMonthlyReport | null;

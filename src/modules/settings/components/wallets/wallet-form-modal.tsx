@@ -5,6 +5,7 @@ import { useUpdateWallet } from '../../hooks/wallets/use-update-wallet';
 import { BlockchainNetwork } from '@/enums';
 import { validateWalletAddress } from '@/helpers/validate-wallet-address';
 import { REQUIRED } from '@/constants/form-rules';
+import { useFormErrorHandler } from '@/hooks';
 
 const NETWORK_OPTIONS = [
   { value: BlockchainNetwork.BEP20, label: 'BEP20 (Binance Smart Chain)' },
@@ -23,6 +24,8 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
   const isEditing = !!wallet;
   const isPending = isAdding || isUpdating;
   const [form] = Form.useForm<IWalletFormValues>();
+
+  const handleFormError = useFormErrorHandler(form);
 
   const network = Form.useWatch('network', form);
 
@@ -43,10 +46,10 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
             label: values.label,
           },
         },
-        { onSuccess: onClose },
+        { onSuccess: onClose, onError: handleFormError },
       );
     } else {
-      addWallet(values, { onSuccess: onClose });
+      addWallet(values, { onSuccess: onClose, onError: handleFormError });
     }
   };
 

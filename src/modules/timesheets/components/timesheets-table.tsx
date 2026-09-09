@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 
 import { useExplosion } from '@/components/explosion/explosion';
-import type { ITimesheetsTableProps } from './timesheet.interface';
+import type { ITimesheetsTableProps } from '../timesheet.interface';
 import { TimesheetExpandedRow } from './timesheet-expanded-row';
 import { getExpandIcon, getTimesheetsColumns } from './timesheets-table.columns';
 import { useTimesheetsTable } from './use-timesheets-table';

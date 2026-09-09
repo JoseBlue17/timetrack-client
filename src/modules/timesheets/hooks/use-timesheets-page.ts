@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Modal } from 'antd';
-import type { ITimesheet } from '../components/timesheet.interface';
+import type { ITimesheet } from '../timesheet.interface';
 import { useGetTimesheets } from './use-get-timesheets';
 import { useCloseMonth } from './use-close-month';
 import { useTimesheetFilters } from './use-timesheet-filters';

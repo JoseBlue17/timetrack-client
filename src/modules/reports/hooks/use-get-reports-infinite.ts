@@ -1,19 +1,15 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Http } from '@/config/http';
+import { cursorParams } from '@/helpers/cursor-params';
 import type { AxiosResponseError } from '@/config/http';
 import { REPORTS_LIST_QUERY_KEY } from '@/query-keys';
-import type { IReportsPaginatedResponse, IMonthlyReport } from '../components/reports.interface';
+import type { IReportsPaginatedResponse, IMonthlyReport } from '../reports.interface';
 import { mapToMonthlyReport } from '../helpers/map-monthly-report';
 
 async function getReportsPage(cursor?: string): Promise<IReportsPaginatedResponse> {
-  const params: Record<string, string> = {};
-  if (cursor) {
-    params.cursor = cursor;
-  }
-
   const { data } = await Http.get<IReportsPaginatedResponse>('/reports', {
-    params: Object.keys(params).length > 0 ? params : undefined,
+    params: cursorParams(cursor),
   });
 
   return data;

@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import type { IPaymentDetailModalProps } from './payments.interface';
+import type { IPaymentDetailModalProps } from '../payments.interface';
 import { PaymentStatus } from '@/enums';
 import { useVerifyPayment } from '../hooks/use-verify-payment';
 import { useCanEditConfiguration } from '@/hooks';
