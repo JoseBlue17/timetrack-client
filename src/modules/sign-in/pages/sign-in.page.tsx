@@ -17,7 +17,7 @@ export function SignInPage() {
                 className="h-40 md:h-50 w-auto object-contain mb-8"
               />
               <figcaption>
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Bienvenido a TimeTrack</h2>
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Bienvenido a ClockLedger</h2>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   Plataforma de gestión de timesheets
                 </p>
