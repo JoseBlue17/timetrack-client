@@ -97,7 +97,9 @@ El frontend de TimeTrack está desplegado mediante **Cloudflare Workers**.
 
 La API, desarrollada con NestJS y MongoDB, se administra y despliega de manera independiente.
 
-## 🤝 Contribuciones
+## 🤝 Contribuciones y Colaboradores
+
+- Backend: Samuel Ramírez (@SamuelR099) — Desarrollo de la API con NestJS y MongoDB.
 
 Para mantener la consistencia del proyecto:
 
