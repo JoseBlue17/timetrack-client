@@ -11,7 +11,7 @@ TimeTrack es una aplicación web que permite registrar horas de trabajo por proy
 ## 📸 Vista previa
 
 ### Dashboard
-<img width="1852" height="971" alt="Captura de pantalla 2026-10-23 a la(s) 9 00 10 a m" src="https://github.com/user-attachments/assets/384e92f4-0984-484c-bd50-94baa08446da" />
+<img width="1855" height="969" alt="image" src="https://github.com/user-attachments/assets/199d9a88-164e-4c0f-87f5-dcee2aff66b8" />
 
 ### Registro de horas
 <img width="1911" height="958" alt="Captura de pantalla 2026-10-23 a la(s) 9 07 25 a m" src="https://github.com/user-attachments/assets/9b8a0c45-73e1-41b5-a32d-e1b05058f921" />
