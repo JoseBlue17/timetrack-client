@@ -13,7 +13,7 @@ export function SignInPage() {
             <figure className="flex flex-col items-center text-center">
               <img
                 src="/LOGO.jpg.jpeg"
-                alt="TimeTrack"
+                alt="ClockLedger"
                 className="h-40 md:h-50 w-auto object-contain mb-8"
               />
               <figcaption>
@@ -37,9 +37,9 @@ export function SignInPage() {
       </section>
 
       <footer className="relative z-10 text-center mt-auto pt-10">
-        <h2 className="text-2xl font-bold text-surface">TimeTrack</h2>
+        <h2 className="text-2xl font-bold text-surface">ClockLedger</h2>
         <p className="text-sm text-slate-400 mt-1">
-          © 2026 TimeTrack. Todos los derechos reservados.
+          © 2026 ClockLedger. Todos los derechos reservados.
         </p>
       </footer>
     </main>
