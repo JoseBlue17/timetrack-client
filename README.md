@@ -12,7 +12,7 @@ ClockLedger is a web application designed to track working hours by project, gen
 
 ### Dashboard
 
-<img width="1852" height="971" alt="Captura de pantalla 2026-10-23 a la(s) 9 00 10 a m" src="https://github.com/user-attachments/assets/6521f44f-da55-4595-9ce9-fbca5087f3e7" />
+<img width="1855" height="969" alt="image" src="https://github.com/user-attachments/assets/63d50e01-e415-416d-ab63-5cd5b0903184" />
 
 ### Time Tracking
 
