@@ -1,10 +1,10 @@
-# ⏱️ TimeTrack
+# ⏱️ ClockLedger
 
 **🌐 Idioma:** [English](./README.md) | Español
 
 ### Gestión de horas, reportes y seguimiento de pagos en USDT
 
-TimeTrack es una aplicación web que permite registrar horas de trabajo por proyecto, generar reportes mensuales y realizar seguimiento de pagos en USDT. Ofrece funcionalidades específicas según el rol del usuario: empleado, supervisor o administrador.
+ClockLedger es una aplicación web que permite registrar horas de trabajo por proyecto, generar reportes mensuales y realizar seguimiento de pagos en USDT. Ofrece funcionalidades específicas según el rol del usuario: empleado, supervisor o administrador.
 
 > Este repositorio contiene el cliente web. La API se desarrolla por separado en `payment-system`.
 
