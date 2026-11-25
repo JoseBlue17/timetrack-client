@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getDocumentUrl } from '@/helpers/document-url';
 import { Button, Tabs, Modal, Select, Upload, Spin } from 'antd';
 import { LuCloudUpload, LuFileText, LuTrash2, LuEye } from 'react-icons/lu';
 import { MdOutlinePictureAsPdf, MdCalendarMonth } from 'react-icons/md';
@@ -24,7 +25,8 @@ function OldReportPdfViewer({
   reportId: string | null;
   onClose: () => void;
 }) {
-  const { data: pdfUrl, isLoading } = useGetOldReportPdf(reportId);
+  const { data: rawPdfUrl, isLoading, isError } = useGetOldReportPdf(reportId);
+  const pdfUrl = getDocumentUrl(rawPdfUrl);
 
   return (
     <Modal
@@ -38,8 +40,17 @@ function OldReportPdfViewer({
         <div className="flex items-center justify-center h-64">
           <Spin size="large" />
         </div>
+      ) : pdfUrl && !isError ? (
+        <iframe
+          referrerPolicy="no-referrer"
+          src={pdfUrl}
+          className="w-full h-full min-h-[70vh]"
+          title="PDF Preview"
+        />
       ) : (
-        <iframe src={pdfUrl} className="w-full h-full min-h-[70vh]" title="PDF Preview" />
+        <p role="alert" className="p-8 text-center text-red-500">
+          No se pudo cargar el PDF.
+        </p>
       )}
     </Modal>
   );

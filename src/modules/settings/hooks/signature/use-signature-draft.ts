@@ -33,7 +33,8 @@ export function useSignatureDraft() {
   );
 
   const handleSave = useCallback(async () => {
-    await setSignature(pendingSignature!);
+    if (pendingSignature === undefined) return;
+    if (!(await setSignature(pendingSignature))) return;
 
     if (pendingSignatureUrl) URL.revokeObjectURL(pendingSignatureUrl);
 

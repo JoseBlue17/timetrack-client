@@ -1,4 +1,5 @@
 import { Spin } from 'antd';
+import { getDocumentUrl } from '@/helpers/document-url';
 
 import { useGetReportPdf } from '@/modules/reports/hooks/use-get-report-pdf';
 
@@ -8,7 +9,8 @@ interface HistoricalReportDetailRowProps {
 }
 
 export function HistoricalReportDetailRow({ reportId, monthName }: HistoricalReportDetailRowProps) {
-  const { reportPdfUrl, isLoading } = useGetReportPdf(reportId);
+  const { reportPdfUrl: rawPdfUrl, isLoading, isError } = useGetReportPdf(reportId);
+  const reportPdfUrl = getDocumentUrl(rawPdfUrl);
 
   if (isLoading) {
     return (
@@ -16,6 +18,14 @@ export function HistoricalReportDetailRow({ reportId, monthName }: HistoricalRep
         <Spin size="small" />
         <span className="ml-2 text-sm text-gray-400">Cargando PDF...</span>
       </div>
+    );
+  }
+
+  if (isError || (rawPdfUrl && !reportPdfUrl)) {
+    return (
+      <p role="alert" className="p-4 text-center text-red-500">
+        No se pudo cargar el PDF.
+      </p>
     );
   }
 
@@ -32,6 +42,7 @@ export function HistoricalReportDetailRow({ reportId, monthName }: HistoricalRep
   return (
     <div className="ml-12 rounded-2xl border border-stone-100 bg-stone-50 p-2">
       <iframe
+        referrerPolicy="no-referrer"
         src={reportPdfUrl}
         className="w-full rounded-xl border border-gray-200"
         style={{ height: '500px' }}

@@ -10,8 +10,8 @@ export function SignInForm({ onSubmit, isPending }: ISignInFormProps) {
   const [form] = Form.useForm<SignInValues>();
   const passwordVisibility = usePasswordVisibility();
 
-  const handleFinish = ({ email, password }: SignInValues) => {
-    onSubmit({ email, password });
+  const handleFinish = (values: SignInValues) => {
+    onSubmit(values);
   };
 
   return (

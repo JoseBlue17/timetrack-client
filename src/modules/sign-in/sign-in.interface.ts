@@ -5,7 +5,7 @@ export interface SignInValues {
 }
 
 export interface ISignInFormProps {
-  onSubmit: (values: Omit<SignInValues, 'rememberMe'>) => void;
+  onSubmit: (values: SignInValues) => void;
   isPending: boolean;
 }
 

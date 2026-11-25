@@ -1,4 +1,16 @@
-import axios, { AxiosError, type AxiosInstance, isAxiosError } from 'axios';
+import axios, {
+  AxiosError,
+  CanceledError,
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
+  isAxiosError,
+} from 'axios';
+import {
+  getAuthToken,
+  getSessionGeneration,
+  invalidateSession,
+  isCurrentSession,
+} from '@/helpers/auth-session';
 
 export interface HttpFieldError {
   name: string;
@@ -19,35 +31,63 @@ export type HttpError = AxiosError<ApiError>;
 
 export type AxiosResponseError = HttpError;
 
+function logHttpFailure(error: AxiosResponseError): void {
+  if (!isAxiosError(error) || axios.isCancel(error)) return;
+
+  console.error('HTTP request failed', {
+    method: error.config?.method?.toUpperCase(),
+    status: error.response?.status,
+  });
+}
+
 const baseURL = import.meta.env.VITE_API_URL as string;
+const requestSessions = new WeakMap<InternalAxiosRequestConfig, number>();
 
-export const Http: AxiosInstance = axios.create({ baseURL, withCredentials: true });
+export const Http: AxiosInstance = axios.create({ baseURL, withCredentials: false });
 
-export const PublicHttp: AxiosInstance = axios.create({ baseURL, withCredentials: true });
+export const PublicHttp: AxiosInstance = axios.create({ baseURL, withCredentials: false });
 
-Http.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-PublicHttp.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+Http.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    const generation = config.expectedSessionGeneration ?? getSessionGeneration();
+    if (!isCurrentSession(generation)) throw new CanceledError('Session changed');
+    requestSessions.set(config, generation);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      config.headers.delete('Authorization');
+    }
+    return config;
+  },
+  (error: unknown) => {
+    throw error;
+  },
+  { synchronous: true },
+);
 
 Http.interceptors.response.use(
-  (response) => response,
-  (error: AxiosResponseError) => {
-    if (isAxiosError(error)) {
-      const requestUrl = error.config?.url ?? 'URL desconocida';
-      console.error(`Error en petición a ${requestUrl}:`, error);
+  (response) => {
+    const generation = requestSessions.get(response.config);
+    if (generation !== undefined && !isCurrentSession(generation)) {
+      throw new CanceledError('Session changed');
     }
+    return response;
+  },
+  (error: AxiosResponseError) => {
+    const generation = error.config && requestSessions.get(error.config);
+    if (generation !== undefined && !isCurrentSession(generation)) {
+      return Promise.reject(new CanceledError('Session changed'));
+    }
+    if (
+      isAxiosError(error) &&
+      error.response?.status === 401 &&
+      generation !== undefined &&
+      error.config?.headers.has('Authorization')
+    ) {
+      invalidateSession();
+    }
+    logHttpFailure(error);
     return Promise.reject(error);
   },
 );
@@ -55,10 +95,7 @@ Http.interceptors.response.use(
 PublicHttp.interceptors.response.use(
   (response) => response,
   (error: AxiosResponseError) => {
-    if (isAxiosError(error)) {
-      const requestUrl = error.config?.url ?? 'URL desconocida';
-      console.error(`Error en petición pública a ${requestUrl}:`, error);
-    }
+    logHttpFailure(error);
     return Promise.reject(error);
   },
 );

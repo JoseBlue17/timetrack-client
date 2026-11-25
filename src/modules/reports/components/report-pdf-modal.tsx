@@ -1,4 +1,6 @@
 import { Modal, Spin, Button } from 'antd';
+import { getDocumentUrl } from '@/helpers/document-url';
+import { openExternal } from '@/helpers/open-external';
 import { LuExternalLink, LuDownload } from 'react-icons/lu';
 import { useGetReportPdf } from '../hooks/use-get-report-pdf';
 
@@ -10,7 +12,8 @@ interface IReportPdfModalProps {
 }
 
 export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportPdfModalProps) {
-  const { reportPdfUrl, isLoading, error } = useGetReportPdf(reportId);
+  const { reportPdfUrl: rawPdfUrl, isLoading, error } = useGetReportPdf(reportId);
+  const reportPdfUrl = getDocumentUrl(rawPdfUrl);
 
   return (
     <Modal
@@ -27,7 +30,7 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
                 type="text"
                 size="small"
                 icon={<LuExternalLink size={16} />}
-                onClick={() => window.open(reportPdfUrl, '_blank')}
+                onClick={() => openExternal(reportPdfUrl)}
                 className="text-indigo-600 hover:text-indigo-700!"
               >
                 Abrir en nueva pestaña
@@ -39,6 +42,8 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
                 onClick={() => {
                   const link = document.createElement('a');
                   link.href = reportPdfUrl;
+                  link.rel = 'noopener noreferrer';
+                  link.referrerPolicy = 'no-referrer';
                   link.download = `reporte-${reportName || reportId}.pdf`;
                   link.click();
                 }}
@@ -55,7 +60,7 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
       centered
       className="report-pdf-modal"
       styles={{ body: { padding: 0, height: '80vh', overflow: 'hidden' } }}
-      destroyOnClose
+      destroyOnHidden
     >
       <div className="w-full h-full bg-stone-100 flex items-center justify-center relative">
         {isLoading && (
@@ -67,7 +72,7 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
           </div>
         )}
 
-        {error && (
+        {(error || (rawPdfUrl && !reportPdfUrl)) && (
           <div className="bg-white p-8 rounded-2xl border border-red-100 shadow-sm text-center max-w-md">
             <p className="text-red-500 font-bold mb-2">Error al cargar el PDF</p>
             <p className="text-gray-500 text-sm">
@@ -79,6 +84,7 @@ export function ReportPdfModal({ reportId, reportName, open, onClose }: IReportP
 
         {reportPdfUrl && !isLoading && (
           <iframe
+            referrerPolicy="no-referrer"
             src={`${reportPdfUrl}#toolbar=0&navpanes=0`}
             title={`Reporte ${reportName}`}
             className="w-full h-full border-none shadow-inner"

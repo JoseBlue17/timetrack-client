@@ -1,32 +1,45 @@
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { PublicHttp } from '@/config';
 import { useAuth, useShowError, useShowSuccess } from '@/hooks';
+import { getSessionGeneration, invalidateSession, isCurrentSession } from '@/helpers/auth-session';
 import type { SignUpValues, SignUpResponse } from '../sign-up.interface';
 
 export function useSignUp() {
   const { onLogin } = useAuth();
   const { showError } = useShowError();
   const { showSuccess } = useShowSuccess();
-  const navigate = useNavigate();
 
-  const { mutate: signUp, isPending } = useMutation({
-    mutationFn: (values: Omit<SignUpValues, 'confirmPassword'>) =>
-      PublicHttp.post<SignUpResponse>('/users/sign-up', values).then((r) => r.data),
-    onSuccess: (data) => {
-      onLogin({ token: data.token, user: data.user as Parameters<typeof onLogin>[0]['user'] });
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({
+      values,
+    }: {
+      values: Omit<SignUpValues, 'confirmPassword'>;
+      generation: number;
+    }) => PublicHttp.post<SignUpResponse>('/users/sign-up', values).then((r) => r.data),
+    onSuccess: (data, { generation }) => {
+      if (!isCurrentSession(generation)) return;
+      if (
+        !onLogin(
+          { token: data.token, user: data.user as Parameters<typeof onLogin>[0]['user'] },
+          true,
+          generation,
+        )
+      )
+        return;
       showSuccess({ title: '¡Bienvenido!', description: 'Tu cuenta ha sido creada exitosamente.' });
-      navigate('/');
     },
-    onError: (error) => {
-      showError(error as Parameters<typeof showError>[0]);
+    onError: (error, { generation }) => {
+      if (isCurrentSession(generation)) showError(error as Parameters<typeof showError>[0]);
     },
   });
 
   const handleSubmit = (values: SignUpValues) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword: _confirmPassword, ...rest } = values;
-    signUp(rest);
+    const { firstName, lastName, email, password } = values;
+    invalidateSession();
+    mutate({
+      values: { firstName, lastName, email, password },
+      generation: getSessionGeneration(),
+    });
   };
 
   return { signUp: handleSubmit, isPending };

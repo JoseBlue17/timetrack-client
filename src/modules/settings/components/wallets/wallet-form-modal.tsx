@@ -12,8 +12,8 @@ const NETWORK_OPTIONS = [
   { value: BlockchainNetwork.TRC20, label: 'TRC20 (Tron)' },
 ];
 
-const walletAddressValidator = (_: unknown, value: string, network?: string) => {
-  const error = validateWalletAddress(value, network);
+const walletAddressValidator = async (_: unknown, value: string, network?: string) => {
+  const error = await validateWalletAddress(value, network);
   return error ? Promise.reject(new Error(error)) : Promise.resolve();
 };
 
@@ -27,8 +27,6 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
 
   const handleFormError = useFormErrorHandler(form);
 
-  const network = Form.useWatch('network', form);
-
   const initialValues: IWalletFormValues = {
     network: wallet?.network ?? BlockchainNetwork.BEP20,
     walletAddress: wallet?.walletAddress ?? '',
@@ -37,19 +35,20 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
   };
 
   const handleSubmit = (values: IWalletFormValues) => {
+    const walletAddress = values.walletAddress.trim();
     if (isEditing && wallet) {
       updateWallet(
         {
           walletId: wallet.id,
           values: {
-            walletAddress: values.walletAddress,
+            walletAddress,
             label: values.label,
           },
         },
         { onSuccess: onClose, onError: handleFormError },
       );
     } else {
-      addWallet(values, { onSuccess: onClose, onError: handleFormError });
+      addWallet({ ...values, walletAddress }, { onSuccess: onClose, onError: handleFormError });
     }
   };
 
@@ -84,9 +83,12 @@ export function WalletFormModal({ open, onClose, wallet }: IWalletFormModalProps
         <Form.Item
           label="Dirección de wallet"
           name="walletAddress"
+          dependencies={['network']}
           rules={[
             REQUIRED('La dirección de wallet es obligatoria'),
-            { validator: (_, value) => walletAddressValidator(_, value, network) },
+            ({ getFieldValue }) => ({
+              validator: (_, value) => walletAddressValidator(_, value, getFieldValue('network')),
+            }),
           ]}
         >
           <Input placeholder="0x... o T..." />

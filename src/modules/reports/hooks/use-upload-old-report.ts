@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { Http } from '@/config/http';
+import { validateUpload } from '@/helpers/validate-upload';
 import { useShowError, useShowSuccess, useInvalidateOldReports } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
@@ -17,6 +18,7 @@ export function useUploadOldReport() {
 
   const { mutate: uploadOldReport, isPending: isUploading } = useMutation({
     mutationFn: async (payload: IUploadOldReportPayload) => {
+      validateUpload(payload.file, 'report-pdf');
       const formData = new FormData();
       formData.append('file', payload.file);
       formData.append('pdfFileName', payload.pdfFileName);

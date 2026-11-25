@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Http } from '@/config/http';
+import { validateUpload } from '@/helpers/validate-upload';
+import { getSessionGeneration, isCurrentSession } from '@/helpers/auth-session';
 import { useShowError } from '@/hooks';
 import type { AxiosResponseError } from '@/config/http';
 
@@ -13,9 +15,11 @@ export function useUploadToS3() {
 
   const uploadUserSignature = useCallback(
     async (file: File): Promise<string | null> => {
+      const generation = getSessionGeneration();
       setIsUploading(true);
 
       try {
+        validateUpload(file, 'signature');
         const formData = new FormData();
         formData.append('file', file);
 
@@ -29,12 +33,12 @@ export function useUploadToS3() {
           },
         ).then(({ data }) => data);
 
-        return signatureUrl;
+        return isCurrentSession(generation) ? signatureUrl : null;
       } catch (error) {
-        showError(error as AxiosResponseError);
+        if (isCurrentSession(generation)) showError(error as AxiosResponseError);
         return null;
       } finally {
-        setIsUploading(false);
+        if (isCurrentSession(generation)) setIsUploading(false);
       }
     },
     [showError],

@@ -1,3 +1,5 @@
+import { openExternal } from './open-external';
+
 export function openBinanceWithdrawal(): void {
-  window.open('https://www.binance.com/es-LA/my/wallet/account/withdrawal', '_blank');
+  openExternal('https://www.binance.com/es-LA/my/wallet/account/withdrawal');
 }

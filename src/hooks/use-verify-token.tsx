@@ -2,29 +2,49 @@ import { useEffect, useState } from 'react';
 import { Http } from '@/config/http';
 import useLoggedUser from './use-logged-user';
 import type { IUserMeResponse } from '@/interfaces';
-
-const getMe = () => Http.get('/users/me').then(({ data }) => data);
+import {
+  getAuthToken,
+  getSessionGeneration,
+  invalidateSession,
+  isCurrentSession,
+} from '@/helpers/auth-session';
 
 export function useVerifyToken() {
   const [isVerifyingToken, setIsVerifyingToken] = useState(true);
   const { updateLoggedUser, updateToken } = useLoggedUser();
 
   useEffect(() => {
-    getMe()
-      .then(({ user }: IUserMeResponse) => {
-        if (user) {
-          updateLoggedUser(user);
-          updateToken('present'); // El token real vive en la cookie HttpOnly.
+    let active = true;
+    const generation = getSessionGeneration();
+    const token = getAuthToken();
+    if (!token) {
+      void Promise.resolve().then(() => {
+        if (active) setIsVerifyingToken(false);
+      });
+      return () => {
+        active = false;
+      };
+    }
+    Http.get<IUserMeResponse>('/users/me')
+      .then(({ data: { user } }) => {
+        if (!active || !isCurrentSession(generation)) return;
+        if (!user) {
+          invalidateSession();
+          return;
         }
+        updateLoggedUser(user);
+        updateToken(token);
       })
       .catch(() => {
-        updateToken(null);
+        if (active && isCurrentSession(generation)) invalidateSession();
       })
       .finally(() => {
-        setIsVerifyingToken(false);
+        if (active) setIsVerifyingToken(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [updateLoggedUser, updateToken]);
 
   return { isVerifyingToken, setIsVerifyingToken };
 }

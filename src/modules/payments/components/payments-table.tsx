@@ -1,4 +1,5 @@
 import { Button, Tag, Popconfirm } from 'antd';
+import { openBinanceWithdrawal } from '@/helpers/binance-withdrawal';
 import {
   LuEye,
   LuTrash2,
@@ -159,12 +160,7 @@ export function PaymentsTable() {
                       <Button
                         type="text"
                         icon={<LuExternalLink className="text-amber-500" />}
-                        onClick={() =>
-                          window.open(
-                            'https://www.binance.com/es-LA/my/wallet/account/withdrawal',
-                            '_blank',
-                          )
-                        }
+                        onClick={openBinanceWithdrawal}
                         title="Abrir Binance para pagar"
                       />
                       <Button
